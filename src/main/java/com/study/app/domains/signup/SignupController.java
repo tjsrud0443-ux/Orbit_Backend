@@ -19,7 +19,7 @@ public class SignupController {
 	
 	@PostMapping
 	public ResponseEntity<Void> signupRequest(@RequestPart("input") SignupDTO dto,
-												@RequestPart("file") MultipartFile profile){
+												@RequestPart("file") MultipartFile profile) throws Exception{
 		
 		signupServ.signupRequest(dto, profile);
 		return ResponseEntity.ok().build();
