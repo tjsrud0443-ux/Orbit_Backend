@@ -35,4 +35,12 @@ public class AdminController {
 		return ResponseEntity.ok(dto);
 	}
 	
+	@GetMapping("getDeptList")
+	public ResponseEntity<Map<String, Object>> getDeptList(){
+		Map<String, Object> resp = adminServ.getDeptAndRank();
+		return ResponseEntity.ok(resp);
+	}
+	
+	@PostMapping
+	public ResponseEntity
 }
