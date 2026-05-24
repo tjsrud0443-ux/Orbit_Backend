@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Schedules">
+<insert id="insertSchedules">
+	 insert into schedules values(
+        Schedule_seq.nextval,
+        #{title},
+        #{schedule_type},
+        #{users_id},
+        #{start_dt, jdbcType=TIMESTAMP},
+        #{end_dt, jdbcType=TIMESTAMP},
+        #{sked_reason, jdbcType=VARCHAR},
+        #{is_public, jdbcType=INTEGER},
+        #{ref_seq, jdbcType=NUMERIC},
+        #{ref_type, jdbcType=VARCHAR},
+        sysdate
+    )
+</insert>
+<select id="getSchedules" resultType="com.study.app.domains.schedules.SchedulesDTO">
+	select * from schedules where users_id = #{users_id}
+</select>
 </mapper>
