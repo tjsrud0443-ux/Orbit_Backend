@@ -4,11 +4,11 @@
 
 	
 	<select id="selectGroupTree" resultType="com.study.app.domains.departments.GroupTreeDTO">
-		select d.dept_seq as deptSeq, d.dept_code as deptCode, d.dept_name as deptName,
+		select d.dept_seq as deptSeq, d.dept_code as deptCode, d.dept_name as deptName, u.sysname as sysname,
 			d.parent_dept_seq as parentDeptSeq, u.name as name, r.rank_name as position
 			from departments d
 			left join (
-				select u1.dept_seq, u1.name, u1.rank_seq
+				select u1.dept_seq, u1.name, u1.rank_seq, u1.sysname
 				from users u1
 				where u1.users_seq in
 				(select min(u2.users_seq)

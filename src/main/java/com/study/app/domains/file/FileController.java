@@ -15,9 +15,9 @@ public class FileController {
 	@Autowired
 	private FileService FileServ;
 	
+	// 프로필 사진 출력용 *소용량 전용으로 큰 파일, 게시판 다운로드 사용 xx
 	@GetMapping("/profile/view")
 	public ResponseEntity<byte[]> profileImage(@RequestParam("sysname") String sysname) {
-		System.out.println(sysname);
 		byte[] imgByte = FileServ.profileImage(sysname);
 		
 		if(imgByte == null) {

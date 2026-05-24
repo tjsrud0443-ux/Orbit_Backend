@@ -8,6 +8,7 @@ public class GroupTreeDTO {
 	private Long deptSeq;
     private String deptCode;
     private String deptName;
+    private String sysname;
     private Long parentDeptSeq;
     private String name;
     private String position;
@@ -15,12 +16,13 @@ public class GroupTreeDTO {
     
 	public GroupTreeDTO() {}
 	
-	public GroupTreeDTO(Long deptSeq, String deptCode, String deptName, Long parentDeptSeq, String name,
+	public GroupTreeDTO(Long deptSeq, String deptCode, String deptName, String sysname, Long parentDeptSeq, String name,
 			String position, List<GroupTreeDTO> children) {
 		super();
 		this.deptSeq = deptSeq;
 		this.deptCode = deptCode;
 		this.deptName = deptName;
+		this.sysname = sysname;
 		this.parentDeptSeq = parentDeptSeq;
 		this.name = name;
 		this.position = position;
@@ -44,6 +46,12 @@ public class GroupTreeDTO {
 	}
 	public void setDeptName(String deptName) {
 		this.deptName = deptName;
+	}
+	public String getSysname() {
+		return sysname;
+	}
+	public void setSysname(String sysname) {
+		this.sysname = sysname;
 	}
 	public Long getParentDeptSeq() {
 		return parentDeptSeq;
