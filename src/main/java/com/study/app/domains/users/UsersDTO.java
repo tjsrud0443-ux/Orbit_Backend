@@ -1,4 +1,233 @@
 package com.study.app.domains.users;
 
 public class UsersDTO {
+	
+	private String id;
+	private String pw;
+	private Long users_seq;
+	private String name;
+	private String phone;
+	private String email;
+	private String oriname;
+	private String ssn_hash;
+	private String ssn_enc;
+	private String ssn_masked;
+	private String zonecode;
+	private String address1;
+	private String address2;
+	private String role;
+	private String status;
+	private String hire_date;
+	private String resign_date;
+	private Long dept_seq;
+	private Long rank_seq;
+	private String created_at;
+	private String update_at;
+	private String sysname;
+	
+	public UsersDTO() {}
+	public UsersDTO(String id, String pw, Long users_seq, String name, String phone, String email, String oriname,
+			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
+			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
+			String created_at, String update_at, String sysname) {
+		super();
+		this.id = id;
+		this.pw = pw;
+		this.users_seq = users_seq;
+		this.name = name;
+		this.phone = phone;
+		this.email = email;
+		this.oriname = oriname;
+		this.ssn_hash = ssn_hash;
+		this.ssn_enc = ssn_enc;
+		this.ssn_masked = ssn_masked;
+		this.zonecode = zonecode;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.role = role;
+		this.status = status;
+		this.hire_date = hire_date;
+		this.resign_date = resign_date;
+		this.dept_seq = dept_seq;
+		this.rank_seq = rank_seq;
+		this.created_at = created_at;
+		this.update_at = update_at;
+		this.sysname = sysname;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getPw() {
+		return pw;
+	}
+
+	public void setPw(String pw) {
+		this.pw = pw;
+	}
+
+	public Long getUsers_seq() {
+		return users_seq;
+	}
+
+	public void setUsers_seq(Long users_seq) {
+		this.users_seq = users_seq;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getOriname() {
+		return oriname;
+	}
+
+	public void setOriname(String oriname) {
+		this.oriname = oriname;
+	}
+
+	public String getSsn_hash() {
+		return ssn_hash;
+	}
+
+	public void setSsn_hash(String ssn_hash) {
+		this.ssn_hash = ssn_hash;
+	}
+
+	public String getSsn_enc() {
+		return ssn_enc;
+	}
+
+	public void setSsn_enc(String ssn_enc) {
+		this.ssn_enc = ssn_enc;
+	}
+
+	public String getSsn_masked() {
+		return ssn_masked;
+	}
+
+	public void setSsn_masked(String ssn_masked) {
+		this.ssn_masked = ssn_masked;
+	}
+
+	public String getZonecode() {
+		return zonecode;
+	}
+
+	public void setZonecode(String zonecode) {
+		this.zonecode = zonecode;
+	}
+
+	public String getAddress1() {
+		return address1;
+	}
+
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
+
+	public String getAddress2() {
+		return address2;
+	}
+
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getHire_date() {
+		return hire_date;
+	}
+
+	public void setHire_date(String hire_date) {
+		this.hire_date = hire_date;
+	}
+
+	public String getResign_date() {
+		return resign_date;
+	}
+
+	public void setResign_date(String resign_date) {
+		this.resign_date = resign_date;
+	}
+
+	public Long getDept_seq() {
+		return dept_seq;
+	}
+
+	public void setDept_seq(Long dept_seq) {
+		this.dept_seq = dept_seq;
+	}
+
+	public Long getRank_seq() {
+		return rank_seq;
+	}
+
+	public void setRank_seq(Long rank_seq) {
+		this.rank_seq = rank_seq;
+	}
+
+	public String getCreated_at() {
+		return created_at;
+	}
+
+	public void setCreated_at(String created_at) {
+		this.created_at = created_at;
+	}
+
+	public String getUpdate_at() {
+		return update_at;
+	}
+
+	public void setUpdate_at(String update_at) {
+		this.update_at = update_at;
+	}
+
+	public String getSysname() {
+		return sysname;
+	}
+
+	public void setSysname(String sysname) {
+		this.sysname = sysname;
+	}
 }

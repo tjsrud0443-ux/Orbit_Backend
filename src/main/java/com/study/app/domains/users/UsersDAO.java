@@ -18,4 +18,5 @@ public class UsersDAO {
 		dto.setPw(getShaPw);
 		return batis.selectOne("Users.login", dto);
 	}
+	
 }
