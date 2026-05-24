@@ -10,6 +10,10 @@ public class SignupDAO {
 	@Autowired
 	private SqlSessionTemplate mybatis;
 	
+	public int isExistId(String id) {
+		return mybatis.selectOne("Signup.isExistId", id);
+	}
+	
 	public void signupRequest(SignupDTO dto) {
 		mybatis.insert("Signup.signupRequest", dto);
 	}

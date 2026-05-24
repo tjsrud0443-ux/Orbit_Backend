@@ -19,7 +19,4 @@ public class UsersDAO {
 		return batis.selectOne("Users.login", dto);
 	}
 	
-	public int isExistId(String id) {
-		return batis.selectOne("Users.isExistId", id);
-	}
 }

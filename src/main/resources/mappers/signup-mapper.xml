@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Signup">
+	
+	<select id="isExistId" resultType="int">
+		select count(*) from signup where id = #{id} and status in ('PENDING','APPROVED')
+	</select>
+	
+	<insert id="signupRequest">
+		insert into signup values(
+			signup_seq.nextval, #{id}, #{pw}, #{name}, #{phone}, #{email},
+			#{oriname}, #{ssn_hash}, #{ssn_enc}, #{ssn_masked}, #{zonecode},
+			#{address1}, #{address2}, 'PENDING', sysdate, #{sysname}
+		)
+	</insert>
 </mapper>

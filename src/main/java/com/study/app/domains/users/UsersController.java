@@ -14,9 +14,4 @@ public class UsersController {
 	@Autowired
 	private UsersService usersServ;
 	
-	@GetMapping("duplCheck")
-	public ResponseEntity<Boolean> isExistId(@RequestParam String id){
-		boolean result = usersServ.isExistId(id);
-		return ResponseEntity.ok(result);
-	}
 }

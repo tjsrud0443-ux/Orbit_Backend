@@ -9,6 +9,7 @@ public class SignupDTO {
 	private String phone;
 	private String email;
 	private String oriname;
+	private String ssn;
 	private String ssn_hash;
 	private String ssn_enc;
 	private String ssn_masked;
@@ -21,8 +22,8 @@ public class SignupDTO {
 	
 	public SignupDTO() {}
 	public SignupDTO(Long signup_seq, String id, String pw, String name, String phone, String email, String oriname,
-			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
-			String status, String signup_at, String sysname) {
+			String ssn, String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1,
+			String address2, String status, String signup_at, String sysname) {
 		super();
 		this.signup_seq = signup_seq;
 		this.id = id;
@@ -31,6 +32,7 @@ public class SignupDTO {
 		this.phone = phone;
 		this.email = email;
 		this.oriname = oriname;
+		this.ssn = ssn;
 		this.ssn_hash = ssn_hash;
 		this.ssn_enc = ssn_enc;
 		this.ssn_masked = ssn_masked;
@@ -82,6 +84,12 @@ public class SignupDTO {
 	}
 	public void setOriname(String oriname) {
 		this.oriname = oriname;
+	}
+	public String getSsn() {
+		return ssn;
+	}
+	public void setSsn(String ssn) {
+		this.ssn = ssn;
 	}
 	public String getSsn_hash() {
 		return ssn_hash;

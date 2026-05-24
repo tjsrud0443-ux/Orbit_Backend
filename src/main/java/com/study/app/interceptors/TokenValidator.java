@@ -23,10 +23,6 @@ public class TokenValidator implements HandlerInterceptor{
 			response.setStatus(HttpServletResponse.SC_OK);
 			return true;
 		}
-		
-		if(request.getRequestURI().equals("/users/duplCheck") && request.getMethod().equals("GET")) {
-			return true;
-		}
 
 		String token = "";
 		String authHeader = request.getHeader("Authorization");

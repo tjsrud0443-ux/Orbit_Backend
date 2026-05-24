@@ -9,7 +9,4 @@ public class UsersService {
 	@Autowired
 	private UsersDAO dao;
 	
-	public boolean isExistId(String id) {
-		return dao.isExistId(id) > 0;
-	}
 }

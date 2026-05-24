@@ -7,7 +7,4 @@
 		select count(*) from users where id = #{id} and pw = #{pw}
 	</select>
 	
-	<select id="isExistId" resultType="int">
-		select count(*) from users where id = #{id}
-	</select>
 </mapper>
