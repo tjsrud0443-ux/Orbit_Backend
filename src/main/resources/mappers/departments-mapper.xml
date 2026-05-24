@@ -1,4 +1,53 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Departments">
+
+
+	<select id="selectGroupTree"
+		resultType="com.study.app.domains.departments.GroupTreeDTO">
+		select d.dept_seq as deptSeq, d.dept_code as deptCode, d.dept_name as
+		deptName, u.sysname as sysname,
+		d.parent_dept_seq as parentDeptSeq, u.name as name, r.rank_name as
+		position
+		from departments d
+		left join (
+		select u1.dept_seq, u1.name, u1.rank_seq, u1.sysname
+		from users u1
+		where u1.users_seq in
+		(select min(u2.users_seq)
+		from users u2 group by u2.dept_seq)
+		) u
+		on d.dept_seq = u.dept_seq
+		left join rank r on u.rank_seq = r.rank_seq
+		order by d.dept_seq
+	</select>
+
+	<select id="selectGroupList"
+		resultType="com.study.app.domains.departments.GroupListDTO">
+		select u.id as id, u.name as name, u.dept_seq as deptSeq,
+		d.dept_code as deptCode, d.dept_name as deptName, u.sysname as sysname,
+		r.rank_name as position, u.phone,
+		case
+		when a.check_out is not null then '퇴근'
+		when a.check_in is not null then '근무중'
+		else '연차'
+		end as attendanceStatus
+		from users u
+		left join departments d on u.dept_seq = d.dept_seq
+		left join rank r on u.rank_seq = r.rank_seq
+		left join attendance a
+		on u.id = a.users_id
+		and trunc(a.work_date) = trunc(sysdate)
+
+		order by r.rank_order asc, u.name asc
+	</select>
+
+	<select id="selectMembers"
+		resultType="com.study.app.domains.departments.GroupMemberDTO">
+		select u.id as id, u.name as name, r.rank_name as position, u.sysname as sysname
+		from users u
+		left join rank r on u.rank_seq = r.rank_seq
+		where u.dept_seq = #{deptSeq}
+		order by r.rank_order
+	</select>
 </mapper>
