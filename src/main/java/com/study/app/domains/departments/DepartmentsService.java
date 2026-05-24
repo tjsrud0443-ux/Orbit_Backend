@@ -18,12 +18,15 @@ public class DepartmentsService {
 
 		List<GroupTreeDTO> groupTree = dao.selectGroupTree();
 		List<GroupListDTO> groupList = dao.selectGroupList();
-
+		
 		Map<Long, GroupTreeDTO> nodeMap = new HashMap<>();
 
 		for(GroupTreeDTO node : groupTree) {
 			node.setChildren(new ArrayList<>());
-
+			node.setMembers(new ArrayList<>());
+			
+			List<GroupMemberDTO> members = dao.selectMembers(node.getDeptSeq());
+			node.setMembers(members);
 			nodeMap.put(node.getDeptSeq(), node);
 		}
 
