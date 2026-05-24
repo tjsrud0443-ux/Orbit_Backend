@@ -41,6 +41,8 @@ public class AdminController {
 		return ResponseEntity.ok(resp);
 	}
 	
-	@PostMapping
-	public ResponseEntity
+	@PostMapping("userSignup")
+	public ResponseEntity<Void> userSignup(@RequestBody ){
+		
+	}
 }
