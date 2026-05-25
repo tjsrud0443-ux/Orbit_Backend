@@ -26,4 +26,8 @@ public class UsersDAO {
 	public UsersDTO getHrInfo(String id) {
 		return batis.selectOne("Users.getHrInfo", id);
 	}
+	
+	public UsersDTO getUsersInfo(String loginId) {
+		return batis.selectOne("Users.getUsersInfo", loginId);
+	}
 }
