@@ -23,4 +23,8 @@ public class SchedulesDAO {
 	public int deleteSchedules(Long schedule_seq) {
 		return mybatis.delete("deleteSchedules",schedule_seq);
 	}
+	
+	public int updateSchedules(SchedulesDTO dto) {
+		return mybatis.update("updateSchedules", dto);
+	}
 }

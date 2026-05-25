@@ -22,4 +22,8 @@ public class SchedulesService {
 	public int deleteSchedules(Long schedule_seq) {
 		return schedDAO.deleteSchedules(schedule_seq);
 	}
+	
+	public int updateSchedules(SchedulesDTO dto) {
+		return schedDAO.updateSchedules(dto);
+	}
 }

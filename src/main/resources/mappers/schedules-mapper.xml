@@ -3,7 +3,7 @@
 <mapper namespace="Schedules">
 <insert id="insertSchedules">
 	 insert into schedules values(
-        Schedule_seq.nextval,
+        schedule_seq.nextval,
         #{title},
         #{schedule_type},
         #{users_id},
@@ -20,6 +20,10 @@
 	select * from schedules where users_id = #{users_id}
 </select>
 <delete id="deleteSchedules">
-	delete from schedules where Schedule_seq=#{Schedule_seq}
+	delete from schedules where Schedule_seq=#{schedule_seq}
 </delete>
+<update id="updateSchedules">
+	update schedules set title=#{title},schedule_type=#{schedule_type},
+	start_dt=#{start_dt},end_dt=#{end_dt},sked_reason=#{sked_reason} where Schedule_seq=#{schedule_seq}
+</update>
 </mapper>
