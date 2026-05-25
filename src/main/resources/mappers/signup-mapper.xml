@@ -21,12 +21,17 @@
 
 	<select id="getAllRequest" resultType="com.study.app.domains.signup.SignupDTO">
 		select * from (
-			select signup.*, row_number() over (order by signup_seq desc) rn from signup <where>
+			select signup.*, row_number() over (order by signup_seq desc) rn from signup 
+			<where>
 				<if test="status != 'TOTAL'">
 					status = #{status}
 				</if>
-			</where> ) where rn
-			between #{start} and #{end}
+				<if test="searchTerm != null and searchTerm != ''">
+	                and name like '%' || #{searchTerm} || '%'
+	            </if>
+			</where> 
+		) where rn
+		between #{start} and #{end}
 	</select>
 	
 	<select id="getCount" resultType="int">
@@ -54,4 +59,10 @@
 	<update id="updateStatusToApproved">
 		update signup set status = 'APPROVED' where signup_seq = #{signup_seq}
 	</update>
+	
+	<update id="rejectSignup">
+		update signup set status = 'REJECTED' where signup_seq = #{signup_seq}
+	</update>
+	
+	
 </mapper>

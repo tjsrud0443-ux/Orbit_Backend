@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,8 +35,9 @@ public class AdminController {
 	
 	@GetMapping("allRequest")
     public ResponseEntity<Map<String, Object>> getAllRequest(@RequestParam Long cPage,
-    															@RequestParam String status) {
-        Map<String, Object> result = signupServ.getAllRequest(cPage, status);
+    															@RequestParam String status,
+    															@RequestParam(required = false) String searchTerm) {
+        Map<String, Object> result = signupServ.getAllRequest(cPage, status, searchTerm);
         return ResponseEntity.ok(result);
     }
 	
@@ -66,6 +68,12 @@ public class AdminController {
 	@PostMapping("userSignup")
 	public ResponseEntity<Void> userSignup(@RequestBody SignupRequestDTO dto){
 		adminServ.userSignup(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("rejectSignup")
+	public ResponseEntity<Void> rejectSignup(@RequestParam Long signup_seq){
+		signupServ.rejectSignup(signup_seq);
 		return ResponseEntity.ok().build();
 	}
 }

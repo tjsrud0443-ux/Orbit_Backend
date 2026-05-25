@@ -69,7 +69,7 @@ public class SignupService {
 		dao.signupRequest(dto);
 	}
 	
-	public Map<String, Object> getAllRequest(Long cPage, String status) {
+	public Map<String, Object> getAllRequest(Long cPage, String status, String searchTerm) {
 		int recordCountPerPage = 10;
 
 	    Long start = (cPage - 1) * recordCountPerPage + 1;
@@ -80,6 +80,7 @@ public class SignupService {
 	    param.put("start", start);
 	    param.put("end", end);
 	    param.put("status", status);
+	    param.put("searchTerm", searchTerm);
 
 	    List<SignupDTO> list = dao.getAllRequest(param);
 
@@ -98,5 +99,9 @@ public class SignupService {
 	
 	public SignupDTO getUserInfo(Long signup_seq) {
 		return dao.getUserInfo(signup_seq);
+	}
+	
+	public void rejectSignup(Long signup_seq) {
+		dao.rejectSignup(signup_seq);
 	}
 }

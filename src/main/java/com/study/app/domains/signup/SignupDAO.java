@@ -46,4 +46,8 @@ public class SignupDAO {
     public int updateStatusToApproved(Long signup_seq) {
     	return mybatis.update("Signup.updateStatusToApproved", signup_seq);
     }
+    
+    public int rejectSignup(Long signup_seq) {
+    	return mybatis.update("Signup.rejectSignup", signup_seq);
+    }
 }
