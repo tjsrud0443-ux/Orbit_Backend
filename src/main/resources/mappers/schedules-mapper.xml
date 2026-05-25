@@ -19,4 +19,7 @@
 <select id="getSchedules" resultType="com.study.app.domains.schedules.SchedulesDTO">
 	select * from schedules where users_id = #{users_id}
 </select>
+<!--</delete id="deleteSchedules">
+	delete from schedules where Schedule_seq=#{Schedule_seq}
+</delete>-->
 </mapper>
