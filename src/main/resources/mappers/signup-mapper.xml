@@ -1,16 +1,57 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Signup">
-	
+
 	<select id="isExistId" resultType="int">
-		select count(*) from signup where id = #{id} and status in ('PENDING','APPROVED')
+		select count(*) from signup where id = #{id} and status in
+		('PENDING','APPROVED')
 	</select>
-	
+
 	<insert id="signupRequest">
 		insert into signup values(
-			signup_seq.nextval, #{id}, #{pw}, #{name}, #{phone}, #{email},
-			#{oriname}, #{ssn_hash}, #{ssn_enc}, #{ssn_masked}, #{zonecode},
-			#{address1}, #{address2}, 'PENDING', sysdate, #{sysname}
+		signup_seq.nextval, #{id}, #{pw}, #{name}, #{phone}, #{email},
+		#{oriname}, #{ssn_hash}, #{ssn_enc}, #{ssn_masked}, #{zonecode},
+		#{address1}, #{address2}, 'PENDING', sysdate, #{sysname}
 		)
 	</insert>
+
+	<select id="countAllRequest" resultType="int">
+		select count(*) from signup
+	</select>
+
+	<select id="getAllRequest" resultType="com.study.app.domains.signup.SignupDTO">
+		select * from (
+			select signup.*, row_number() over (order by signup_seq desc) rn from signup <where>
+				<if test="status != 'TOTAL'">
+					status = #{status}
+				</if>
+			</where> ) where rn
+			between #{start} and #{end}
+	</select>
+	
+	<select id="getCount" resultType="int">
+		select count(*) from signup
+		<where>
+			<if test='_parameter != "TOTAL"'>
+				status = #{_parameter}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getTabCount" resultType="hashmap">
+		select
+			count(*) as TOTAL,
+			count(case when status = 'PENDING' then 1 end) as PENDING,
+			count(case when status = 'APPROVED' then 1 end) as APPROVED,
+			count(case when status = 'REJECTED' then 1 end) as REJECTED
+		from signup
+	</select>
+	
+	<select id="getUserInfo" resultType="com.study.app.domains.signup.SignupDTO">
+		select * from signup where signup_seq = #{signup_seq}
+	</select>
+	
+	<update id="updateStatusToApproved">
+		update signup set status = 'APPROVED' where signup_seq = #{signup_seq}
+	</update>
 </mapper>

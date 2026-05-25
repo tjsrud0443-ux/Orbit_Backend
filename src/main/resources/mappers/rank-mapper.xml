@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Rank">
+
+	<select id="getRankList" resultType="com.study.app.domains.rank.RankDTO">
+		select rank_seq, rank_name from "RANK" 
+		where rank_seq not in (1,9)
+		order by rank_seq desc
+	</select>
+</mapper>

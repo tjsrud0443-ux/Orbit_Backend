@@ -1,5 +1,7 @@
 package com.study.app.domains.signup;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +67,36 @@ public class SignupService {
             
 		}
 		dao.signupRequest(dto);
+	}
+	
+	public Map<String, Object> getAllRequest(Long cPage, String status) {
+		int recordCountPerPage = 10;
+
+	    Long start = (cPage - 1) * recordCountPerPage + 1;
+	    Long end = cPage * recordCountPerPage;
+
+	    Map<String, Object> param = new HashMap<>();
+
+	    param.put("start", start);
+	    param.put("end", end);
+	    param.put("status", status);
+
+	    List<SignupDTO> list = dao.getAllRequest(param);
+
+	    int totalCount = dao.getCount(status);
+
+	    Map<String, Integer> tabCount = dao.getTabCount();
+
+	    Map<String, Object> result = new HashMap<>();
+
+	    result.put("list", list);
+	    result.put("count", totalCount);
+	    result.put("tabCount", tabCount);
+
+	    return result;
+    }
+	
+	public SignupDTO getUserInfo(Long signup_seq) {
+		return dao.getUserInfo(signup_seq);
 	}
 }

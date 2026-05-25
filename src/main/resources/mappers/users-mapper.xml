@@ -7,4 +7,18 @@
 		select count(*) from users where id = #{id} and pw = #{pw}
 	</select>
 	
+	<insert id="insertUser">
+		insert into users values(#{id}, #{pw}, users_seq.nextval, #{name}, #{phone}, 
+		#{email}, #{oriname}, #{ssn_hash}, #{ssn_enc}, #{ssn_masked}, #{zonecode}, 
+		#{address1}, #{address2}, 'USER', 'ACTIVE', #{hire_date}, null, #{dept_seq}, 
+		#{rank_seq}, sysdate, null, #{sysname})
+	</insert>
+	
+	<select id="getHrInfo" resultType="com.study.app.domains.users.UsersDTO">
+		SELECT 
+        	u.*, d.dept_name, r.rank_name from users u
+    	LEFT JOIN departments d ON u.dept_seq = d.dept_seq
+    	LEFT JOIN "RANK" r ON u.rank_seq = r.rank_seq
+    	WHERE u.id = #{id}
+	</select>
 </mapper>

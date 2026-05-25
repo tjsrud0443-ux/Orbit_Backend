@@ -9,4 +9,7 @@ public class UsersService {
 	@Autowired
 	private UsersDAO dao;
 	
+	public UsersDTO getHrInfo(String id) {
+		return dao.getHrInfo(id);
+	}
 }

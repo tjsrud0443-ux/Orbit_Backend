@@ -50,4 +50,8 @@
 		where u.dept_seq = #{deptSeq}
 		order by r.rank_order
 	</select>
+	
+	<select id="getDeptList" resultType="com.study.app.domains.departments.DepartmentsDTO">
+		select dept_seq, dept_name from departments where dept_seq not in (1,2) order by dept_seq
+	</select>
 </mapper>

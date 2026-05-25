@@ -23,5 +23,9 @@ public class DepartmentsDAO {
 	public List<GroupMemberDTO> selectMembers(Long deptSeq) {
 		return batis.selectList("Departments.selectMembers", deptSeq);
 	}
+	
+	public List<DepartmentsDTO> getDeptList(){
+		return batis.selectList("Departments.getDeptList");
+	}
 
 }

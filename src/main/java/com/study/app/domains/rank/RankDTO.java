@@ -1,7 +1,6 @@
-package com.study.app.domains.users;
+package com.study.app.domains.rank;
 
 public class RankDTO {
-	
 	private Long rank_seq;
 	private String rank_name;
 	private Long rank_order;
