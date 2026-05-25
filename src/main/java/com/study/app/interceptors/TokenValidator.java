@@ -31,72 +31,61 @@ public class TokenValidator implements HandlerInterceptor{
 
 		String token = "";
 		String authHeader = request.getHeader("Authorization");
-		if(authHeader != null && authHeader.startsWith("Bearer")) {
+		if(authHeader != null && authHeader.startsWith("Bearer ")) {
 			token = authHeader.substring(7);
 		}else {
 			token = request.getParameter("token");
 		}
 
-		if(token != null) {
+		if(token != null && !token.isEmpty() && !"null".equals(token) && !"undefined".equals(token)) {
 			try {
 				String id = jwt.getSubject(token);
 				request.setAttribute("loginId", id);
 
-				// ============ 직급, 팀별 권한 제어
-				// 입력한 api 파악 
+				UsersDTO userInfo = usersServ.getUsersInfo(id);
+
+				if(userInfo == null) {
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					return false;
+				}
+
+				String dept = userInfo.getDept_name();
+				String rank = userInfo.getRank_name();
+				String role = userInfo.getRole();
+
 				String uri = request.getRequestURI();
 
+				boolean isAdmin = "ADMIN".equals(role) || "운영총괄본부".equals(dept) || "운영총괄팀".equals(dept);
 
-				if(uri.startsWith("/admin")) {
-					// ID , 이름, 부서명, 직급, 권한 뽑아오는 메서드
-					UsersDTO userInfo = usersServ.getUsersInfo(id);
-					if(userInfo == null) {
-						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				if(isAdmin) {return true;}
+
+				if(uri.startsWith("/admin/hr")) {
+					if(!"인사팀".equals(dept) && !"대표".equals(rank)) {
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 						return false;
 					}
+				}
 
-					String dept = userInfo.getDept_name();
-					String rank = userInfo.getRank_name();
-					String role = userInfo.getRole();
+				if(uri.startsWith("/admin/ga")) {
+					if(!"총무팀".equals(dept) && !"대표".equals(rank)) {
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
+						return false;
+					}
+				}
 
-					boolean isMaster = 
-							"ADMIN".equals(role) || "운영총괄본부".equals(dept) || "운영총괄팀".equals(dept);
-
-					if(!isMaster) {
-						// 직원 관리, 부서 관리, 회원가입 관리 권한 확인
-						if(uri.startsWith("/adminUsers") || uri.startsWith("/adminDepartments") || 
-								uri.startsWith("/adminSignup")) {
-							if(!"인사팀".equals(dept) && !"대표".equals(rank)) {
-								response.sendError(HttpServletResponse.SC_FORBIDDEN, "인사 관리 권한이 없습니다");
-								return false;
-							}
-						}
-
-						// 비품 관리, 비품 신청 관리, 비품 대여이력 관리, 회의실 관리 권한 확인
-						if(uri.startsWith("/adminSupply") || uri.startsWith("/adminSupplyRequest") ||
-								uri.startsWith("/adminSupplyRental") || uri.startsWith("/adminMeetingRoom")) {
-							if(!"총무팀".equals(dept) && !"대표".equals(rank)) {
-								response.sendError(HttpServletResponse.SC_FORBIDDEN, "자산 관리 권한이 없습니다");
-								return false;
-							}
-						}
-
-						// 문서 관리, AI 미답변 질문 관리 권한 확인
-						if(uri.startsWith("/adminDocument") || uri.startsWith("/adminQna")) {
-							if(!"부서장".equals(rank) && !"본부장".equals(rank) && !"대표".equals(rank)) {
-								response.sendError(HttpServletResponse.SC_FORBIDDEN, "해당 메뉴의 직급 권한이 없습니다");
-								return false;
-							}
-						}
+				if(uri.startsWith("/admin/document")|| uri.startsWith("/admin/ai")) {
+					if(!"부서장".equals(rank) && !"본부장".equals(rank) && !"대표".equals(rank)) {
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
+						return false;
 					}
 				}
 				return true;
 			}catch(Exception e) {
 				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return false;
 			}
 		}
-
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		return false;
 	}
 }
