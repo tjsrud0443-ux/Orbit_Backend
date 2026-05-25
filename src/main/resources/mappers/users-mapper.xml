@@ -21,4 +21,14 @@
     	LEFT JOIN "RANK" r ON u.rank_seq = r.rank_seq
     	WHERE u.id = #{id}
 	</select>
+	
+	<select id="getUsersInfo" resultType="com.study.app.domains.users.UsersDTO">
+		select
+		u.id as id, u.name as name, u.sysname as sysname,
+		d.dept_name as dept_name, r.rank_name rank_name, u.role as role
+		from users u
+		left join departments d on u.dept_seq = d.dept_seq
+		left join rank r on u.rank_seq = r.rank_seq
+		where id = #{loginId}
+	</select>
 </mapper>
