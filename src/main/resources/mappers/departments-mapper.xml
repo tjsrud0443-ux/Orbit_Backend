@@ -53,7 +53,7 @@
 				
 				else
 					case 
-						when a.check_in is null then '결근'
+						when a.check_in is null then null
 						when a.check_out is not null then '퇴근'
 						else '근무중'
 					end
