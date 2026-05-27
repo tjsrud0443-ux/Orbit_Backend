@@ -1,5 +1,7 @@
 package com.study.app.domains.users;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -29,5 +31,13 @@ public class UsersDAO {
 	
 	public UsersDTO getUsersInfo(String loginId) {
 		return batis.selectOne("Users.getUsersInfo", loginId);
+	}
+	
+	public List<UsersDTO> getAllUsers(){
+		return batis.selectList("Users.getAllUsers");
+	}
+	
+	public int updateUsersState(UsersDTO dto) {
+		return batis.update("Users.updateUsersState",dto);
 	}
 }

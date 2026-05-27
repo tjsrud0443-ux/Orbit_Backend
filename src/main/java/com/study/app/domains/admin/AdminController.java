@@ -80,4 +80,25 @@ public class AdminController {
 		signupServ.rejectSignup(signup_seq);
 		return ResponseEntity.ok().build();
 	}
+	
+	@GetMapping("/hr/getAllUsers")
+	public ResponseEntity<List<UsersDTO>> getAllUsers(){
+		List<UsersDTO> users_list = adminServ.getAllUsers();
+		return ResponseEntity.ok(users_list);
+	}
+	
+	@PutMapping("/hr/updateUsersState")
+	public ResponseEntity<Void> updateUsersState(@RequestBody UsersDTO dto){
+		adminServ.updateUsersState(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+//	@PutMapping("/hr/updateUsersInfo")
+//	public ResponseEntity<Void> updateUsersState(Long users_seq, UsersDTO dto){
+//		dto.setUsers_seq(users_seq);
+//		adminServ.updateUsersState(dto);
+//		return ResponseEntity.ok().build();
+//	}
+	
+	
 }

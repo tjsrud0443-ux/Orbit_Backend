@@ -64,4 +64,12 @@ public class AdminService {
         
         signupDao.updateStatusToApproved(request.getSignup_seq());
 	}
+	
+	public List<UsersDTO> getAllUsers(){
+		return usersDao.getAllUsers();
+	}
+	
+	public int updateUsersState(UsersDTO dto) {
+		return usersDao.updateUsersState(dto);
+	}
 }
