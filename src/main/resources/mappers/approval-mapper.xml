@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Approval">
+
+	<insert id="insertDraftOfVacation">
+		<selectKey keyProperty="doc_seq" resultType="long" order="BEFORE">
+	        select doc_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+	    
+	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, sysdate,
+	     #{status}, null, 0, null, sysdate, null)
+	</insert>
+	
+	<insert id="insertApprovalLines">
+		insert into approval_lines values (line_seq.nextval, #{doc_seq}, #{users_id}, #{step_order}, 
+		#{status}, null, null)
+	</insert>
+	
+	<insert id="insertReferrers">
+		insert into approval_cc values (cc_seq.nextval, #{doc_seq}, #{users_id})
+	</insert>
+	
+	<insert id="insertVacationDetail">
+		insert into vacation values (vac_seq.nextval, #{doc_seq}, #{vac_type}, #{start_date}, 
+		#{end_date}, #{days}, #{reason})
+	</insert>
 </mapper>
