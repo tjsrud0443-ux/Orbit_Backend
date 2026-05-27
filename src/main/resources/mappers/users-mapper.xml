@@ -49,7 +49,11 @@
 		update users set 
 		status = #{status},  update_at = sysdate where users_seq = #{users_seq}
 	</update>
-	
+	<update id="updateUsersInfo">
+		update users set name = #{name}, dept_seq = #{dept_seq}, rank_seq = {rank_seq},
+			   role=#{role}, update_at = sysdate
+		where users_seq = #{users_seq}
+	</update>	
 	<select id="getAllEmployees" resultType="com.study.app.domains.users.UsersDTO">
     SELECT 
         u.id,

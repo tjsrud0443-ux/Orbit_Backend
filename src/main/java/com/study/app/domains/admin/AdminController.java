@@ -93,12 +93,11 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
-//	@PutMapping("/hr/updateUsersInfo")
-//	public ResponseEntity<Void> updateUsersState(Long users_seq, UsersDTO dto){
-//		dto.setUsers_seq(users_seq);
-//		adminServ.updateUsersState(dto);
-//		return ResponseEntity.ok().build();
-//	}
+	@PutMapping("/hr/updateUsersInfo")
+	public ResponseEntity<Void> updateUsersInfo(@RequestBody UsersDTO dto){
+		adminServ.updateUsersState(dto);
+		return ResponseEntity.ok().build();
+	}
 	
 	
 }

@@ -41,9 +41,13 @@ public class UsersDAO {
 		return batis.update("Users.updateUsersState",dto);
 	}
 	
+	public int updateUsersInfo(UsersDTO dto) {
+		return batis.update("updateUsersInfo",dto);
+	}
 	public List<UsersDTO> getAllEmployees(){
 		return batis.selectList("Users.getAllEmployees");
 	}
+	
 	
 	
 	

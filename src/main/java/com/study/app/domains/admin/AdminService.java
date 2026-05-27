@@ -72,4 +72,8 @@ public class AdminService {
 	public int updateUsersState(UsersDTO dto) {
 		return usersDao.updateUsersState(dto);
 	}
+	
+	public int updateUsersInfo(UsersDTO dto) {
+		return usersDao.updateUsersInfo(dto);
+	}
 }
