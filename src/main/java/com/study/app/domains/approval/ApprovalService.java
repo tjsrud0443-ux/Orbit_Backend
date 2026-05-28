@@ -54,7 +54,6 @@ public class ApprovalService {
 	// 휴가 신청서
 	@Transactional
 	public void insertVacation(VacationDTO dto) {
-		System.out.println("dto : " + dto);
 		insertCommonApprovalData(dto);
 		dao.insertVacationDetail(dto);
 	}
