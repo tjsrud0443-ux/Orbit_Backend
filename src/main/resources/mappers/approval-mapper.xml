@@ -4,7 +4,7 @@
 
 	<insert id="insertDraftDocument">
 		<selectKey keyProperty="doc_seq" resultType="long" order="BEFORE">
-	        select doc_seq.NEXTVAL FROM DUAL
+	        select doc_seq.nextval from dual
 	    </selectKey>
 	    
 	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, sysdate,
@@ -34,11 +34,15 @@
 	</insert>
 	
 	<insert id="insertPurchaseMaster">
-		insert into purchase values (purchase_seq.nextval, #{doc_seq}, #{total_amount}, #{purpose}, #{vendor}, #{purchase_date})
+		<selectKey keyProperty="purchase_seq" resultType="long" order="BEFORE">
+			select purchase_seq.nextval from dual
+		</selectKey>
+		
+		insert into purchase values (#{purchase_seq}, #{doc_seq}, #{total_amount}, #{purpose}, #{vendor}, #{purchase_date})
 	</insert>
 	
 	<insert id="insertPurchaseItem">
-		insert into purchase_items values (item_seq.nextval, #{purchase_seq}, #{item_order}, #{item_name}, #{ea},
+		insert into purchase_items values (p_item_seq.nextval, #{purchase_seq}, #{item_order}, #{item_name}, #{ea},
 		 #{unit_price}, #{total_price}, #{note})
 	</insert>
 	
