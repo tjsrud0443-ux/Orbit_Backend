@@ -1,5 +1,7 @@
 package com.study.app.domains.approval;
 
+import java.util.List;
+
 public class DraftDocumentsDTO {
 	
 	private Long doc_seq;
@@ -14,10 +16,13 @@ public class DraftDocumentsDTO {
 	private String created_at;
 	private String updated_at;
 	
-	public DraftDocumentsDTO() {}
+	private List<ApprovalLinesDTO> approvers;
+    private List<ApprovalCcDTO> referrers;
+    
+    public DraftDocumentsDTO() {}
 	public DraftDocumentsDTO(Long doc_seq, String title, String doc_type, String users_id, String draft_date,
 			String status, String reject_reason, Long is_temp, String temp_expires_at, String created_at,
-			String updated_at) {
+			String updated_at, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers) {
 		super();
 		this.doc_seq = doc_seq;
 		this.title = title;
@@ -30,6 +35,8 @@ public class DraftDocumentsDTO {
 		this.temp_expires_at = temp_expires_at;
 		this.created_at = created_at;
 		this.updated_at = updated_at;
+		this.approvers = approvers;
+		this.referrers = referrers;
 	}
 	public Long getDoc_seq() {
 		return doc_seq;
@@ -96,5 +103,17 @@ public class DraftDocumentsDTO {
 	}
 	public void setUpdated_at(String updated_at) {
 		this.updated_at = updated_at;
+	}
+	public List<ApprovalLinesDTO> getApprovers() {
+		return approvers;
+	}
+	public void setApprovers(List<ApprovalLinesDTO> approvers) {
+		this.approvers = approvers;
+	}
+	public List<ApprovalCcDTO> getReferrers() {
+		return referrers;
+	}
+	public void setReferrers(List<ApprovalCcDTO> referrers) {
+		this.referrers = referrers;
 	}
 }

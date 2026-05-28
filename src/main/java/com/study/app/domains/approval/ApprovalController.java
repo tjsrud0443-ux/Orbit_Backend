@@ -29,8 +29,26 @@ public class ApprovalController {
 	}
 
 	@PostMapping("submit/vacation")
-	public ResponseEntity<Void> submitVacation(@RequestBody VacationSubmitRequestDTO dto){ 
+	public ResponseEntity<Void> submitVacation(@RequestBody VacationDTO dto){ 
 		appServ.insertVacation(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("submit/general")
+	public ResponseEntity<Void> submitGeneral(@RequestBody GeneralDTO dto){ 
+		appServ.insertGeneral(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("submit/purchase")
+	public ResponseEntity<Void> submitPurchase(@RequestBody PurchaseDTO dto){ 
+		appServ.insertPurchase(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("submit/payment")
+	public ResponseEntity<Void> submitPayment(@RequestBody PaymentDTO dto){ 
+		appServ.insertPayment(dto);
 		return ResponseEntity.ok().build();
 	}
 }

@@ -1,17 +1,22 @@
 package com.study.app.domains.approval;
 
-public class VacationDTO {
+import java.util.List;
+
+public class VacationDTO extends DraftDocumentsDTO {
 	private Long vac_seq;
 	private Long doc_seq;
 	private String vac_type;
 	private String start_date;
 	private String end_date;
-	private Long days;
+	private Double days;
 	private String reason;
 	
+	private List<ApprovalLinesDTO> approvers;
+    private List<ApprovalCcDTO> referrers;
+	
 	public VacationDTO() {}
-	public VacationDTO(Long vac_seq, Long doc_seq, String vac_type, String start_date, String end_date, Long days,
-			String reason) {
+	public VacationDTO(Long vac_seq, Long doc_seq, String vac_type, String start_date, String end_date, Double days,
+			String reason, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers) {
 		super();
 		this.vac_seq = vac_seq;
 		this.doc_seq = doc_seq;
@@ -20,6 +25,8 @@ public class VacationDTO {
 		this.end_date = end_date;
 		this.days = days;
 		this.reason = reason;
+		this.approvers = approvers;
+		this.referrers = referrers;
 	}
 	public Long getVac_seq() {
 		return vac_seq;
@@ -51,10 +58,10 @@ public class VacationDTO {
 	public void setEnd_date(String end_date) {
 		this.end_date = end_date;
 	}
-	public Long getDays() {
+	public Double getDays() {
 		return days;
 	}
-	public void setDays(Long days) {
+	public void setDays(Double days) {
 		this.days = days;
 	}
 	public String getReason() {
@@ -62,5 +69,17 @@ public class VacationDTO {
 	}
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+	public List<ApprovalLinesDTO> getApprovers() {
+		return approvers;
+	}
+	public void setApprovers(List<ApprovalLinesDTO> approvers) {
+		this.approvers = approvers;
+	}
+	public List<ApprovalCcDTO> getReferrers() {
+		return referrers;
+	}
+	public void setReferrers(List<ApprovalCcDTO> referrers) {
+		this.referrers = referrers;
 	}
 }
