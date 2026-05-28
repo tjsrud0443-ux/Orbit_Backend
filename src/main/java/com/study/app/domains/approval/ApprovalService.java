@@ -28,6 +28,7 @@ public class ApprovalService {
 		// selectKey(BEFORE)에 의해 실행 후 docSeq 필드에 시퀀스 값이 채워짐
 		dao.insertDraftDocument(dto); 
 		Long docSeq = dto.getDoc_seq(); // 채워진 시퀀스 꺼내기
+		System.out.println("docSeq : " + docSeq);
 
 		// 결재라인 정보 저장
 		if(dto.getApprovers() != null) {
@@ -53,6 +54,7 @@ public class ApprovalService {
 	// 휴가 신청서
 	@Transactional
 	public void insertVacation(VacationDTO dto) {
+		System.out.println("dto : " + dto);
 		insertCommonApprovalData(dto);
 		dao.insertVacationDetail(dto);
 	}
