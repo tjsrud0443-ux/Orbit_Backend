@@ -19,4 +19,12 @@ public class AdminDAO {
 	public void addTeam(DepartmentsDTO dto) {
 		batis.insert("Admin.addTeam", dto);
 	}
+	
+	public void delDept(Long dept_seq) {
+		batis.delete("Admin.delDept", dept_seq);
+	}
+	
+	public void updateDept(DepartmentsDTO dto) {
+		batis.update("Admin.updateDept", dto);
+	}
 }

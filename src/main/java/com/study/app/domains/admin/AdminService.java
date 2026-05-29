@@ -108,5 +108,13 @@ public class AdminService {
 		}
 
 	}
+	
+	public void delDept(Long dept_seq) {
+		adminDao.delDept(dept_seq);
+	}
+	
+	public void updateDept(DepartmentsDTO dto) {
+		adminDao.updateDept(dto);
+	}
 
 }

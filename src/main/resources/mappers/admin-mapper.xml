@@ -11,5 +11,14 @@
 		insert into departments values(dept_seq.nextval, #{dept_name},
 			#{dept_code}, #{parent_dept_seq}, sysdate)
 	</insert>
+	
+	<delete id="delDept">
+		delete from departments where dept_seq = #{dept_seq}
+	</delete>
+	
+	<update id="updateDept">
+		update departments set dept_name = #{dept_name} , dept_code = #{dept_code} 
+			where dept_seq = #{dept_seq}
+	</update>
 
 </mapper>
