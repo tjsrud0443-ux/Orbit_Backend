@@ -31,9 +31,10 @@
 		left join rank r on u.rank_seq = r.rank_seq
 		where id = #{loginId}
 	</select>
-	<select id="getAllUsers" resultType="com.study.app.domains.users.UsersDTO">
+<!--	<select id="getAllUsers" resultType="com.study.app.domains.users.UsersDTO">
 		SELECT
 	        u.users_seq, u.name, u.id, u.role, u.hire_date,
+	        u.dept_seq, u.rank_seq,
 	        d.dept_name, r.rank_name,
 	        CASE u.status
 	            WHEN 'ACTIVE' THEN '재직'
@@ -44,12 +45,96 @@
 	    LEFT JOIN departments d ON u.dept_seq = d.dept_seq
 	    LEFT JOIN rank r ON u.rank_seq = r.rank_seq
 	    ORDER BY u.users_seq
-	</select>
+	</select>-->
+	<select id="getAllUsers" resultType="com.study.app.domains.users.UsersDTO">
+	    SELECT * FROM (
+        SELECT ROWNUM AS rn, a.* FROM (
+            SELECT
+                u.users_seq, u.name, u.id, u.role, u.hire_date,
+                u.dept_seq, u.rank_seq,
+                d.dept_name, r.rank_name,
+                CASE u.status
+                    WHEN 'ACTIVE' THEN '재직'
+                    WHEN 'INACTIVE' THEN '휴직'
+                    WHEN 'REJECTED' THEN '퇴사'
+                END as status
+            FROM users u
+            LEFT JOIN departments d ON u.dept_seq = d.dept_seq
+            LEFT JOIN "RANK" r ON u.rank_seq = r.rank_seq
+            <where>
+            	<if test="status != null and status != ''">
+                    AND u.status = #{status}
+                </if>
+                <if test="keyword != null and keyword != ''">
+                    <if test="keyword.matches('[0-9]+')">
+                        AND u.users_seq = #{keyword}
+                    </if>
+                    <if test="!keyword.matches('[0-9]+')">
+                        AND (u.name LIKE '%' || #{keyword} || '%'
+                        OR d.dept_name LIKE '%' || #{keyword} || '%')
+                    </if>
+                </if>
+            </where>
+            ORDER BY u.users_seq
+        ) a
+    )
+    WHERE rn BETWEEN #{start} AND #{end}
+</select>
+
+<select id="getTotalCount" resultType="int">
+    SELECT COUNT(*)
+    FROM users u
+    LEFT JOIN departments d ON u.dept_seq = d.dept_seq
+    <where>
+        <if test="status != null and status != ''">
+             AND u.status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            <if test="keyword.matches('[0-9]+')">
+                AND u.users_seq = #{keyword}
+            </if>
+            <if test="!keyword.matches('[0-9]+')">
+                AND (u.name LIKE '%' || #{keyword} || '%'
+                OR d.dept_name LIKE '%' || #{keyword} || '%')
+            </if>
+        </if>
+    </where>
+</select>
+
+<select id="getCountByStatus" resultType="int">
+    SELECT COUNT(*)
+    FROM users u
+    LEFT JOIN departments d ON u.dept_seq = d.dept_seq
+    <where>
+        <if test="status != null and status != ''">
+            AND u.status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            <if test="keyword.matches('[0-9]+')">
+                AND u.users_seq = #{keyword}
+            </if>
+            <if test="!keyword.matches('[0-9]+')">
+                AND (u.name LIKE '%' || #{keyword} || '%'
+                OR d.dept_name LIKE '%' || #{keyword} || '%')
+            </if>
+        </if>
+    </where>
+</select>
+
 	<update id="updateUsersState">
 		update users set 
 		status = #{status},  update_at = sysdate where users_seq = #{users_seq}
 	</update>
-	
+	<update id="updateUsersInfo">
+		update users set 
+        name = #{name},
+        dept_seq = NVL(#{dept_seq, jdbcType=NUMERIC}, dept_seq),
+        rank_seq = NVL(#{rank_seq, jdbcType=NUMERIC}, rank_seq),
+        role = #{role, jdbcType=VARCHAR},
+        update_at = sysdate
+    where users_seq = #{users_seq}
+	</update>	
+
 	<select id="getAllEmployees" resultType="com.study.app.domains.users.UsersDTO">
     SELECT 
         u.id,

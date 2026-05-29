@@ -19,7 +19,7 @@ import com.study.app.domains.users.UsersDTO;
 
 @Service
 public class AdminService {
-	
+
 	@Autowired
 	private DepartmentsDAO departmentsDao;
 	@Autowired
@@ -28,48 +28,72 @@ public class AdminService {
 	private UsersDAO usersDao;
 	@Autowired
 	private SignupDAO signupDao;
-	
-	public List<DepartmentsDTO> getDeptList() {
-        return departmentsDao.getDeptList();
-    }
 
-    public List<RankDTO> getRankList() {
-        return rankDao.getRankList();
-    }
-	
+	public List<DepartmentsDTO> getDeptList() {
+		return departmentsDao.getDeptList();
+	}
+
+	public List<RankDTO> getRankList() {
+		return rankDao.getRankList();
+	}
+
 	public void userSignup(SignupRequestDTO request) {
 		SignupDTO signupInfo = signupDao.getUserInfo(request.getSignup_seq());
-        
+
 		UsersDTO dto = new UsersDTO();
-		
-        dto.setId(signupInfo.getId());
-        dto.setPw(signupInfo.getPw());
-        dto.setName(signupInfo.getName());
-        dto.setPhone(signupInfo.getPhone());
-        dto.setEmail(signupInfo.getEmail());
-        dto.setOriname(signupInfo.getOriname());
-        dto.setSsn_hash(signupInfo.getSsn_hash());
-        dto.setSsn_enc(signupInfo.getSsn_enc());
-        dto.setSsn_masked(signupInfo.getSsn_masked());
-        dto.setZonecode(signupInfo.getZonecode());
-        dto.setAddress1(signupInfo.getAddress1());
-        dto.setAddress2(signupInfo.getAddress2());
-        dto.setSysname(signupInfo.getSysname());
-        
-        dto.setHire_date(request.getHire_date());
-        dto.setDept_seq(request.getDept_seq());
-        dto.setRank_seq(request.getRank_seq());
-        
-        usersDao.insertUser(dto);
-        
-        signupDao.updateStatusToApproved(request.getSignup_seq());
+
+		dto.setId(signupInfo.getId());
+		dto.setPw(signupInfo.getPw());
+		dto.setName(signupInfo.getName());
+		dto.setPhone(signupInfo.getPhone());
+		dto.setEmail(signupInfo.getEmail());
+		dto.setOriname(signupInfo.getOriname());
+		dto.setSsn_hash(signupInfo.getSsn_hash());
+		dto.setSsn_enc(signupInfo.getSsn_enc());
+		dto.setSsn_masked(signupInfo.getSsn_masked());
+		dto.setZonecode(signupInfo.getZonecode());
+		dto.setAddress1(signupInfo.getAddress1());
+		dto.setAddress2(signupInfo.getAddress2());
+		dto.setSysname(signupInfo.getSysname());
+
+		dto.setHire_date(request.getHire_date());
+		dto.setDept_seq(request.getDept_seq());
+		dto.setRank_seq(request.getRank_seq());
+
+		usersDao.insertUser(dto);
+
+		signupDao.updateStatusToApproved(request.getSignup_seq());
+	}
+
+	public Map<String, Object> getAllUsers(String keyword, String status, Long start, Long end) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("keyword", keyword);
+	    params.put("status", status);
+	    params.put("start", start);
+	    params.put("end", end);
+
+	    List<UsersDTO> users = usersDao.getAllUsers(params);
+	    int totalCount = usersDao.getTotalCount(params);
+	    int activeCount = usersDao.getCountByStatus("ACTIVE", params);
+	    int inactiveCount = usersDao.getCountByStatus("INACTIVE", params);
+	    int rejectedCount = usersDao.getCountByStatus("REJECTED", params);
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("users", users);
+	    result.put("totalCount", totalCount);
+	    result.put("activeCount", activeCount);
+	    result.put("inactiveCount", inactiveCount);
+	    result.put("rejectedCount", rejectedCount);
+
+	    return result;
 	}
 	
-	public List<UsersDTO> getAllUsers(){
-		return usersDao.getAllUsers();
-	}
-	
+
 	public int updateUsersState(UsersDTO dto) {
 		return usersDao.updateUsersState(dto);
+	}
+
+	public int updateUsersInfo(UsersDTO dto) {
+		return usersDao.updateUsersInfo(dto);
 	}
 }
