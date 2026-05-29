@@ -7,7 +7,7 @@
 		resultType="com.study.app.domains.departments.GroupTreeDTO">
 		select d.dept_seq as deptSeq, d.dept_code as deptCode, d.dept_name as
 		deptName, u.sysname as sysname,
-		d.parent_dept_seq as parentDeptSeq, u.name as name, r.rank_name as
+		d.parent_dept_seq as parentDeptSeq, d.auth_group as auth_group, u.name as name, r.rank_name as
 		position
 		from departments d
 		left join (
