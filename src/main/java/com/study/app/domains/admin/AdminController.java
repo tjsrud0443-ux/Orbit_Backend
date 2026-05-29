@@ -1,11 +1,11 @@
 package com.study.app.domains.admin;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -105,6 +105,24 @@ public class AdminController {
 	@PutMapping("/hr/updateUsersInfo")
 	public ResponseEntity<Void> updateUsersInfo(@RequestBody UsersDTO dto){
 		adminServ.updateUsersInfo(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/hr/addDept")
+	public ResponseEntity<Void> addDept(@RequestBody DepartmentsDTO dto) {
+		adminServ.addDept(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/hr/delDept/{dept_seq}")
+	public ResponseEntity<Void> delDept(@PathVariable Long dept_seq) {
+		adminServ.delDept(dept_seq);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("/hr/updateDept")
+	public ResponseEntity<Void> updateDept(@RequestBody DepartmentsDTO dto) {
+		adminServ.updateDept(dto);
 		return ResponseEntity.ok().build();
 	}
 	

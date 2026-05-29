@@ -49,25 +49,25 @@ public class TokenValidator implements HandlerInterceptor{
 					return false;
 				}
 
-				String dept = userInfo.getDept_name();
 				String rank = userInfo.getRank_name();
 				String role = userInfo.getRole();
-
+				String auth = userInfo.getAuth_group();
+				
 				String uri = request.getRequestURI();
 
-				boolean isAdmin = "ADMIN".equals(role) || "운영총괄본부".equals(dept) || "운영총괄팀".equals(dept);
+				boolean isAdmin = "ADMIN".equals(role) || "ROLE_SUPER_ADMIN".equals(auth);
 
 				if(isAdmin) {return true;}
 
 				if(uri.startsWith("/admin/hr")) {
-					if(!"인사팀".equals(dept) && !"대표".equals(rank)) {
+					if(!"ROLE_HR_ADMIN".equals(auth) && !"ROLE_SUPER_ADMIN".equals(auth)) {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 						return false;
 					}
 				}
 
 				if(uri.startsWith("/admin/ga")) {
-					if(!"총무팀".equals(dept) && !"대표".equals(rank)) {
+					if(!"ROLE_GA_ADMIN".equals(auth) && !"ROLE_SUPER_ADMIN".equals(auth)) {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 						return false;
 					}

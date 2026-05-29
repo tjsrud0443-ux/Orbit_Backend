@@ -26,12 +26,13 @@ public class UsersDTO {
 	private String sysname;
 	private String dept_name; // DB 테이블엔 없음
     private String rank_name; // DB 테이블엔 없음
+    private String auth_group; // DB 테이블엔 없음
 	
 	public UsersDTO() {}
 	public UsersDTO(String id, String pw, Long users_seq, String name, String phone, String email, String oriname,
 			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
 			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
-			String created_at, String update_at, String sysname, String dept_name, String rank_name) {
+			String created_at, String update_at, String sysname, String dept_name, String rank_name, String auth_group) {
 		super();
 		this.id = id;
 		this.pw = pw;
@@ -57,6 +58,7 @@ public class UsersDTO {
 		this.sysname = sysname;
 		this.dept_name = dept_name;
 		this.rank_name = rank_name;
+		this.auth_group = auth_group;
 	}
 	public String getId() {
 		return id;
@@ -202,6 +204,10 @@ public class UsersDTO {
 	public void setRank_name(String rank_name) {
 		this.rank_name = rank_name;
 	}
-	
-	
+	public String getAuth_group() {
+		return auth_group;
+	}
+	public void setAuth_group(String auth_group) {
+		this.auth_group = auth_group;
+	}
 }

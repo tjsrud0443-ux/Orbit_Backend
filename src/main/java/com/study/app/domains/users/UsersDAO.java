@@ -18,10 +18,8 @@ public class UsersDAO {
 	@Autowired
 	private SqlSessionTemplate batis;
 	
-	public int login(AuthDTO dto) {
-		String getShaPw = EncryptionUtils.getSha512(dto.getPw());
-		dto.setPw(getShaPw);
-		return batis.selectOne("Users.login", dto);
+	public UsersDTO login(String id) {
+		return batis.selectOne("Users.login", id);
 	}
 	
 	public int insertUser(UsersDTO dto) {

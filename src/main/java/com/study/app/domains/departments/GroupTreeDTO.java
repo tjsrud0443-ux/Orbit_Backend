@@ -14,11 +14,13 @@ public class GroupTreeDTO {
     private String position;
     private List<GroupTreeDTO> children;
     private List<GroupMemberDTO> members;
+    private String auth_group;
     
 	public GroupTreeDTO() {}
 	
 	public GroupTreeDTO(Long deptSeq, String deptCode, String deptName, String sysname, Long parentDeptSeq, String name,
-			String position, List<GroupTreeDTO> children, List<GroupMemberDTO> members) {
+			String position, List<GroupTreeDTO> children, List<GroupMemberDTO> members,
+			String auth_group) {
 		super();
 		this.deptSeq = deptSeq;
 		this.deptCode = deptCode;
@@ -29,6 +31,7 @@ public class GroupTreeDTO {
 		this.position = position;
 		this.children = children;
 		this.members = members;
+		this.auth_group = auth_group;
 	}
 	
 	public Long getDeptSeq() {
@@ -84,5 +87,13 @@ public class GroupTreeDTO {
 	}
 	public void setMembers(List<GroupMemberDTO> members) {
 		this.members = members;
+	}
+
+	public String getAuth_group() {
+		return auth_group;
+	}
+
+	public void setAuth_group(String auth_group) {
+		this.auth_group = auth_group;
 	}
 }

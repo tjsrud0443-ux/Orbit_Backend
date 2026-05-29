@@ -26,13 +26,19 @@ public class AuthController {
 	public ResponseEntity<Map<String, String>> login(@RequestBody AuthDTO dto) {
 		int result = authServ.login(dto);
 
-		if(result > 0) {
+		if(result == 1) {
 			Map<String, String> response = new HashMap<>();
 			String token = jwt.createToken(dto.getId());
 			response.put("token", token);
 			response.put("id", dto.getId());
 			return ResponseEntity.ok(response);
 		}
+		
+		if(result == -1) { // 탈퇴, 휴직 403 리턴
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		
 	}
 }

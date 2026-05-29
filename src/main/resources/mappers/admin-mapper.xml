@@ -1,4 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Admin">
+
+	<insert id="addDept">
+		insert into departments values(dept_seq.nextval, #{dept_name},
+			#{dept_code}, #{parent_dept_seq}, sysdate, #{auth_group})
+	</insert>
+	
+	<insert id="addTeam">
+		insert into departments values(dept_seq.nextval, #{dept_name},
+			#{dept_code}, #{parent_dept_seq}, sysdate, #{auth_group})
+	</insert>
+	
+	<delete id="delDept">
+		delete from departments where dept_seq = #{dept_seq}
+	</delete>
+	
+	<update id="updateDept">
+		update departments set dept_name = #{dept_name} , 
+			dept_code = #{dept_code} , auth_group = #{auth_group}
+				where dept_seq = #{dept_seq}
+	</update>
+
 </mapper>
