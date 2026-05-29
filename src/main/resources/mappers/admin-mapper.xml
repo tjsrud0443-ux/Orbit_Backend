@@ -4,12 +4,12 @@
 
 	<insert id="addDept">
 		insert into departments values(dept_seq.nextval, #{dept_name},
-			#{dept_code}, #{parent_dept_seq}, sysdate)
+			#{dept_code}, #{parent_dept_seq}, sysdate, #{auth_group})
 	</insert>
 	
 	<insert id="addTeam">
 		insert into departments values(dept_seq.nextval, #{dept_name},
-			#{dept_code}, #{parent_dept_seq}, sysdate)
+			#{dept_code}, #{parent_dept_seq}, sysdate, #{auth_group})
 	</insert>
 	
 	<delete id="delDept">
@@ -17,8 +17,9 @@
 	</delete>
 	
 	<update id="updateDept">
-		update departments set dept_name = #{dept_name} , dept_code = #{dept_code} 
-			where dept_seq = #{dept_seq}
+		update departments set dept_name = #{dept_name} , 
+			dept_code = #{dept_code} , auth_group = #{auth_group}
+				where dept_seq = #{dept_seq}
 	</update>
 
 </mapper>
