@@ -28,7 +28,6 @@ public class ApprovalService {
 		// selectKey(BEFORE)에 의해 실행 후 docSeq 필드에 시퀀스 값이 채워짐
 		dao.insertDraftDocument(dto); 
 		Long docSeq = dto.getDoc_seq(); // 채워진 시퀀스 꺼내기
-		System.out.println("docSeq : " + docSeq);
 
 		// 결재라인 정보 저장
 		if(dto.getApprovers() != null) {
@@ -65,15 +64,50 @@ public class ApprovalService {
 	}
 	// 지출 결의서
 	@Transactional
-	public void insertPayment(PaymentDTO dto) {
+	public void insertPayment(PaymentDTO dto, List<MultipartFile> files) {
 		insertCommonApprovalData(dto);
 		dao.insertPaymentDetail(dto);
+		
+		// 지출 세부 항목 및 개별 파일 업로드
+		if(dto.getItems() != null) {
+			for(int i = 0; i < dto.getItems().size(); i++) {
+				PaymentItemsDTO item = dto.getItems().get(i);
+				
+				item.setPay_seq(dto.getPay_seq());
+				item.setItem_order((Long.valueOf(i + 1)));
+				
+				if(files != null && i < files.size() && !files.get(i).isEmpty()) {
+					MultipartFile file = files.get(i);
+					try {
+						String oriname = file.getOriginalFilename();
+						String sysname = UUID.randomUUID().toString() + "_" + oriname;
+						
+						// GCS 업로드
+						BlobId blobId = BlobId.of(bucketName, sysname);
+						BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+											.setContentType(file.getContentType()).build();
+						
+						storage.create(blobInfo, file.getBytes());
+						
+						// DB에 저장
+						item.setOriname(oriname);
+						item.setSysname(sysname);
+						
+					}catch(Exception e) {
+						e.printStackTrace();
+						throw new RuntimeException("영수증 파일 업로드 중 오류 발생", e);
+					}
+				}
+				
+				dao.insertPaymentItem(item);
+			}
+		}
 	}
 	// 구매 신청서
 	@Transactional
 	public void insertPurchase(PurchaseDTO dto, List<MultipartFile> files) {
 		insertCommonApprovalData(dto);
-		dao.insertPurchaseMaster(dto);
+		dao.insertPurchaseDetail(dto);
 		Long purchase_seq = dto.getPurchase_seq();
 		
 		if (dto.getItems() != null) {
@@ -92,11 +126,11 @@ public class ApprovalService {
 						String oriname = file.getOriginalFilename();
 						String sysname = UUID.randomUUID().toString() + "_" + oriname;
 						
+						// GCS 업로드
 						BlobId blobId = BlobId.of(bucketName, sysname);
 						BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
 											.setContentType(file.getContentType()).build();
 						
-						// GCS 업로드
 						storage.create(blobInfo, file.getBytes());
 						
 						PurchaseAttachmentsDTO attach = new PurchaseAttachmentsDTO();
@@ -108,7 +142,6 @@ public class ApprovalService {
 						
 					}catch(Exception e) {
 						e.printStackTrace();
-						System.out.println(file.getOriginalFilename() + "업로드 실패");
 						throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
 					}
 				}

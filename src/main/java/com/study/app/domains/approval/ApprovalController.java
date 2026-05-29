@@ -52,9 +52,12 @@ public class ApprovalController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@PostMapping("submit/payment")
-	public ResponseEntity<Void> submitPayment(@RequestBody PaymentDTO dto){ 
-		appServ.insertPayment(dto);
+	@PostMapping(value = "submit/payment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Void> submitPayment(
+			@RequestPart("dto") PaymentDTO dto,
+			@RequestPart(value = "files", required = false) List<MultipartFile> files){ 
+		
+		appServ.insertPayment(dto, files);
 		return ResponseEntity.ok().build();
 	}
 }

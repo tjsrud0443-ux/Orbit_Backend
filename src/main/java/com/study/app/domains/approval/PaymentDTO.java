@@ -5,39 +5,32 @@ import java.util.List;
 public class PaymentDTO extends DraftDocumentsDTO {
 	
 	private Long pay_seq;
-	private Long doc_seq;
+//	private Long doc_seq;
 	private String pay_date;
 	private Double total_amount;
 	private String pay_reason;
 	private String account_info;
 	
-	private List<ApprovalLinesDTO> approvers;
-    private List<ApprovalCcDTO> referrers;
+//	private List<ApprovalLinesDTO> approvers;
+//    private List<ApprovalCcDTO> referrers;
+    private List<PaymentItemsDTO> items;
     
     public PaymentDTO() {}
-	public PaymentDTO(Long pay_seq, Long doc_seq, String pay_date, Double total_amount, String pay_reason,
-			String account_info, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers) {
+	public PaymentDTO(Long pay_seq, String pay_date, Double total_amount, String pay_reason, String account_info,
+			List<PaymentItemsDTO> items) {
 		super();
 		this.pay_seq = pay_seq;
-		this.doc_seq = doc_seq;
 		this.pay_date = pay_date;
 		this.total_amount = total_amount;
 		this.pay_reason = pay_reason;
 		this.account_info = account_info;
-		this.approvers = approvers;
-		this.referrers = referrers;
+		this.items = items;
 	}
 	public Long getPay_seq() {
 		return pay_seq;
 	}
 	public void setPay_seq(Long pay_seq) {
 		this.pay_seq = pay_seq;
-	}
-	public Long getDoc_seq() {
-		return doc_seq;
-	}
-	public void setDoc_seq(Long doc_seq) {
-		this.doc_seq = doc_seq;
 	}
 	public String getPay_date() {
 		return pay_date;
@@ -63,16 +56,10 @@ public class PaymentDTO extends DraftDocumentsDTO {
 	public void setAccount_info(String account_info) {
 		this.account_info = account_info;
 	}
-	public List<ApprovalLinesDTO> getApprovers() {
-		return approvers;
+	public List<PaymentItemsDTO> getItems() {
+		return items;
 	}
-	public void setApprovers(List<ApprovalLinesDTO> approvers) {
-		this.approvers = approvers;
-	}
-	public List<ApprovalCcDTO> getReferrers() {
-		return referrers;
-	}
-	public void setReferrers(List<ApprovalCcDTO> referrers) {
-		this.referrers = referrers;
+	public void setItems(List<PaymentItemsDTO> items) {
+		this.items = items;
 	}
 }

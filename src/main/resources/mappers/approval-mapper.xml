@@ -30,10 +30,18 @@
 	</insert>
 	
 	<insert id="insertPaymentDetail">
-		insert into payment values (pay_seq.nextval, #{doc_seq}, #{pay_date}, #{total_amount}, #{pay_reason}, #{account_info})
+		<selectKey keyProperty="pay_seq" resultType="long" order="BEFORE">
+			select pay_seq.nextval from dual
+		</selectKey>
+		insert into payment values (#{pay_seq}, #{doc_seq}, #{pay_date}, #{total_amount}, #{pay_reason}, #{account_info})
 	</insert>
 	
-	<insert id="insertPurchaseMaster">
+	<insert id="insertPaymentItem">
+		insert into payment_items values (pa_item_seq.nextval, #{pay_seq}, #{item_order}, #{item_name}, 
+		#{amount}, #{note}, #{sysname}, #{oriname})
+	</insert>
+	
+	<insert id="insertPurchaseDetail">
 		<selectKey keyProperty="purchase_seq" resultType="long" order="BEFORE">
 			select purchase_seq.nextval from dual
 		</selectKey>

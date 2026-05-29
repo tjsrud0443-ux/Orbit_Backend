@@ -34,8 +34,12 @@ public class ApprovalDAO {
 		mybatis.insert("Approval.insertPaymentDetail", dto);
 	}
 	
-	public void insertPurchaseMaster(PurchaseDTO dto) {
-		mybatis.insert("Approval.insertPurchaseMaster", dto);
+	public void insertPaymentItem(PaymentItemsDTO dto) {
+		mybatis.insert("Approval.insertPaymentItem", dto);
+	}
+	
+	public void insertPurchaseDetail(PurchaseDTO dto) {
+		mybatis.insert("Approval.insertPurchaseDetail", dto);
 	}
 	
 	public void insertPurchaseItem(PurchaseItemsDTO dto) {
