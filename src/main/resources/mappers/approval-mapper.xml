@@ -177,4 +177,21 @@
 			where a.doc_seq = #{doc_seq}
 			order by a.step_order
 	</select>
+	
+	<select id="getCcPage" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
+		select * from (select row_number() over(order by d.created_at desc) rn, 
+			d.*, u.name as name
+			from draft_documents d
+			inner join users u on d.users_id = u.id
+			inner join approval_cc c on d.doc_seq = c.doc_seq
+			where c.users_id = #{loginId} and d.status = #{status}
+			)
+			where rn between #{start} and #{end}
+	</select>
+	
+	<select id="getCcpageCount" resultType="int">
+		select count(*) from draft_documents d 
+			inner join approval_cc c on d.doc_seq = c.doc_seq
+			where c.users_id = #{loginId} and d.status = #{status}
+	</select>
 </mapper>
