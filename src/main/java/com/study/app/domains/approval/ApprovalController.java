@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -209,5 +210,18 @@ public class ApprovalController {
 		
 		Map<String, Object> result = appServ.getCcDocumentsByPage(loginId, status, cpage);
 		return ResponseEntity.ok(result);
+	}
+	
+	@GetMapping("/temp")
+	public ResponseEntity<List<DraftDocumentsDTO>> getTempDoc(@RequestAttribute String loginId) {
+		List<DraftDocumentsDTO> result = appServ.getTempDoc(loginId);
+		return ResponseEntity.ok(result);
+	}
+	
+	@DeleteMapping("/tempDelete/{doc_seq}")
+	public ResponseEntity<Void> deleteTempDoc(@PathVariable Long doc_seq, 
+			@RequestParam String doc_type) {
+		appServ.deleteTempDoc(doc_seq, doc_type);
+		return ResponseEntity.ok().build();
 	}
 }

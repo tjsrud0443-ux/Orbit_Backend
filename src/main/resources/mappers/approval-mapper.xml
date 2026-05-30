@@ -297,5 +297,59 @@
 	
 	
 	
+	<select id="getTempDoc" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
+		select * from draft_documents where users_id = #{loginId} and status = 'TEMP'
+			order by updated_at desc
+	</select>
+	
+	<select id="tempList" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
+		select * from draft_documents where status = 'TEMP' and temp_expires_at &lt;= sysdate
+	</select>
+	
+	<delete id ="deleteAppLine">
+		delete from approval_lines where doc_seq = #{doc_seq}
+	</delete>
+	
+	<delete id ="deleteAppCc">
+		delete from approval_cc where doc_seq = #{doc_seq}
+	</delete>
+	
+	<delete id ="deleteDraftDoc">
+		delete from draft_documents where doc_seq = #{doc_seq}
+	</delete>
+	
+	<delete id ="deleteVacDoc">
+		delete from vacation where doc_seq = #{doc_seq}
+	</delete>
+	
+	<delete id ="deleteGenDoc">
+		delete from general where doc_seq = #{doc_seq}
+	</delete>
+	
+	<delete id ="deletePayItem">
+		delete from payment_items where pay_seq in
+			(select pay_seq from payment where doc_seq = #{doc_seq}
+		)
+	</delete>
+	
+	<delete id ="deletePayDoc">
+		delete from payment where doc_seq = #{doc_seq}
+	</delete>
+	
+	<delete id ="deletePurAttach">
+		delete from purchase_attachments where purchase_seq in
+    		(select purchase_seq from purchase where doc_seq = #{doc_seq}
+    	)
+	</delete>
+	
+	<delete id ="deletePurItem">
+		delete from purchase_items where purchase_seq in
+			(select purchase_seq from purchase where doc_seq = #{doc_seq}
+		)
+	</delete>
+	
+	<delete id ="deletePurDoc">
+		delete from purchase where doc_seq = #{doc_seq}
+	</delete>
 	
 </mapper>
