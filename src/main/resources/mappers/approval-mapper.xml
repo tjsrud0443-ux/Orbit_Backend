@@ -7,8 +7,8 @@
 	        select doc_seq.nextval from dual
 	    </selectKey>
 	    
-	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, sysdate,
-	     'DRAFT', null, 0, null, sysdate, null)
+	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, 
+	    #{status}, null, #{is_temp}, null, sysdate, null)
 	</insert>
 	
 	<insert id="insertApprovalLines">
@@ -58,104 +58,90 @@
 		insert into purchase_attachments values (attachment_seq.nextval, #{purchase_seq}, #{oriname}, #{sysname}, sysdate)
 	</insert>
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	<select id="selectCommonDetail" resultType="map">
+	    select
+	    	d.doc_seq as "doc_seq", d.title as "title", d.doc_type as "doc_type", d.users_id as "users_id", d.status as "status",
+	    	d.reject_reason as "reject_reason", d.is_temp as "is_temp", d.temp_expires_at as "temp_expires_at", d.created_at as "created_at",
+	    	d.updated_at as "updated_at", u.name as "name", u.users_seq as "users_seq", dept.dept_name as "dept_name", r.rank_name as "rank_name"
+	    	from draft_documents d
+	    left outer join users u 
+	    	on d.users_id = u.id
+	    left outer join departments dept 
+	    	on u.dept_seq = dept.dept_seq
+	    left outer join rank r 
+	    	on u.rank_seq = r.rank_seq
+	    where d.doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="selectApprovers" resultType="map">
+		select 
+			a.line_seq as "line_seq", a.doc_seq as "doc_seq", a.users_id as "users_id", a.step_order as "step_order",
+			a.status as "status", a.handle_at as "handle_at", a.reject_reason as "reject_reason", 
+			u.name as "name", r.rank_name as "rank_name"
+		from approval_lines a
+	    join users u on a.users_id = u.id
+	    join rank r on u.rank_seq = r.rank_seq
+	    where a.doc_seq = #{doc_seq}
+	    order by a.step_order
+	</select>
+	
+	<select id="selectReferrers" resultType="map">
+		select 
+			a.cc_seq as "cc_seq", a.doc_seq as "doc_seq", a.users_id as "users_id", u.name as "name", d.dept_name as "dept_name"
+	    from approval_cc a
+	    join users u on a.users_id = u.id
+	    join departments d on u.dept_seq = d.dept_seq
+	    where a.doc_seq = #{doc_seq}
+	    order by a.cc_seq
+	</select>
+	
+	<select id="selectVacationDetail" resultType="map">
+		select 
+			vac_seq as "vac_seq", doc_seq as "doc_seq", vac_type as "vac_type", start_date as "start_date",
+			end_date as "end_date", days as "days", reason as "reason" 
+		from vacation where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="selectGeneralDetail" resultType="map">
+		select 
+			general_seq as "general_seq", doc_seq as "doc_seq", purpose as "purpose", content as "content" 
+		from general where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="selectPaymentDetail" resultType="map">
+		select 
+			pay_seq as "pay_seq", doc_seq as "doc_seq", pay_date as "pay_date", 
+			total_amount as "total_amount", pay_reason as "pay_reason", account_info as "account_info"
+		from payment where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="selectPurchaseDetail" resultType="map">
+		select 
+			purchase_seq as "purchase_seq", doc_seq as "doc_seq", total_amount as "total_amount",
+			purpose as "purpose", vendor as "vendor", purchase_date as "purchase_date"
+		from purchase where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="selectPaymentItems" resultType="map">
+		select 
+			item_seq as "item_seq", pay_seq as "pay_seq", item_order as "item_order", item_name as "item_name", 
+			amount as "amount", note as "note", sysname as "sysname", oriname as "oriname"
+		from payment_items where pay_seq = #{pay_seq} order by item_order
+	</select>
+	
+	<select id="selectPurchaseItems" resultType="map">
+		select 
+			item_seq as "item_seq", purchase_seq as "purchase_seq", item_order as "item_order", item_name as "item_name",
+			ea as "ea", unit_price as "unit_price", total_price as "total_price", note as "note"
+		from purchase_items where purchase_seq = #{purchase_seq} order by item_order
+	</select>
+	
+	<select id="selectPurchaseAttachments" resultType="map">
+		select 
+			attachment_seq as "attachment_seq", purchase_seq as "purchase_seq", 
+			oriname as "oriname", sysname as "sysname", created_at as "created_at"
+		from purchase_attachments where purchase_seq = #{purchase_seq} order by attachment_seq
+	</select>
 	
 	<select id="getCcList" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
 		select d.*, u.name as name 
@@ -194,4 +180,122 @@
 			inner join approval_cc c on d.doc_seq = c.doc_seq
 			where c.users_id = #{loginId} and d.status = #{status}
 	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 </mapper>

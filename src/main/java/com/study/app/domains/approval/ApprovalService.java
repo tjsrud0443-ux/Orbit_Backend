@@ -150,6 +150,68 @@ public class ApprovalService {
 			}
 		}
 	}
+	
+	public Map<String, Object> getApprovalDetail(String doc_type, Long doc_seq) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+
+        // 공통 정보 조회 (draft_documents)
+        Map<String, Object> common = dao.selectCommonDetail(doc_seq);
+        if (common == null) {
+            throw new IllegalArgumentException("존재하지 않는 결재 문서입니다.");
+        }
+        result.put("common", common);
+
+        // 결재자 및 참조자 리스트 조회
+        List<Map<String, Object>> approvers = dao.selectApprovers(doc_seq);
+        List<Map<String, Object>> referrers = dao.selectReferrers(doc_seq);
+        result.put("approvers", approvers);
+        result.put("referrers", referrers);
+
+        // 하위 데이터 조회
+        Map<String, Object> detail = null;
+
+        switch (doc_type) {
+            case "VACATION":
+                detail = dao.selectVacationDetail(doc_seq);
+                break;
+                
+            case "GENERAL":
+                detail = dao.selectGeneralDetail(doc_seq);
+                break;
+                
+            case "PAYMENT":
+                detail = dao.selectPaymentDetail(doc_seq);
+                if (detail != null) {
+                	Object paySeqObj = detail.get("pay_seq");
+                    Long pay_seq = Long.parseLong(String.valueOf(paySeqObj));
+                    
+                    List<Map<String, Object>> paymentItems = dao.selectPaymentItems(pay_seq);
+                    result.put("items", paymentItems);
+                }
+                break;
+                
+            case "PURCHASE":
+                detail = dao.selectPurchaseDetail(doc_seq);
+                if (detail != null) {
+                	Object purchaseSeqObj = detail.get("purchase_seq");
+                    Long purchase_seq = Long.parseLong(String.valueOf(purchaseSeqObj));
+                    
+                    List<Map<String, Object>> purchaseItems = dao.selectPurchaseItems(purchase_seq);
+                    result.put("items", purchaseItems);
+                    
+                    List<Map<String, Object>> attachments = dao.selectPurchaseAttachments(purchase_seq);
+                    result.put("attachments", attachments);
+                }
+                break;
+                
+            default:
+                throw new IllegalArgumentException("잘못된 문서 타입입니다: " + doc_type);
+        }
+
+        result.put("detail", detail);
+
+        return result;
+    }
 
 
 

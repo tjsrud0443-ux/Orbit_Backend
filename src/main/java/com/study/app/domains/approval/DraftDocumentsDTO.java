@@ -8,7 +8,6 @@ public class DraftDocumentsDTO {
 	private String title;
 	private String doc_type;
 	private String users_id;
-	private String draft_date;
 	private String status;
 	private String reject_reason;
 	private Long is_temp;
@@ -20,15 +19,14 @@ public class DraftDocumentsDTO {
     private List<ApprovalCcDTO> referrers;
     
     public DraftDocumentsDTO() {}
-	public DraftDocumentsDTO(Long doc_seq, String title, String doc_type, String users_id, String draft_date,
-			String status, String reject_reason, Long is_temp, String temp_expires_at, String created_at,
-			String updated_at, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers) {
+	public DraftDocumentsDTO(Long doc_seq, String title, String doc_type, String users_id, String status,
+			String reject_reason, Long is_temp, String temp_expires_at, String created_at, String updated_at,
+			List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers) {
 		super();
 		this.doc_seq = doc_seq;
 		this.title = title;
 		this.doc_type = doc_type;
 		this.users_id = users_id;
-		this.draft_date = draft_date;
 		this.status = status;
 		this.reject_reason = reject_reason;
 		this.is_temp = is_temp;
@@ -61,12 +59,6 @@ public class DraftDocumentsDTO {
 	}
 	public void setUsers_id(String users_id) {
 		this.users_id = users_id;
-	}
-	public String getDraft_date() {
-		return draft_date;
-	}
-	public void setDraft_date(String draft_date) {
-		this.draft_date = draft_date;
 	}
 	public String getStatus() {
 		return status;
