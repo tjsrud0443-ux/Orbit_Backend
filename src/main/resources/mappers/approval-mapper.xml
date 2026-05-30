@@ -142,4 +142,42 @@
 			oriname as "oriname", sysname as "sysname", created_at as "created_at"
 		from purchase_attachments where purchase_seq = #{purchase_seq} order by attachment_seq
 	</select>
+	
+	<select id="getCcList" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
+		select d.*, u.name as name 
+			from draft_documents d 
+			inner join users u on d.users_id = u.id
+			inner join approval_cc c on d.doc_seq = c.doc_seq
+			where c.users_id = #{loginId}
+			order by d.created_at desc
+	</select>
+	
+	<select id="getLinesBySeq" resultType="com.study.app.domains.approval.ApprovalLinesDTO">
+		select 
+			a.line_seq, a.doc_seq, a.users_id, a.step_order, a.status, a.handle_at, a.reject_reason,
+			u.name as name, r.rank_name as rank_name, u.sysname as sysname 
+			
+			from approval_lines a
+			inner join users u on a.users_id = u.id
+			inner join rank r on u.rank_seq = r.rank_seq
+			where a.doc_seq = #{doc_seq}
+			order by a.step_order
+	</select>
+	
+	<select id="getCcPage" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
+		select * from (select row_number() over(order by d.created_at desc) rn, 
+			d.*, u.name as name
+			from draft_documents d
+			inner join users u on d.users_id = u.id
+			inner join approval_cc c on d.doc_seq = c.doc_seq
+			where c.users_id = #{loginId} and d.status = #{status}
+			)
+			where rn between #{start} and #{end}
+	</select>
+	
+	<select id="getCcpageCount" resultType="int">
+		select count(*) from draft_documents d 
+			inner join approval_cc c on d.doc_seq = c.doc_seq
+			where c.users_id = #{loginId} and d.status = #{status}
+	</select>
 </mapper>

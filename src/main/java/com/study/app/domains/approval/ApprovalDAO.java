@@ -92,4 +92,109 @@ public class ApprovalDAO {
 	public List<Map<String, Object>> selectPurchaseAttachments(Long purchase_seq){
 		return mybatis.selectList("Approval.selectPurchaseAttachments", purchase_seq);
 	}
+	
+	public List<DraftDocumentsDTO> getCcList(String loginId) {
+		return mybatis.selectList("Approval.getCcList", loginId);
+	}
+	
+	public List<ApprovalLinesDTO> getLinesBySeq(Long doc_seq){
+		return mybatis.selectList("Approval.getLinesBySeq", doc_seq);
+	}
+	
+	public List<DraftDocumentsDTO> getCcPage(Map<String, Object> param) {
+		return mybatis.selectList("Approval.getCcPage", param);
+	}
+	
+	public int getCcpageCount(Map<String, Object> param) {
+		return mybatis.selectOne("Approval.getCcpageCount", param);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
