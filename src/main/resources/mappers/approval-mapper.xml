@@ -158,10 +158,12 @@
 	
 	
 	<select id="getCcList" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
-		select * from draft_documents d 
+		select d.*, u.name as name 
+			from draft_documents d 
+			inner join users u on d.users_id = u.id
 			inner join approval_cc c on d.doc_seq = c.doc_seq
 			where c.users_id = #{loginId}
-			order by d.draft_date desc
+			order by d.created_at desc
 	</select>
 	
 	<select id="getLinesBySeq" resultType="com.study.app.domains.approval.ApprovalLinesDTO">
