@@ -1,5 +1,8 @@
 package com.study.app.domains.approval;
 
+import java.util.List;
+import java.util.Map;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -48,5 +51,68 @@ public class ApprovalDAO {
 	
 	public void insertPurchaseAttachment(PurchaseAttachmentsDTO dto) {
 		mybatis.insert("Approval.insertPurchaseAttachment", dto);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public List<DraftDocumentsDTO> getCcList(String loginId) {
+		return mybatis.selectList("Approval.getCcList", loginId);
+	}
+	
+	public List<ApprovalLinesDTO> getLinesBySeq(Long doc_seq){
+		return mybatis.selectList("Approval.getLinesBySeq", doc_seq);
+	}
+	
+	public List<DraftDocumentsDTO> getCcPage(Map<String, Object> param) {
+		return mybatis.selectList("Approval.getCcPage", param);
+	}
+	
+	public int getCcpageCount(Map<String, Object> param) {
+		return mybatis.selectOne("Approval.getCcpageCount", param);
 	}
 }
