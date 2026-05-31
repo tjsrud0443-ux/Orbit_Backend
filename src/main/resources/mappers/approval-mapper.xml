@@ -344,6 +344,15 @@
 			inner join users u on d.users_id = u.id
 			inner join approval_cc c on d.doc_seq = c.doc_seq
 			where c.users_id = #{loginId} and d.status = #{status}
+			
+			<if test="keyword != null and keyword != ''">
+            	and lower(d.title) like '%' || lower(#{keyword}) || '%'
+        	</if>
+
+	        <if test="docType != null and docType != '' and docType != '전체' and docType != '전체 문서'">
+	            and d.doc_type = #{docType}
+	        </if>
+	        
 			)
 			where rn between #{start} and #{end}
 	</select>
@@ -352,6 +361,14 @@
 		select count(*) from draft_documents d 
 			inner join approval_cc c on d.doc_seq = c.doc_seq
 			where c.users_id = #{loginId} and d.status = #{status}
+			
+			<if test="keyword != null and keyword != ''">
+            	and lower(d.title) like '%' || lower(#{keyword}) || '%'
+        	</if>
+
+	        <if test="docType != null and docType != '' and docType != '전체' and docType != '전체 문서'">
+	            and d.doc_type = #{docType}
+	        </if>
 	</select>
 	
 	<select id="getMyDoc" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
@@ -389,10 +406,7 @@
 		        and lower(d.title) like '%' || lower(#{keyword}) || '%'
 		    </if>
 
-		    <if test="docType != null
-		              and docType != ''
-		              and docType != '전체'
-		              and docType != '전체 문서'">
+		    <if test="docType != null and docType != '' and docType != '전체' and docType != '전체 문서'">
 		        and d.doc_type = #{docType}
 		    </if>
 	</select>
