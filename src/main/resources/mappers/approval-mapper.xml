@@ -350,7 +350,7 @@
 	
 	<select id="getMyDoneDocByPage" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
 		select * from (select row_number() over(order by a.handle_at desc) rn, 
-			d.*, u.name as name, a.status as app_status
+			d.*, u.name as name, u.sysname as sysname, a.status as app_status
 			from approval_lines a
 			inner join draft_documents d on a.doc_seq = d.doc_seq
 			inner join users u on d.users_id = u.id
