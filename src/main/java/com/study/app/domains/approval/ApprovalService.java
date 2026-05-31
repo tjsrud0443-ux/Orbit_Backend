@@ -439,6 +439,10 @@ public class ApprovalService {
 		return result;
 	}
 	
+//	public List<DraftDocumentsDTO> getMydraftDoc(String loginId) {
+//		
+//	}
+	
 	public List<DraftDocumentsDTO> getTempDoc(String loginId) {
 		return dao.getTempDoc(loginId);
 	}

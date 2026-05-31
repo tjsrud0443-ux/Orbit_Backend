@@ -230,6 +230,12 @@ public class ApprovalController {
 		return ResponseEntity.ok(result);
 	}
 	
+//	@GetMapping("/MydraftDoc")
+//	public ResponseEntity<List<DraftDocumentsDTO>> getMydraftDoc(@RequestAttribute String loginId) {
+//		List<DraftDocumentsDTO> list = appServ.getMydraftDoc(loginId);
+//		return ResponseEntity.ok(list);
+//	}
+	
 	@GetMapping("/temp")
 	public ResponseEntity<List<DraftDocumentsDTO>> getTempDoc(@RequestAttribute String loginId) {
 		List<DraftDocumentsDTO> result = appServ.getTempDoc(loginId);
