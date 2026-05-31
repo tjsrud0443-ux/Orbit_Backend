@@ -230,11 +230,18 @@ public class ApprovalController {
 		return ResponseEntity.ok(result);
 	}
 	
-//	@GetMapping("/MydraftDoc")
-//	public ResponseEntity<List<DraftDocumentsDTO>> getMydraftDoc(@RequestAttribute String loginId) {
-//		List<DraftDocumentsDTO> list = appServ.getMydraftDoc(loginId);
-//		return ResponseEntity.ok(list);
-//	}
+	@GetMapping("/MydraftDoc")
+	public ResponseEntity<List<DraftDocumentsDTO>> getMydraftDoc(@RequestAttribute String loginId) {
+		List<DraftDocumentsDTO> list = appServ.getMydraftDoc(loginId);
+		return ResponseEntity.ok(list);
+	}
+	
+	@GetMapping("/MyDoneDoc/page")
+	public ResponseEntity<Map<String, Object>> getMyDoneDocByPage(@RequestAttribute String loginId,
+			@RequestParam Long cpage) {
+		Map<String, Object> result = appServ.getMyDoneDocByPage(loginId, cpage);
+		return ResponseEntity.ok(result);
+	}
 	
 	@GetMapping("/temp")
 	public ResponseEntity<List<DraftDocumentsDTO>> getTempDoc(@RequestAttribute String loginId) {

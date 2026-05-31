@@ -439,9 +439,36 @@ public class ApprovalService {
 		return result;
 	}
 	
-//	public List<DraftDocumentsDTO> getMydraftDoc(String loginId) {
-//		
-//	}
+	public List<DraftDocumentsDTO> getMydraftDoc(String loginId) {
+		List<DraftDocumentsDTO> mydraftDocList = dao.getMydraftDoc(loginId);
+		
+			for(DraftDocumentsDTO dto : mydraftDocList) {
+				List<ApprovalLinesDTO> lines = dao.getLinesBySeq(dto.getDoc_seq());
+				dto.setApprovers(lines);
+			}
+		return mydraftDocList;
+	}
+	
+	public Map<String, Object> getMyDoneDocByPage(String loginId, Long cpage) {
+		int start = (int)(cpage * 5 - 4);
+		int end = (int)(cpage * 5);
+		
+		Map<String, Object> param = new HashMap<>();
+		
+		param.put("loginId", loginId);
+		param.put("start", start);
+		param.put("end", end);
+		
+		List<DraftDocumentsDTO> list = dao.getMyDoneDocByPage(param);
+		
+		int count = dao.getMyDoneDocCount(param);
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("list", list);
+		result.put("count", count);
+		
+		return result;
+	}
 	
 	public List<DraftDocumentsDTO> getTempDoc(String loginId) {
 		return dao.getTempDoc(loginId);

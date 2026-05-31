@@ -318,6 +318,31 @@
 			where users_id = #{loginId} and status = #{status}
 	</select>
 	
+	<select id="getMydraftDoc" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
+		select d.*, u.name as name, u.sysname as sysname, a.status as app_status
+			from approval_lines a
+			inner join draft_documents d on a.doc_seq = d.doc_seq
+			inner join users u on d.users_id = u.id
+			where a.users_id = #{loginId}
+			and a.status = 'IN_PROGRESS'
+			order by d.created_at
+	</select>
+	
+	<select id="getMyDoneDocByPage" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
+		select * from (select row_number() over(order by a.handle_at desc) rn, 
+			d.*, u.name as name, a.status as app_status
+			from approval_lines a
+			inner join draft_documents d on a.doc_seq = d.doc_seq
+			inner join users u on d.users_id = u.id
+			where a.users_id = #{loginId} and a.status in ('APPROVED', 'REJECTED')
+			)
+			where rn between #{start} and #{end}
+	</select>
+	
+	<select id="getMyDoneDocCount" resultType="int">
+		select count(*) from approval_lines where users_id = #{loginId} and status in ('APPROVED', 'REJECTED')
+	</select>
+	
 	<select id="getTempDoc" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
 		select * from draft_documents where users_id = #{loginId} and status = 'TEMP'
 			order by updated_at desc
