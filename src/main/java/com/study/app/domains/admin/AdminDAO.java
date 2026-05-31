@@ -1,9 +1,12 @@
 package com.study.app.domains.admin;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
 
 @Repository
@@ -26,5 +29,29 @@ public class AdminDAO {
 	
 	public void updateDept(DepartmentsDTO dto) {
 		batis.update("Admin.updateDept", dto);
+	}
+	
+	public int allEmployeeCount() {
+		return batis.selectOne("Admin.allEmployeeCount");
+	}
+	
+	public int joinEmployeeCount() {
+		return batis.selectOne("Admin.joinEmployeeCount");
+	}
+	
+	public int resignEmployeeCount() {
+		return batis.selectOne("Admin.resignEmployeeCount");
+	}
+	
+	public int aiQuestionsCount() {
+		return batis.selectOne("Admin.aiQuestionsCount");
+	}
+	
+	public int supplyRequestCount() {
+		return batis.selectOne("Admin.supplyRequestCount");
+	}
+	
+	public List<DepartmentsCountDTO> deptEmployeeCount() {
+		return batis.selectList("Admin.deptEmployeeCount");
 	}
 }

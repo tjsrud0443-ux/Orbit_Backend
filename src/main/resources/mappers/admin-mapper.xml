@@ -21,5 +21,35 @@
 			dept_code = #{dept_code} , auth_group = #{auth_group}
 				where dept_seq = #{dept_seq}
 	</update>
+	
+	<select id="allEmployeeCount" resultType="int">
+		select count(*) from users where status in ('ACTIVE','INACTIVE')
+	</select>
+	
+	<select id="joinEmployeeCount" resultType="int">
+		select count(*) from users 
+			where hire_date >= trunc(sysdate, 'MM') and hire_date &lt; ADD_MONTHS(trunc(sysdate, 'MM'), 1)
+	</select>
+	
+	<select id="resignEmployeeCount" resultType="int">
+		select count(*) from users 
+			where resign_date >= trunc(sysdate, 'MM') and resign_date &lt; ADD_MONTHS(trunc(sysdate, 'MM'), 1)
+	</select>
+	
+	<select id="aiQuestionsCount" resultType="int">
+		select count(*) from ai_unanswered_questions where status = 'PENDING'
+	</select>
+	
+	<select id="supplyRequestCount" resultType="int">
+		select count(*) from supply_request where status = 'PENDING'
+	</select>
+	
+	<select id="deptEmployeeCount" resultType="com.study.app.domains.departments.DepartmentsCountDTO">
+		select d.dept_name as deptName, count(u.id) as employeeCount
+			from departments d
+			left join users u on d.dept_seq = u.dept_seq
+			group by d.dept_name
+			order by d.dept_name
+	</select>
 
 </mapper>

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDAO;
 import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.rank.RankDAO;
@@ -115,6 +116,30 @@ public class AdminService {
 	
 	public void updateDept(DepartmentsDTO dto) {
 		adminDao.updateDept(dto);
+	}
+	
+	public int allEmployeeCount() {
+		return adminDao.allEmployeeCount();
+	}
+	
+	public int joinEmployeeCount() {
+		return adminDao.joinEmployeeCount();
+	}
+	
+	public int resignEmployeeCount() {
+		return adminDao.resignEmployeeCount();
+	}
+	
+	public int aiQuestionsCount() {
+		return adminDao.aiQuestionsCount();
+	}
+	
+	public int supplyRequestCount() {
+		return adminDao.supplyRequestCount();
+	}
+	
+	public List<DepartmentsCountDTO> deptEmployeeCount() {
+		return adminDao.deptEmployeeCount();
 	}
 
 }
