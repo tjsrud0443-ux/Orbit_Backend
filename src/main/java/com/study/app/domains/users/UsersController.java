@@ -19,4 +19,10 @@ public class UsersController {
 		UsersDTO result = usersServ.getUsersInfo(loginId);
 		return ResponseEntity.ok(result);
 	}
+	
+	@GetMapping("/myPage")
+	public ResponseEntity<UsersDTO> getMyPageInfo(@RequestAttribute String loginId){
+		UsersDTO result = usersServ.getMyPageInfo(loginId);
+		return ResponseEntity.ok(result);
+	}
 }

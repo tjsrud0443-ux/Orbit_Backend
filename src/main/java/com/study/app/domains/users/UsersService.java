@@ -22,4 +22,8 @@ public class UsersService {
 	public List<UsersDTO> getAllEmployees(){
 		return dao.getAllEmployees();
 	}
+	
+	public UsersDTO getMyPageInfo(String loginId) {
+		return dao.getMyPageInfo(loginId);
+	}
 }
