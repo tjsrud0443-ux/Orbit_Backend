@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Attendance">
+<insert id="checkIn">
+	INSERT INTO ATTENDANCE (ATTENDANCE_SEQ, USERS_ID, WORK_DATE, CHECK_IN)
+	VALUES (ATTENDANCE_SEQ.NEXTVAL, #{users_id}, TRUNC(SYSDATE), SYSTIMESTAMP)
+</insert>
+<select id="getAttendance" resultType="com.study.app.domains.attendance.AttendanceDTO">
+    SELECT CHECK_IN, CHECK_OUT
+    FROM ATTENDANCE
+    WHERE USERS_ID = #{users_id}
+    AND WORK_DATE = TRUNC(SYSDATE)
+</select>
+<update id="checkOut">
+	UPDATE ATTENDANCE
+	SET CHECK_OUT = SYSTIMESTAMP,
+	    TOTAL_WORK_MIN = ROUND(
+            (CAST(SYSTIMESTAMP AS DATE) - CAST(CHECK_IN AS DATE)) * 24 * 60
+        )
+	WHERE USERS_ID = #{users_id}
+	AND WORK_DATE = TRUNC(SYSDATE)
+</update>
 </mapper>
