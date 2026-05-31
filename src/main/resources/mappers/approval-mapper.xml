@@ -145,8 +145,29 @@
 		from purchase_attachments where purchase_seq = #{purchase_seq} order by attachment_seq
 	</select>
 	
+	<select id="selectMyApprovalLine" resultType="map">
+		select
+			users_id as "users_id", step_order as "step_order"
+		from approval_lines where doc_seq = #{doc_seq} and users_id = #{users_id}
+	</select>
 	
+	<select id="selectNextApprovalLine" resultType="map">
+		select
+			users_id as "users_id", step_order as "step_order"
+		from approval_lines where doc_seq = #{doc_seq} and step_order = #{step_order} + 1
+	</select>
 	
+	<update id="updateApprovalLineStatus">
+		update approval_lines set status = #{status}, handle_at = sysdate where doc_seq = #{doc_seq} and users_id = #{users_id} 
+	</update>
+	
+	<update id="updateNextApprovalLineStatus">
+		update approval_lines set status = #{status} where doc_seq = #{doc_seq} and users_id = #{users_id}
+	</update>
+	
+	<update id="updateDocumentStatus">
+		update draft_documents set status = #{status} where doc_seq = #{doc_seq}
+	</update>
 	
 	
 	

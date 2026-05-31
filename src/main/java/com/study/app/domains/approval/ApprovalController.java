@@ -86,12 +86,12 @@ public class ApprovalController {
 		}
 	}    
 
-//	@PutMapping("approve/{doc_seq}")
-//	public ResponseEntity<Void> approveDraft(@PathVariable Long doc_seq,
-//												@RequestParam String users_id){
-//		appServ.approveDraft(doc_seq, users_id);
-//		return ResponseEntity.ok().build();
-//	}
+	@PutMapping("approve/{doc_seq}")
+	public ResponseEntity<Void> approveDraft(@PathVariable Long doc_seq,
+												@RequestParam String users_id){
+		appServ.approveDraft(doc_seq, users_id);
+		return ResponseEntity.ok().build();
+	}
 	
 	
 	

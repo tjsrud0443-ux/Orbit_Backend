@@ -220,28 +220,28 @@ public class ApprovalService {
         return result;
     }
 
-//	@Transactional
-//	public void approveDocument(Long doc_seq, String users_id) {
-//	    // 현재 결재자의 라인 정보 조회
-//	    Map<String, Object> currentLine = dao.selectMyApprovalLine(doc_seq, users_id);
-//	    Long currentStepOrder = Long.parseLong(String.valueOf(currentLine.get("step_order")));
-//
-//	    // 현재 결재자 status → APPROVED, handle_at → sysdate
-//	    dao.updateApprovalLineStatus(doc_seq, users_id, "APPROVED");
-//
-//	    // 다음 결재자 조회
-//	    Map<String, Object> nextLine = dao.selectNextApprovalLine(doc_seq, currentStepOrder);
-//
-//	    if (nextLine != null) {
-//	        // 중간 결재자 → 다음 결재자 IN_PROGRESS, 문서 IN_PROGRESS 유지
-//	        String nextUsersId = String.valueOf(nextLine.get("users_id"));
-//	        dao.updateApprovalLineStatus(doc_seq, nextUsersId, "IN_PROGRESS");
-//	        dao.updateDocumentStatus(doc_seq, "IN_PROGRESS");
-//	    } else {
-//	        // 마지막 결재자 → 문서 APPROVED
-//	        dao.updateDocumentStatus(doc_seq, "APPROVED");
-//	    }
-//	}
+	@Transactional
+	public void approveDraft(Long doc_seq, String users_id) {
+	    // 현재 결재자의 라인 정보 조회
+	    Map<String, Object> currentLine = dao.selectMyApprovalLine(doc_seq, users_id);
+	    Long currentStepOrder = Long.parseLong(String.valueOf(currentLine.get("step_order")));
+
+	    // 현재 결재자 status → APPROVED, handle_at → sysdate
+	    dao.updateApprovalLineStatus(doc_seq, users_id, "APPROVED");
+
+	    // 다음 결재자 조회
+	    Map<String, Object> nextLine = dao.selectNextApprovalLine(doc_seq, currentStepOrder);
+
+	    if (nextLine != null) {
+	        // 중간 결재자 → 다음 결재자 IN_PROGRESS, 문서 IN_PROGRESS
+	        String nextUsersId = String.valueOf(nextLine.get("users_id"));
+	        dao.updateNextApprovalLineStatus(doc_seq, nextUsersId, "IN_PROGRESS");
+	        dao.updateDocumentStatus(doc_seq, "IN_PROGRESS");
+	    } else {
+	        // 마지막 결재자 → 문서 APPROVED
+	        dao.updateDocumentStatus(doc_seq, "APPROVED");
+	    }
+	}
 
 
 

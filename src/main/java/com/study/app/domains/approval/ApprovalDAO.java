@@ -1,5 +1,6 @@
 package com.study.app.domains.approval;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +94,42 @@ public class ApprovalDAO {
 		return mybatis.selectList("Approval.selectPurchaseAttachments", purchase_seq);
 	}
 	
+	public Map<String, Object> selectMyApprovalLine(Long doc_seq, String users_id) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("users_id", users_id);
+	    return mybatis.selectOne("Approval.selectMyApprovalLine", params);
+	}
+
+	public Map<String, Object> selectNextApprovalLine(Long doc_seq, Long currentStepOrder) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("step_order", currentStepOrder);
+	    return mybatis.selectOne("Approval.selectNextApprovalLine", params);
+	}
+
+	public void updateApprovalLineStatus(Long doc_seq, String users_id, String status) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("users_id", users_id);
+	    params.put("status", status);
+	    mybatis.update("Approval.updateApprovalLineStatus", params);
+	}
 	
+	public void updateNextApprovalLineStatus(Long doc_seq, String users_id, String status) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("doc_seq", doc_seq);
+		params.put("users_id", users_id);
+		params.put("status", status);
+		mybatis.update("Approval.updateNextApprovalLineStatus", params);
+	}
+
+	public void updateDocumentStatus(Long doc_seq, String status) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("status", status);
+	    mybatis.update("Approval.updateDocumentStatus", params);
+	}
 	
 	
 	
