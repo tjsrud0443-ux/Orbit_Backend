@@ -309,13 +309,33 @@
 			from draft_documents d
 			inner join users u on d.users_id = u.id
 			where d.users_id = #{loginId} and d.status = #{status}
+			
+			<if test="keyword != null and keyword != ''">
+            	and lower(d.title) like '%' || lower(#{keyword}) || '%'
+        	</if>
+
+	        <if test="docType != null and docType != '' and docType != '전체' and docType != '전체 문서'">
+	            and d.doc_type = #{docType}
+	        </if>
+	        
 			)
 			where rn between #{start} and #{end}
 	</select>
 	
 	<select id="getMyDocPageCount" resultType="int">
-		select count(*) from draft_documents 
-			where users_id = #{loginId} and status = #{status}
+		select count(*) from draft_documents d
+			where d.users_id = #{loginId} and status = #{status}
+			
+			<if test="keyword != null and keyword != ''">
+		        and lower(d.title) like '%' || lower(#{keyword}) || '%'
+		    </if>
+
+		    <if test="docType != null
+		              and docType != ''
+		              and docType != '전체'
+		              and docType != '전체 문서'">
+		        and d.doc_type = #{docType}
+		    </if>
 	</select>
 	
 	<select id="getMydraftDoc" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
@@ -335,12 +355,30 @@
 			inner join draft_documents d on a.doc_seq = d.doc_seq
 			inner join users u on d.users_id = u.id
 			where a.users_id = #{loginId} and a.status in ('APPROVED', 'REJECTED')
+			
+			<if test="keyword != null and keyword != ''">
+            	and lower(d.title) like '%' || lower(#{keyword}) || '%'
+        	</if>
+
+	        <if test="docType != null and docType != '' and docType != '전체' and docType != '전체 문서'">
+	            and d.doc_type = #{docType}
+	        </if>
+	        
 			)
 			where rn between #{start} and #{end}
 	</select>
 	
 	<select id="getMyDoneDocCount" resultType="int">
-		select count(*) from approval_lines where users_id = #{loginId} and status in ('APPROVED', 'REJECTED')
+		select count(*) from approval_lines a
+		inner join draft_documents d on a.doc_seq = d.doc_seq
+		where a.users_id = #{loginId} and a.status in ('APPROVED', 'REJECTED')
+			<if test="keyword != null and keyword != ''">
+	            and lower(d.title) like '%' || lower(#{keyword}) || '%'
+        	</if>
+
+	        <if test="docType != null and docType != '' and docType != '전체' and docType != '전체 문서'">
+	            and d.doc_type = #{docType}
+	        </if>
 	</select>
 	
 	<select id="getTempDoc" resultType="com.study.app.domains.approval.DraftDocumentsDTO">

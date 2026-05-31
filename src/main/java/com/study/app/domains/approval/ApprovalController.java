@@ -225,8 +225,9 @@ public class ApprovalController {
 	
 	@GetMapping("/myDoc/page")
 	public ResponseEntity<Map<String, Object>> getMyDocumentsByPage(@RequestAttribute String loginId,
-			@RequestParam String status, @RequestParam Long cpage) {
-		Map<String, Object> result = appServ.getMyDocumentsByPage(loginId, status, cpage);
+			@RequestParam String status, @RequestParam Long cpage,
+			@RequestParam String keyword, @RequestParam String docType) {
+		Map<String, Object> result = appServ.getMyDocumentsByPage(loginId, status, cpage, keyword, docType);
 		return ResponseEntity.ok(result);
 	}
 	
@@ -238,8 +239,8 @@ public class ApprovalController {
 	
 	@GetMapping("/MyDoneDoc/page")
 	public ResponseEntity<Map<String, Object>> getMyDoneDocByPage(@RequestAttribute String loginId,
-			@RequestParam Long cpage) {
-		Map<String, Object> result = appServ.getMyDoneDocByPage(loginId, cpage);
+			@RequestParam Long cpage, @RequestParam String keyword, @RequestParam String docType) {
+		Map<String, Object> result = appServ.getMyDoneDocByPage(loginId, cpage, keyword, docType);
 		return ResponseEntity.ok(result);
 	}
 	

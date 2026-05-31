@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.BlobId;
@@ -411,7 +412,8 @@ public class ApprovalService {
 		return myDocList;
 	}
 	
-	public Map<String, Object> getMyDocumentsByPage(String loginId, String status, Long cpage) {
+	public Map<String, Object> getMyDocumentsByPage(String loginId, String status, Long cpage,
+			String keyword, String docType) {
 		int start = (int)(cpage * 5 - 4);
 		int end = (int)(cpage * 5);
 		
@@ -419,6 +421,8 @@ public class ApprovalService {
 		
 		param.put("loginId", loginId);
 		param.put("status", status);
+		param.put("keyword", keyword);
+		param.put("docType", docType);
 		param.put("start", start);
 		param.put("end", end);
 		
@@ -449,13 +453,15 @@ public class ApprovalService {
 		return mydraftDocList;
 	}
 	
-	public Map<String, Object> getMyDoneDocByPage(String loginId, Long cpage) {
+	public Map<String, Object> getMyDoneDocByPage(String loginId, Long cpage, String keyword, String docType) {
 		int start = (int)(cpage * 5 - 4);
 		int end = (int)(cpage * 5);
 		
 		Map<String, Object> param = new HashMap<>();
 		
 		param.put("loginId", loginId);
+		param.put("keyword", keyword);
+		param.put("docType", docType);
 		param.put("start", start);
 		param.put("end", end);
 		
