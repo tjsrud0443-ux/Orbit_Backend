@@ -178,6 +178,13 @@
 		update draft_documents set status = #{status}, reject_reason = #{reject_reason} where doc_seq = #{doc_seq}
 	</update>
 	
+	<select id="selectVacationDays" resultType="map">
+		select 
+			d.users_id as "users_id", v.days as "days"
+		from draft_documents d
+		join vacation v on d.doc_seq = v.doc_seq
+		where d.doc_seq = #{doc_seq}
+	</select>
 	
 	
 	

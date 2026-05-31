@@ -44,9 +44,15 @@ public class ApprovalController {
 	}
 
 	@PostMapping("submit/vacation")
-	public ResponseEntity<Void> submitVacation(@RequestBody VacationDTO dto){ 
-		appServ.insertVacation(dto);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<String> submitVacation(@RequestBody VacationDTO dto){ 
+		try{
+			appServ.insertVacation(dto);
+			return ResponseEntity.ok("기안 상신이 완료되었습니다.");
+		}catch(IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}catch (Exception e) {
+	        return ResponseEntity.internalServerError().body("서버 오류 발생");
+	    }
 	}
 	
 	@PostMapping("submit/general")
@@ -88,8 +94,10 @@ public class ApprovalController {
 
 	@PutMapping("approve/{doc_seq}")
 	public ResponseEntity<Void> approveDraft(@PathVariable Long doc_seq,
-												@RequestAttribute String loginId){
-		appServ.approveDraft(doc_seq, loginId);
+												@RequestAttribute String loginId,
+												@RequestParam String doc_type){
+		System.out.println("doc_type");
+		appServ.approveDraft(doc_seq, loginId, doc_type);
 		return ResponseEntity.ok().build();
 	}
 	
@@ -97,9 +105,8 @@ public class ApprovalController {
 	public ResponseEntity<Void> rejectApproval(@PathVariable Long doc_seq,
 												@RequestAttribute String loginId,
 												@RequestBody Map<String, Object> data){
-		System.out.println("data: " + data);
+		
 		String reject_reason = String.valueOf(data.get("reject_reason"));
-		System.out.println("reject_reason : " + reject_reason);
 		appServ.rejectApproval(doc_seq, loginId, reject_reason);
 		return ResponseEntity.ok().build();
 	}

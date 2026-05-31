@@ -148,6 +148,10 @@ public class ApprovalDAO {
 	    mybatis.update("Approval.updateDocumentStatusToReject", params);
 	}
 	
+	public Map<String, Object> selectVacationDays(Long doc_seq){
+		return mybatis.selectOne("Approval.selectVacationDays", doc_seq);
+	}
+	
 	
 	
 	

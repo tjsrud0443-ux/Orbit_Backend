@@ -10,18 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.study.app.domains.annualLeave.AnnualLeaveDAO;
 
 @Service
 public class ApprovalService {
 
 	@Autowired
 	private ApprovalDAO dao;
+	@Autowired
+	private AnnualLeaveDAO annualDao;
 	@Autowired
 	private Storage storage;
 	@Value("${spring.cloud.gcp.bucket}")
@@ -62,6 +64,18 @@ public class ApprovalService {
 	// 휴가 신청서
 	@Transactional
 	public void insertVacation(VacationDTO dto) {
+		String users_id = dto.getUsers_id();
+		Double used_days = dto.getDays();
+
+		Map<String, Object> leaveData = annualDao.selectAnnualLeaveData(users_id);
+		if (leaveData != null) {
+			Double currentRemaining = Double.parseDouble(String.valueOf(leaveData.get("remaining_days")));
+
+			if (used_days > currentRemaining) {
+				throw new IllegalArgumentException("잔여 연차가 부족하여 휴가 신청서를 상신할 수 없습니다. \n(잔여: " 
+						+ currentRemaining + "일)");
+			}
+		}
 		insertCommonApprovalData(dto);
 		dao.insertVacationDetail(dto);
 	}
@@ -221,7 +235,7 @@ public class ApprovalService {
     }
 
 	@Transactional
-	public void approveDraft(Long doc_seq, String loginId) {
+	public void approveDraft(Long doc_seq, String loginId, String doc_type) {
 	    // 현재 결재자의 라인 정보 조회
 	    Map<String, Object> currentLine = dao.selectMyApprovalLine(doc_seq, loginId);
 	    Long currentStepOrder = Long.parseLong(String.valueOf(currentLine.get("step_order")));
@@ -240,6 +254,21 @@ public class ApprovalService {
 	    } else {
 	        // 마지막 결재자 -> 문서 APPROVED
 	        dao.updateDocumentStatus(doc_seq, "APPROVED");
+	        if(doc_type.equals("VACATION")) {
+	        	// 연차 테이블 반영
+	        	Map<String, Object> vac_info = dao.selectVacationDays(doc_seq);
+	        	String users_id = String.valueOf(vac_info.get("users_id"));
+	        	Double used_days = Double.parseDouble(String.valueOf(vac_info.get("days")));
+	        	
+                Map<String, Object> leaveData = annualDao.selectAnnualLeaveData(users_id);
+                Double currentUsed = Double.parseDouble(String.valueOf(leaveData.get("used_days")));
+                Double currentRemaining = Double.parseDouble(String.valueOf(leaveData.get("remaining_days"))) ;
+                
+                Double newUsed = currentUsed + used_days;
+                Double newRemaining = currentRemaining - used_days;
+	        	annualDao.updateAnnualLeaveUsedDays(users_id, newUsed, newRemaining);
+	        }
+	        
 	    }
 	}
 	
