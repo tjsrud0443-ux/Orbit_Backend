@@ -8,7 +8,7 @@
 	    </selectKey>
 	    
 	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, 
-	    #{status}, null, #{is_temp}, null, sysdate, null)
+	    #{status}, null, #{is_temp}, #{temp_expires_at}, sysdate, sysdate)
 	</insert>
 	
 	<insert id="insertApprovalLines">

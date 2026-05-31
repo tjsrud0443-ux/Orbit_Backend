@@ -1,5 +1,6 @@
 package com.study.app.domains.approval;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,13 @@ public class ApprovalService {
 	private String bucketName;
 
 	private void insertCommonApprovalData(DraftDocumentsDTO dto) {
-
+		
+		if(dto.getIs_temp() == 1) {
+			LocalDate expireDate = LocalDate.now().plusDays(7);
+	        dto.setTemp_expires_at(expireDate.toString());
+		}else {
+			dto.setTemp_expires_at(null);
+		}
 		// selectKey(BEFORE)에 의해 실행 후 docSeq 필드에 시퀀스 값이 채워짐
 		dao.insertDraftDocument(dto); 
 		Long docSeq = dto.getDoc_seq(); // 채워진 시퀀스 꺼내기
