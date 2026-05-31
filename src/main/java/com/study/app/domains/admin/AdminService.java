@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDAO;
 import com.study.app.domains.departments.DepartmentsDTO;
@@ -152,5 +153,9 @@ public class AdminService {
 		result.put("joinCount", adminDao.joinResignCount());
 		
 		return result;
+	}
+	
+	public List<AiUnansweredQuestionsDTO> getAiQuestions() {
+		return adminDao.getAiQuestions();
 	}
 }

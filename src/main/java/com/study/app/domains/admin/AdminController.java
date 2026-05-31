@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
@@ -156,6 +157,11 @@ public class AdminController {
 	public ResponseEntity<Map<String, Object>> joinResignCount() {
 		Map<String, Object> result = adminServ.joinResignCount(); 
 		return ResponseEntity.ok(result); 
+	}
+	
+	@GetMapping("/aiQuestions")
+	public ResponseEntity<List<AiUnansweredQuestionsDTO>> getAiQuestions() {
+		return ResponseEntity.ok(adminServ.getAiQuestions());
 	}
 
 }

@@ -100,5 +100,9 @@
 			    on m.year_month = r.year_month
 			order by m.year_month
 	</select>
-
+	
+	<select id="getAiQuestions" resultType="com.study.app.domains.aiChat.AiUnansweredQuestionsDTO">
+		select question, created_at from ai_unanswered_questions where status = 'PENDING'
+		order by created_at desc
+	</select>
 </mapper>

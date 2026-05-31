@@ -6,6 +6,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
@@ -62,5 +63,9 @@ public class AdminDAO {
 	
 	public List<JoinResignDTO> joinResignCount() {
 		return batis.selectList("Admin.joinResignCount");
+	}
+	
+	public List<AiUnansweredQuestionsDTO> getAiQuestions() {
+		return batis.selectList("Admin.getAiQuestions");
 	}
 }
