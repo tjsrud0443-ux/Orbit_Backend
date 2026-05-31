@@ -8,7 +8,7 @@
 	    </selectKey>
 	    
 	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, 
-	    #{status}, null, #{is_temp}, null, sysdate, null)
+	    #{status}, null, #{is_temp}, TO_DATE(#{temp_expires_at, jdbcType=VARCHAR}, 'YYYY-MM-DD'), sysdate, sysdate)
 	</insert>
 	
 	<insert id="insertApprovalLines">
@@ -33,12 +33,13 @@
 		<selectKey keyProperty="pay_seq" resultType="long" order="BEFORE">
 			select pay_seq.nextval from dual
 		</selectKey>
-		insert into payment values (#{pay_seq}, #{doc_seq}, #{pay_date}, #{total_amount}, #{pay_reason}, #{account_info})
+		insert into payment values (#{pay_seq}, #{doc_seq}, #{pay_date, jdbcType=DATE},
+		 #{total_amount, jdbcType=NUMERIC}, #{pay_reason, jdbcType=VARCHAR}, #{account_info, jdbcType=VARCHAR})
 	</insert>
 	
 	<insert id="insertPaymentItem">
-		insert into payment_items values (pa_item_seq.nextval, #{pay_seq}, #{item_order}, #{item_name}, 
-		#{amount}, #{note}, #{sysname}, #{oriname})
+		insert into payment_items values (pa_item_seq.nextval, #{pay_seq}, #{item_order, jdbcType=NUMERIC}, #{item_name, jdbcType=VARCHAR}, 
+		#{amount, jdbcType=NUMERIC}, #{note, jdbcType=VARCHAR}, #{sysname, jdbcType=VARCHAR}, #{oriname, jdbcType=VARCHAR})
 	</insert>
 	
 	<insert id="insertPurchaseDetail">
@@ -46,12 +47,13 @@
 			select purchase_seq.nextval from dual
 		</selectKey>
 		
-		insert into purchase values (#{purchase_seq}, #{doc_seq}, #{total_amount}, #{purpose}, #{vendor}, #{purchase_date})
+		insert into purchase values (#{purchase_seq}, #{doc_seq}, #{total_amount, jdbcType=NUMERIC},
+		 #{purpose, jdbcType=VARCHAR}, #{vendor, jdbcType=VARCHAR}, #{purchase_date, jdbcType=DATE})
 	</insert>
 	
 	<insert id="insertPurchaseItem">
-		insert into purchase_items values (p_item_seq.nextval, #{purchase_seq}, #{item_order}, #{item_name}, #{ea},
-		 #{unit_price}, #{total_price}, #{note})
+		insert into purchase_items values (p_item_seq.nextval, #{purchase_seq}, #{item_order, jdbcType=NUMERIC}, #{item_name, jdbcType=VARCHAR},
+		 #{ea, jdbcType=NUMERIC}, #{unit_price, jdbcType=NUMERIC}, #{total_price, jdbcType=NUMERIC}, #{note, jdbcType=VARCHAR})
 	</insert>
 	
 	<insert id="insertPurchaseAttachment">
@@ -61,8 +63,8 @@
 	<select id="selectCommonDetail" resultType="map">
 	    select
 	    	d.doc_seq as "doc_seq", d.title as "title", d.doc_type as "doc_type", d.users_id as "users_id", d.status as "status",
-	    	d.reject_reason as "reject_reason", d.is_temp as "is_temp", d.temp_expires_at as "temp_expires_at", d.created_at as "created_at",
-	    	d.updated_at as "updated_at", u.name as "name", u.users_seq as "users_seq", dept.dept_name as "dept_name", r.rank_name as "rank_name"
+	    	d.reject_reason as "reject_reason", d.is_temp as "is_temp", TO_CHAR(d.temp_expires_at, 'YYYY-MM-DD') as "temp_expires_at", TO_CHAR(d.created_at, 'YYYY-MM-DD') as "created_at",
+	    	TO_CHAR(d.updated_at, 'YYYY-MM-DD') as "updated_at", u.name as "name", u.users_seq as "users_seq", dept.dept_name as "dept_name", r.rank_name as "rank_name"
 	    	from draft_documents d
 	    left outer join users u 
 	    	on d.users_id = u.id
@@ -76,7 +78,7 @@
 	<select id="selectApprovers" resultType="map">
 		select 
 			a.line_seq as "line_seq", a.doc_seq as "doc_seq", a.users_id as "users_id", a.step_order as "step_order",
-			a.status as "status", a.handle_at as "handle_at", a.reject_reason as "reject_reason", 
+			a.status as "status", TO_CHAR(a.handle_at, 'YYYY-MM-DD') as "handle_at", a.reject_reason as "reject_reason", 
 			u.name as "name", r.rank_name as "rank_name"
 		from approval_lines a
 	    join users u on a.users_id = u.id
@@ -97,8 +99,8 @@
 	
 	<select id="selectVacationDetail" resultType="map">
 		select 
-			vac_seq as "vac_seq", doc_seq as "doc_seq", vac_type as "vac_type", start_date as "start_date",
-			end_date as "end_date", days as "days", reason as "reason" 
+			vac_seq as "vac_seq", doc_seq as "doc_seq", vac_type as "vac_type", TO_CHAR(start_date, 'YYYY-MM-DD') as "start_date",
+        	TO_CHAR(end_date, 'YYYY-MM-DD') as "end_date", days as "days", reason as "reason" 
 		from vacation where doc_seq = #{doc_seq}
 	</select>
 	
@@ -110,7 +112,7 @@
 	
 	<select id="selectPaymentDetail" resultType="map">
 		select 
-			pay_seq as "pay_seq", doc_seq as "doc_seq", pay_date as "pay_date", 
+			pay_seq as "pay_seq", doc_seq as "doc_seq", TO_CHAR(pay_date, 'YYYY-MM-DD') as "pay_date", 
 			total_amount as "total_amount", pay_reason as "pay_reason", account_info as "account_info"
 		from payment where doc_seq = #{doc_seq}
 	</select>
@@ -118,7 +120,7 @@
 	<select id="selectPurchaseDetail" resultType="map">
 		select 
 			purchase_seq as "purchase_seq", doc_seq as "doc_seq", total_amount as "total_amount",
-			purpose as "purpose", vendor as "vendor", purchase_date as "purchase_date"
+			purpose as "purpose", vendor as "vendor", TO_CHAR(purchase_date, 'YYYY-MM-DD') as "purchase_date"
 		from purchase where doc_seq = #{doc_seq}
 	</select>
 	
@@ -139,9 +141,161 @@
 	<select id="selectPurchaseAttachments" resultType="map">
 		select 
 			attachment_seq as "attachment_seq", purchase_seq as "purchase_seq", 
-			oriname as "oriname", sysname as "sysname", created_at as "created_at"
+			oriname as "oriname", sysname as "sysname", TO_CHAR(created_at, 'YYYY-MM-DD') as "created_at"
 		from purchase_attachments where purchase_seq = #{purchase_seq} order by attachment_seq
 	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	<select id="getCcList" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
 		select d.*, u.name as name 
