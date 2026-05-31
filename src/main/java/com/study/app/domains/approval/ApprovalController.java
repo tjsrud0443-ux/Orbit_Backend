@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,7 +66,7 @@ public class ApprovalController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@GetMapping("/detail/{doc_type}/{doc_seq}")
+	@GetMapping("detail/{doc_type}/{doc_seq}")
     public ResponseEntity<?> getDetail(@PathVariable String doc_type,
             							@PathVariable Long doc_seq) {
 		
@@ -78,7 +79,12 @@ public class ApprovalController {
 		}
 	}    
 
-	
+//	@PutMapping("approve/{doc_seq}")
+//	public ResponseEntity<Void> approveDraft(@PathVariable Long doc_seq,
+//												@RequestParam String users_id){
+//		appServ.approveDraft(doc_seq, users_id);
+//		return ResponseEntity.ok().build();
+//	}
 	
 	
 	
