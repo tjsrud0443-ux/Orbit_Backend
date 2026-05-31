@@ -93,6 +93,191 @@ public class ApprovalDAO {
 		return mybatis.selectList("Approval.selectPurchaseAttachments", purchase_seq);
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public List<DraftDocumentsDTO> getCcList(String loginId) {
 		return mybatis.selectList("Approval.getCcList", loginId);
 	}
@@ -109,92 +294,76 @@ public class ApprovalDAO {
 		return mybatis.selectOne("Approval.getCcpageCount", param);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public List<DraftDocumentsDTO> getMyDoc(String loginId) {
+		return mybatis.selectList("Approval.getMyDoc", loginId);
+	}
+	
+	public List<DraftDocumentsDTO> getMyDocPage(Map<String, Object> param) {
+		return mybatis.selectList("Approval.getMyDocPage", param);
+	}
+	
+	public int getMyDocPageCount(Map<String, Object> param) {
+		return mybatis.selectOne("Approval.getMyDocPageCount", param);
+	}
+	
+	public List<DraftDocumentsDTO> getMydraftDoc(String loginId) {
+		return mybatis.selectList("Approval.getMydraftDoc", loginId);
+	}
+	
+	public List<DraftDocumentsDTO> getMyDoneDocByPage(Map<String, Object> param) {
+		return mybatis.selectList("Approval.getMyDoneDocByPage", param);
+	}
+	
+	public int getMyDoneDocCount(Map<String, Object> param) {
+		return mybatis.selectOne("Approval.getMyDoneDocCount", param);
+	}
+	
+	public List<DraftDocumentsDTO> getTempDoc(String loginId) {
+		return mybatis.selectList("Approval.getTempDoc", loginId);
+	}
+	
+	public List<DraftDocumentsDTO> tempList() {
+		return mybatis.selectList("Approval.tempList");
+	}
+	
+	public void deleteAppLine(Long doc_seq) {
+		mybatis.delete("Approval.deleteAppLine", doc_seq);
+	}
+	
+	public void deleteAppCc(Long doc_seq) {
+		mybatis.delete("Approval.deleteAppCc", doc_seq);
+	}
+	
+	public void deleteDraftDoc(Long doc_seq) {
+		mybatis.delete("Approval.deleteDraftDoc", doc_seq);
+	}
+	
+	public void deleteVacDoc(Long doc_seq) {
+		mybatis.delete("Approval.deleteVacDoc", doc_seq);
+	}
+	
+	public void deleteGenDoc(Long doc_seq) {
+		mybatis.delete("Approval.deleteGenDoc", doc_seq);
+	}
+	
+	public void deletePayItem(Long doc_seq) {
+		mybatis.delete("Approval.deletePayItem", doc_seq);
+	}
+	
+	public void deletePayDoc(Long doc_seq) {
+		mybatis.delete("Approval.deletePayDoc", doc_seq);
+	}
+	
+	public void deletePurAttach(Long doc_seq) {
+		mybatis.delete("Approval.deletePurAttach", doc_seq);
+	}
+	
+	public void deletePurItem(Long doc_seq) {
+		mybatis.delete("Approval.deletePurItem", doc_seq);
+	}
+	
+	public void deletePurDoc(Long doc_seq) {
+		mybatis.delete("Approval.deletePurDoc", doc_seq);
+	}
 	
 }

@@ -176,15 +176,30 @@ public class DraftDocumentsDTO {
 	
 	
 	private String name;
-
-	public DraftDocumentsDTO(String name) {
+	private String app_status;
+	private String sysname;
+	public DraftDocumentsDTO(String name, String app_status, String sysname) {
 		super();
 		this.name = name;
+		this.app_status = app_status;
+		this.sysname = sysname;
 	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getApp_status() {
+		return app_status;
+	}
+	public void setApp_status(String app_status) {
+		this.app_status = app_status;
+	}
+	public String getSysname() {
+		return sysname;
+	}
+	public void setSysname(String sysname) {
+		this.sysname = sysname;
 	}
 }

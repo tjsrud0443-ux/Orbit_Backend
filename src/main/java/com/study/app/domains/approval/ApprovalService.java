@@ -1,5 +1,6 @@
 package com.study.app.domains.approval;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.BlobId;
@@ -26,7 +28,12 @@ public class ApprovalService {
 	private String bucketName;
 
 	private void insertCommonApprovalData(DraftDocumentsDTO dto) {
-
+		if(dto.getIs_temp() == 1) {
+			LocalDate expireDate = LocalDate.now().plusDays(7);
+	        dto.setTemp_expires_at(expireDate.toString());
+		}else {
+			dto.setTemp_expires_at(null);
+		}
 		// selectKey(BEFORE)에 의해 실행 후 docSeq 필드에 시퀀스 값이 채워짐
 		dao.insertDraftDocument(dto); 
 		Long docSeq = dto.getDoc_seq(); // 채워진 시퀀스 꺼내기
@@ -213,7 +220,28 @@ public class ApprovalService {
         return result;
     }
 
-
+//	@Transactional
+//	public void approveDocument(Long doc_seq, String users_id) {
+//	    // 현재 결재자의 라인 정보 조회
+//	    Map<String, Object> currentLine = dao.selectMyApprovalLine(doc_seq, users_id);
+//	    Long currentStepOrder = Long.parseLong(String.valueOf(currentLine.get("step_order")));
+//
+//	    // 현재 결재자 status → APPROVED, handle_at → sysdate
+//	    dao.updateApprovalLineStatus(doc_seq, users_id, "APPROVED");
+//
+//	    // 다음 결재자 조회
+//	    Map<String, Object> nextLine = dao.selectNextApprovalLine(doc_seq, currentStepOrder);
+//
+//	    if (nextLine != null) {
+//	        // 중간 결재자 → 다음 결재자 IN_PROGRESS, 문서 IN_PROGRESS 유지
+//	        String nextUsersId = String.valueOf(nextLine.get("users_id"));
+//	        dao.updateApprovalLineStatus(doc_seq, nextUsersId, "IN_PROGRESS");
+//	        dao.updateDocumentStatus(doc_seq, "IN_PROGRESS");
+//	    } else {
+//	        // 마지막 결재자 → 문서 APPROVED
+//	        dao.updateDocumentStatus(doc_seq, "APPROVED");
+//	    }
+//	}
 
 
 
@@ -399,5 +427,147 @@ public class ApprovalService {
 		result.put("count", count);
 		
 		return result;
+	}
+	
+	public List<DraftDocumentsDTO> getMyDocWithLine(String loginId) {
+		List<DraftDocumentsDTO> myDocList = dao.getMyDoc(loginId);
+		
+		for(DraftDocumentsDTO dto : myDocList) {
+			List<ApprovalLinesDTO> lines = dao.getLinesBySeq(dto.getDoc_seq());
+			dto.setApprovers(lines);
+		}
+		return myDocList;
+	}
+	
+	public Map<String, Object> getMyDocumentsByPage(String loginId, String status, Long cpage,
+			String keyword, String docType) {
+		int start = (int)(cpage * 5 - 4);
+		int end = (int)(cpage * 5);
+		
+		Map<String, Object> param = new HashMap<>();
+		
+		param.put("loginId", loginId);
+		param.put("status", status);
+		param.put("keyword", keyword);
+		param.put("docType", docType);
+		param.put("start", start);
+		param.put("end", end);
+		
+		List<DraftDocumentsDTO> list = dao.getMyDocPage(param);
+		
+		for(DraftDocumentsDTO dto : list) {
+			List<ApprovalLinesDTO> lines = dao.getLinesBySeq(dto.getDoc_seq());
+
+			dto.setApprovers(lines);
+		}
+		
+		int count = dao.getMyDocPageCount(param);
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("list", list);
+		result.put("count", count);
+		
+		return result;
+	}
+	
+	public List<DraftDocumentsDTO> getMydraftDoc(String loginId) {
+		List<DraftDocumentsDTO> mydraftDocList = dao.getMydraftDoc(loginId);
+		
+			for(DraftDocumentsDTO dto : mydraftDocList) {
+				List<ApprovalLinesDTO> lines = dao.getLinesBySeq(dto.getDoc_seq());
+				dto.setApprovers(lines);
+			}
+		return mydraftDocList;
+	}
+	
+	public Map<String, Object> getMyDoneDocByPage(String loginId, Long cpage, String keyword, String docType) {
+		int start = (int)(cpage * 5 - 4);
+		int end = (int)(cpage * 5);
+		
+		Map<String, Object> param = new HashMap<>();
+		
+		param.put("loginId", loginId);
+		param.put("keyword", keyword);
+		param.put("docType", docType);
+		param.put("start", start);
+		param.put("end", end);
+		
+		List<DraftDocumentsDTO> list = dao.getMyDoneDocByPage(param);
+		
+		int count = dao.getMyDoneDocCount(param);
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("list", list);
+		result.put("count", count);
+		
+		return result;
+	}
+	
+	public List<DraftDocumentsDTO> getTempDoc(String loginId) {
+		return dao.getTempDoc(loginId);
+	}
+	
+	public List<DraftDocumentsDTO> tempList() {
+		return dao.tempList();
+	}
+	
+	@Transactional
+	public void deleteTempDoc(Long doc_seq , String doc_type) {
+		switch(doc_type) {
+		// 기안 문서 종류 (VACATION(연차) / PAYMENT(지출) / GENERAL(일반) / PURCHASE(구매))
+			case "VACATION" :
+				deleteVacationDoc(doc_seq);
+				break;
+		
+			case "GENERAL" :
+				deleteGeneralDoc(doc_seq);
+				break;
+				
+			case "PAYMENT" :
+				deletePaymentDoc(doc_seq);
+				break;
+				
+			case "PURCHASE" :
+				deletePurchaseDoc(doc_seq);
+				break;	
+			
+			 default:
+	                throw new IllegalArgumentException("잘못된 문서 타입입니다: " + doc_type);
+		}
+	}
+	
+	// 공통 삭제 요소 (임시문서)
+	private void deleteCommon(Long doc_seq) {
+		dao.deleteAppLine(doc_seq);
+		dao.deleteAppCc(doc_seq);
+		dao.deleteDraftDoc(doc_seq);
+	}
+	
+	// 휴가신청서 (임시문서)
+	private void deleteVacationDoc(Long doc_seq) {
+		dao.deleteVacDoc(doc_seq);
+		deleteCommon(doc_seq);
+	}
+	
+	// 일반품의서 (임시문서)
+	private void deleteGeneralDoc(Long doc_seq) {
+		dao.deleteGenDoc(doc_seq);
+		deleteCommon(doc_seq);
+	}
+	
+	// 지출결의서 (임시문서)
+	private void deletePaymentDoc(Long doc_seq) {
+		dao.deletePayItem(doc_seq);
+		dao.deletePayDoc(doc_seq);
+		
+		deleteCommon(doc_seq);
+	}
+	
+	// 구매신청서 (임시문서)
+	private void deletePurchaseDoc(Long doc_seq) {
+		dao.deletePurAttach(doc_seq);
+		dao.deletePurItem(doc_seq);
+		dao.deletePurDoc(doc_seq);
+		deleteCommon(doc_seq);
 	}
 }
