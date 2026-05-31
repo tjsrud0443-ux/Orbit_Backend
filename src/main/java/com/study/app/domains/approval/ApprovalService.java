@@ -27,7 +27,6 @@ public class ApprovalService {
 	private String bucketName;
 
 	private void insertCommonApprovalData(DraftDocumentsDTO dto) {
-		
 		if(dto.getIs_temp() == 1) {
 			LocalDate expireDate = LocalDate.now().plusDays(7);
 	        dto.setTemp_expires_at(expireDate.toString());
