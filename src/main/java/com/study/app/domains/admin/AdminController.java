@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
+import com.study.app.domains.departments.DeptLeaveDTO;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
@@ -131,19 +132,30 @@ public class AdminController {
 	@GetMapping("/dashboard")
 	public ResponseEntity<Map<String, Object>> getDashboard() {
 		Map<String, Object> result = new HashMap<>();
-		
+
 		result.put("allEmployeeCount", adminServ.allEmployeeCount());
 		result.put("joinEmployeeCount", adminServ.joinEmployeeCount());
 		result.put("resignEmployeeCount", adminServ.resignEmployeeCount());
 		result.put("aiQuestionsCount", adminServ.aiQuestionsCount());
 		result.put("supplyRequestCount", adminServ.supplyRequestCount());
-		
+
 		return ResponseEntity.ok(result);
 	}
 
 	@GetMapping("/deptEmployeeCount")
 	public ResponseEntity<List<DepartmentsCountDTO>> deptEmployeeCount() {
 		return ResponseEntity.ok(adminServ.deptEmployeeCount());
+	}
+
+	@GetMapping("/deptLeave")
+	public ResponseEntity<List<DeptLeaveDTO>> getDeptLeave() {
+		return ResponseEntity.ok(adminServ.getDeptLeave()); 
+	}
+	
+	@GetMapping("/joinResign")
+	public ResponseEntity<Map<String, Object>> joinResignCount() {
+		Map<String, Object> result = adminServ.joinResignCount(); 
+		return ResponseEntity.ok(result); 
 	}
 
 }

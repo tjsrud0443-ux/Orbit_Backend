@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
+import com.study.app.domains.departments.DeptLeaveDTO;
 
 @Repository
 public class AdminDAO {
@@ -53,5 +54,13 @@ public class AdminDAO {
 	
 	public List<DepartmentsCountDTO> deptEmployeeCount() {
 		return batis.selectList("Admin.deptEmployeeCount");
+	}
+	
+	public List<DeptLeaveDTO> getDeptLeave() {
+		return batis.selectList("Admin.getDeptLeave");
+	}
+	
+	public List<JoinResignDTO> joinResignCount() {
+		return batis.selectList("Admin.joinResignCount");
 	}
 }
