@@ -96,7 +96,6 @@ public class ApprovalController {
 	public ResponseEntity<Void> approveDraft(@PathVariable Long doc_seq,
 												@RequestAttribute String loginId,
 												@RequestParam String doc_type){
-		System.out.println("doc_type");
 		appServ.approveDraft(doc_seq, loginId, doc_type);
 		return ResponseEntity.ok().build();
 	}
