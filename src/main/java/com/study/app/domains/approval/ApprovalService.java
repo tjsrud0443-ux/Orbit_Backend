@@ -1,5 +1,6 @@
 package com.study.app.domains.approval;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,12 @@ public class ApprovalService {
 	private String bucketName;
 
 	private void insertCommonApprovalData(DraftDocumentsDTO dto) {
-
+		if(dto.getIs_temp() == 1) {
+			LocalDate expireDate = LocalDate.now().plusDays(7);
+	        dto.setTemp_expires_at(expireDate.toString());
+		}else {
+			dto.setTemp_expires_at(null);
+		}
 		// selectKey(BEFORE)에 의해 실행 후 docSeq 필드에 시퀀스 값이 채워짐
 		dao.insertDraftDocument(dto); 
 		Long docSeq = dto.getDoc_seq(); // 채워진 시퀀스 꺼내기
@@ -214,7 +220,28 @@ public class ApprovalService {
         return result;
     }
 
-
+//	@Transactional
+//	public void approveDocument(Long doc_seq, String users_id) {
+//	    // 현재 결재자의 라인 정보 조회
+//	    Map<String, Object> currentLine = dao.selectMyApprovalLine(doc_seq, users_id);
+//	    Long currentStepOrder = Long.parseLong(String.valueOf(currentLine.get("step_order")));
+//
+//	    // 현재 결재자 status → APPROVED, handle_at → sysdate
+//	    dao.updateApprovalLineStatus(doc_seq, users_id, "APPROVED");
+//
+//	    // 다음 결재자 조회
+//	    Map<String, Object> nextLine = dao.selectNextApprovalLine(doc_seq, currentStepOrder);
+//
+//	    if (nextLine != null) {
+//	        // 중간 결재자 → 다음 결재자 IN_PROGRESS, 문서 IN_PROGRESS 유지
+//	        String nextUsersId = String.valueOf(nextLine.get("users_id"));
+//	        dao.updateApprovalLineStatus(doc_seq, nextUsersId, "IN_PROGRESS");
+//	        dao.updateDocumentStatus(doc_seq, "IN_PROGRESS");
+//	    } else {
+//	        // 마지막 결재자 → 문서 APPROVED
+//	        dao.updateDocumentStatus(doc_seq, "APPROVED");
+//	    }
+//	}
 
 
 
