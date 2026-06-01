@@ -339,16 +339,14 @@ public class ApprovalService {
 		updateCommonApprovalData(dto);
 		
 		Long pay_seq = dao.selectPay_seq(doc_seq);
-		dao.deletePaymentItems(pay_seq);
-		
 		dto.setPay_seq(pay_seq);
 		dao.updatePaymentDetail(dto);
+		dao.deletePaymentItems(pay_seq);
 		
 		if(dto.getItems() != null) {
 			for(int i = 0; i < dto.getItems().size(); i++) {
 				PaymentItemsDTO item = dto.getItems().get(i);
-
-				item.setPay_seq(dto.getPay_seq());
+				item.setPay_seq(pay_seq);
 				item.setItem_order((Long.valueOf(i + 1)));
 
 				if(files != null && i < files.size() && !files.get(i).isEmpty()) {
@@ -385,12 +383,10 @@ public class ApprovalService {
 		updateCommonApprovalData(dto);
 		
 		Long purchase_seq = dao.selectPurchase_seq(doc_seq);
-		dao.deletePurchaseItems(purchase_seq);
-		dao.deletePurchaseAttachments(purchase_seq);
-		
 		dto.setPurchase_seq(purchase_seq);
 		dao.updatePurchaseDetail(dto);
 		
+		dao.deletePurchaseItems(purchase_seq);
 		if (dto.getItems() != null) {
 			for (int i = 0; i < dto.getItems().size(); i++) {
 				PurchaseItemsDTO item = dto.getItems().get(i);
@@ -399,8 +395,19 @@ public class ApprovalService {
 				dao.insertPurchaseItem(item);
 			}
 		}
+		
+		dao.deletePurchaseAttachments(purchase_seq);
+		
+		// DTO에 담긴 유지할 기존 파일 재삽입 (프론트에서 삭제 안 한 것들)
+	    if (dto.getAttachments() != null) {
+	        for (PurchaseAttachmentsDTO kept : dto.getAttachments()) {
+	            kept.setPurchase_seq(purchase_seq);
+	            dao.insertPurchaseAttachment(kept);
+	        }
+	    }
+		
 		// 구매 첨부파일 리스트
-		if(files != null && !files.isEmpty()) {
+		if(files != null) {
 			for(MultipartFile file : files) {
 				if(!file.isEmpty()) {
 					try {
