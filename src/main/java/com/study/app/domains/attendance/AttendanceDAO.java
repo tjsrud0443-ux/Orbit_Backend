@@ -27,6 +27,10 @@ public class AttendanceDAO {
 	}
 	
 	public AttendanceDTO getCntWeek(String loginId) {
-		return mybatis.selectOne("Attendance.getLateCntWeek",loginId);
+		return mybatis.selectOne("Attendance.getCntWeek",loginId);
+	}
+	
+	public void autoAttendanceCheck() {
+	    mybatis.update("Attendance.autoAttendanceCheck");
 	}
 }
