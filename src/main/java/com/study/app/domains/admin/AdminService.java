@@ -120,24 +120,16 @@ public class AdminService {
 		adminDao.updateDept(dto);
 	}
 	
-	public int allEmployeeCount() {
-		return adminDao.allEmployeeCount();
-	}
-	
-	public int joinEmployeeCount() {
-		return adminDao.joinEmployeeCount();
-	}
-	
-	public int resignEmployeeCount() {
-		return adminDao.resignEmployeeCount();
-	}
-	
-	public int aiQuestionsCount() {
-		return adminDao.aiQuestionsCount();
-	}
-	
-	public int supplyRequestCount() {
-		return adminDao.supplyRequestCount();
+	public Map<String, Object> getDashboard() {
+		Map<String, Object> result = new HashMap<>();
+
+		result.put("allEmployeeCount", adminDao.allEmployeeCount());
+		result.put("joinEmployeeCount", adminDao.joinEmployeeCount());
+		result.put("resignEmployeeCount", adminDao.resignEmployeeCount());
+		result.put("aiQuestionsCount", adminDao.aiQuestionsCount());
+		result.put("supplyRequestCount", adminDao.supplyRequestCount());
+		
+		return result;
 	}
 	
 	public List<DepartmentsCountDTO> deptEmployeeCount() {

@@ -132,13 +132,7 @@ public class AdminController {
 
 	@GetMapping("/dashboard")
 	public ResponseEntity<Map<String, Object>> getDashboard() {
-		Map<String, Object> result = new HashMap<>();
-
-		result.put("allEmployeeCount", adminServ.allEmployeeCount());
-		result.put("joinEmployeeCount", adminServ.joinEmployeeCount());
-		result.put("resignEmployeeCount", adminServ.resignEmployeeCount());
-		result.put("aiQuestionsCount", adminServ.aiQuestionsCount());
-		result.put("supplyRequestCount", adminServ.supplyRequestCount());
+		Map<String, Object> result = adminServ.getDashboard();
 
 		return ResponseEntity.ok(result);
 	}
