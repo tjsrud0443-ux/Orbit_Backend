@@ -443,7 +443,8 @@ public class ApprovalService {
 		return ccList;
 	}
 
-	public Map<String, Object> getCcDocumentsByPage(String loginId, String status, Long cpage){
+	public Map<String, Object> getCcDocumentsByPage(String loginId, String status, Long cpage, 
+			String keyword, String docType){
 		int start = (int)(cpage * 5 - 4);
 		int end = (int)(cpage * 5);
 		
@@ -451,6 +452,8 @@ public class ApprovalService {
 		
 		param.put("loginId", loginId);
 		param.put("status", status);
+		param.put("keyword", keyword);
+		param.put("docType", docType);
 		param.put("start", start);
 		param.put("end", end);
 		

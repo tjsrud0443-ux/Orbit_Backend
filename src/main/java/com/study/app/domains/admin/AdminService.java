@@ -7,8 +7,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
+import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDAO;
 import com.study.app.domains.departments.DepartmentsDTO;
+import com.study.app.domains.departments.DeptLeaveDTO;
 import com.study.app.domains.rank.RankDAO;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDAO;
@@ -116,5 +119,35 @@ public class AdminService {
 	public void updateDept(DepartmentsDTO dto) {
 		adminDao.updateDept(dto);
 	}
+	
+	public Map<String, Object> getDashboard() {
+		Map<String, Object> result = new HashMap<>();
 
+		result.put("allEmployeeCount", adminDao.allEmployeeCount());
+		result.put("joinEmployeeCount", adminDao.joinEmployeeCount());
+		result.put("resignEmployeeCount", adminDao.resignEmployeeCount());
+		result.put("aiQuestionsCount", adminDao.aiQuestionsCount());
+		result.put("supplyRequestCount", adminDao.supplyRequestCount());
+		
+		return result;
+	}
+	
+	public List<DepartmentsCountDTO> deptEmployeeCount() {
+		return adminDao.deptEmployeeCount();
+	}
+	
+	public List<DeptLeaveDTO> getDeptLeave() {
+		return adminDao.getDeptLeave();
+	}
+
+	public Map<String, Object> joinResignCount() {
+		Map<String, Object> result = new HashMap<>();
+		result.put("joinCount", adminDao.joinResignCount());
+		
+		return result;
+	}
+	
+	public List<AiUnansweredQuestionsDTO> getAiQuestions() {
+		return adminDao.getAiQuestions();
+	}
 }

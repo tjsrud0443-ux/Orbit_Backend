@@ -233,8 +233,9 @@ public class ApprovalController {
 	
 	@GetMapping("/cc/page")
 	public ResponseEntity<Map<String, Object>> getCcDocumentsByPage(
-			@RequestAttribute String loginId, @RequestParam String status, @RequestParam Long cpage){
-		Map<String, Object> result = appServ.getCcDocumentsByPage(loginId, status, cpage);
+			@RequestAttribute String loginId, @RequestParam String status, @RequestParam Long cpage,
+			@RequestParam String keyword, @RequestParam String docType){
+		Map<String, Object> result = appServ.getCcDocumentsByPage(loginId, status, cpage, keyword, docType);
 		return ResponseEntity.ok(result);
 	}
 	

@@ -21,5 +21,88 @@
 			dept_code = #{dept_code} , auth_group = #{auth_group}
 				where dept_seq = #{dept_seq}
 	</update>
-
+	
+	<select id="allEmployeeCount" resultType="int">
+		select count(*) from users where status in ('ACTIVE','INACTIVE')
+	</select>
+	
+	<select id="joinEmployeeCount" resultType="int">
+		select count(*) from users 
+			where hire_date >= trunc(sysdate, 'MM') and hire_date &lt; ADD_MONTHS(trunc(sysdate, 'MM'), 1)
+	</select>
+	
+	<select id="resignEmployeeCount" resultType="int">
+		select count(*) from users 
+			where resign_date >= trunc(sysdate, 'MM') and resign_date &lt; ADD_MONTHS(trunc(sysdate, 'MM'), 1)
+	</select>
+	
+	<select id="aiQuestionsCount" resultType="int">
+		select count(*) from ai_unanswered_questions where status = 'PENDING'
+	</select>
+	
+	<select id="supplyRequestCount" resultType="int">
+		select count(*) from supply_request where status = 'PENDING'
+	</select>
+	
+	<select id="deptEmployeeCount" resultType="com.study.app.domains.departments.DepartmentsCountDTO">
+		select d.dept_name as deptName, count(u.id) as employeeCount
+			from departments d
+			left join users u on d.dept_seq = u.dept_seq
+			group by d.dept_name
+			order by d.dept_name
+	</select>
+	
+	<select id="getDeptLeave" resultType="com.study.app.domains.departments.DeptLeaveDTO">
+		select d.dept_name as deptName, round(sum(a.used_days)/nullif(sum(a.total_days),0) * 100, 1
+			) as leave
+			from annual_leave a
+			inner join users u on a.users_id = u.id
+			inner join departments d on u.dept_seq = d.dept_seq
+			
+			where d.dept_name like '%본부'
+			and a.year = extract(year from sysdate)
+			
+			group by d.dept_name
+			order by d.dept_name
+	</select>
+	
+	<select id="joinResignCount" resultType="com.study.app.domains.admin.JoinResignDTO">
+		with months as (
+		    select to_char(add_months(trunc(sysdate, 'mm'), -5 + level - 1), 'yy/mm') as year_month,
+		           to_char(add_months(trunc(sysdate, 'mm'), -5 + level - 1), 'mm') || '월' as month_name
+		    from dual
+		    connect by level &lt;= 6
+			),
+			join_data as (
+			    select to_char(hire_date, 'yy/mm') as year_month,
+			           count(*) as cnt
+			    from users
+			    where hire_date &gt;= add_months(trunc(sysdate, 'mm'), -5)
+			      and hire_date &lt;= sysdate
+			    group by to_char(hire_date, 'yy/mm')
+			),
+			resign_data as (
+			    select to_char(resign_date, 'yy/mm') as year_month,
+			           count(*) as cnt
+			    from users
+			    where resign_date &gt;= add_months(trunc(sysdate, 'mm'), -5)
+			      and resign_date &lt;= sysdate
+			    group by to_char(resign_date, 'yy/mm')
+			)
+			select
+			    m.month_name as month,
+			    nvl(j.cnt, 0) as joinCount,
+			    nvl(r.cnt, 0) as resignCount
+			from months m
+			left join join_data j
+			    on m.year_month = j.year_month
+			left join resign_data r
+			    on m.year_month = r.year_month
+			order by m.year_month
+	</select>
+	
+	<select id="getAiQuestions" resultType="com.study.app.domains.aiChat.AiUnansweredQuestionsDTO">
+		select question, created_at from ai_unanswered_questions where status = 'PENDING'
+		order by created_at desc
+	</select>
 </mapper>
