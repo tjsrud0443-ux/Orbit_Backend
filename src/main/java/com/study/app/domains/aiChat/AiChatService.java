@@ -29,6 +29,9 @@ public class AiChatService {
 	private AiChatDAO aiDao;
 
 	public String getRagResponse(String role, String content) {
+		
+//		aiDao.insertAiChat();
+		
 		List<Document> similarDocs = vectorStore.similaritySearch(
 				SearchRequest
 				.builder()
