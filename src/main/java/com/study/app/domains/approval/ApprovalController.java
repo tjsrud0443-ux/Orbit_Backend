@@ -144,7 +144,10 @@ public class ApprovalController {
 		return ResponseEntity.ok().build();
 	}
 	
-	
+	@GetMapping("/home")
+	public ResponseEntity<Map<String, Object>> getApprovalHomeData(@RequestAttribute String loginId) {
+	    return ResponseEntity.ok(appServ.getApprovalHomeData(loginId));
+	}
 	
 	
 	

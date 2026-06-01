@@ -437,7 +437,17 @@ public class ApprovalService {
 		}
 	}
 
+	public Map<String, Object> getApprovalHomeData(String users_id) {
+	    Map<String, Object> result = new HashMap<>();
 
+	    result.put("pendingCount", dao.countPendingApprovals(users_id)); // 결재 대기
+	    result.put("inProgressCount", dao.countInProgress(users_id)); // 진행 중
+	    result.put("approvedCount", dao.countApproved(users_id)); // 결재 완료
+	    result.put("rejectedCount", dao.countRejected(users_id)); // 반려
+	    result.put("recentDocs", dao.selectRecentDocs(users_id)); // 최근 문서 목록 5개
+
+	    return result;
+	}
 
 
 

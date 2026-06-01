@@ -247,15 +247,56 @@
 		where purchase_seq = #{purchase_seq}
 	</update>
 	
+	<select id="countPendingApprovals" resultType="int">
+		select count(*) 
+	    from approval_lines al
+	    JOIN draft_documents d ON al.doc_seq = d.doc_seq where al.users_id = #{users_id} 
+	    	and al.status = 'IN_PROGRESS'
+	    	and TO_CHAR(d.created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
 	
+	<select id="countInProgress" resultType="int">
+		select count(*) from draft_documents 
+		where users_id = #{users_id} 
+			and status = 'IN_PROGRESS'
+			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
 	
+	<select id="countApproved" resultType="int">
+		select count(*) from draft_documents 
+		where users_id = #{users_id} 
+			and status = 'APPROVED'
+			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
 	
+	<select id="countRejected" resultType="int">
+		select count(*) from draft_documents 
+		where users_id = #{users_id} 
+			and status = 'REJECTED'
+			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
 	
-	
-	
-	
-	
-	
+	<select id="selectRecentDocs" resultType="map">
+	    select * from (
+	        select
+	            d.doc_seq as "doc_seq",
+	            d.title as "title",
+	            d.doc_type as "doc_type",
+	            TO_CHAR(d.created_at, 'YYYY-MM-DD') as "created_at",
+	            d.status as "status",
+	            u.name as "approver_name",
+	            u.sysname as "sysname",
+	            r.rank_name as "approver_rank"
+	        from draft_documents d
+	        left join approval_lines al
+	            on d.doc_seq = al.doc_seq and al.status = 'IN_PROGRESS'
+	        left join users u on al.users_id = u.id
+	        left join rank r on u.rank_seq = r.rank_seq
+	        where d.users_id = #{users_id}
+	        and d.is_temp = 0
+	        order by d.created_at desc
+	    ) where rownum &lt;= 5
+	</select>
 	
 	
 	

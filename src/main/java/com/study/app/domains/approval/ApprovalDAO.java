@@ -200,15 +200,25 @@ public class ApprovalDAO {
 		mybatis.update("Approval.updatePurchaseDetail", dto);
 	}
 	
+	public int countPendingApprovals(String users_id) {
+		return mybatis.selectOne("Approval.countPendingApprovals", users_id);
+	}
 	
+	public int countInProgress(String users_id) {
+		return mybatis.selectOne("Approval.countInProgress", users_id);
+	}
 	
+	public int countApproved(String users_id) {
+		return mybatis.selectOne("Approval.countApproved", users_id);
+	}
 	
+	public int countRejected(String users_id) {
+		return mybatis.selectOne("Approval.countRejected", users_id);
+	}
 	
-	
-	
-	
-	
-	
+	public List<Map<String, Object>> selectRecentDocs(String users_id){
+		return mybatis.selectList("Approval.selectRecentDocs", users_id);
+	}
 	
 	
 	
