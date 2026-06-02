@@ -18,7 +18,7 @@ public class TempDocScheduler {
 		List<DraftDocumentsDTO> result = appServ.tempList();
 		
 		for(DraftDocumentsDTO dto : result) {
-			appServ.deleteTempDoc(dto.getDoc_seq(), dto.getDoc_type());
+			appServ.deleteDoc(dto.getDoc_seq(), dto.getDoc_type());
 		}
 	}
 }

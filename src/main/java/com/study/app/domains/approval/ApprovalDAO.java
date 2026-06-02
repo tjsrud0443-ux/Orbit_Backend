@@ -1,5 +1,6 @@
 package com.study.app.domains.approval;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,190 +94,131 @@ public class ApprovalDAO {
 		return mybatis.selectList("Approval.selectPurchaseAttachments", purchase_seq);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public Map<String, Object> selectMyApprovalLine(Long doc_seq, String loginId) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("users_id", loginId);
+	    return mybatis.selectOne("Approval.selectMyApprovalLine", params);
+	}
+
+	public Map<String, Object> selectNextApprovalLine(Long doc_seq, Long currentStepOrder) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("step_order", currentStepOrder);
+	    return mybatis.selectOne("Approval.selectNextApprovalLine", params);
+	}
+
+	public void updateApprovalLineStatus(Long doc_seq, String loginId, String status) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("users_id", loginId);
+	    params.put("status", status);
+	    mybatis.update("Approval.updateApprovalLineStatus", params);
+	}
+	
+	public void updateNextApprovalLineStatus(Long doc_seq, String loginId, String status) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("doc_seq", doc_seq);
+		params.put("users_id", loginId);
+		params.put("status", status);
+		mybatis.update("Approval.updateNextApprovalLineStatus", params);
+	}
+
+	public void updateDocumentStatus(Long doc_seq, String status) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("status", status);
+	    mybatis.update("Approval.updateDocumentStatus", params);
+	}
+	
+	public void updateApprovalLineStatusToReject(Long doc_seq, String loginId, String status, String reject_reason) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("doc_seq", doc_seq);
+		params.put("users_id", loginId);
+		params.put("status", status);
+		params.put("reject_reason", reject_reason);
+		mybatis.update("Approval.updateApprovalLineStatusToReject", params);
+	}
+	
+	public void updateDocument(Long doc_seq, String status, String reject_reason) {
+		Map<String, Object> params = new HashMap<>();
+	    params.put("doc_seq", doc_seq);
+	    params.put("status", status);
+	    params.put("reject_reason", reject_reason);
+	    mybatis.update("Approval.updateDocumentStatusToReject", params);
+	}
+	
+	public Map<String, Object> selectVacationDays(Long doc_seq){
+		return mybatis.selectOne("Approval.selectVacationDays", doc_seq);
+	}
+	
+	public void updateDraftDocument(DraftDocumentsDTO dto) {
+		mybatis.update("Approval.updateDraftDocument", dto);
+	}
+	
+	public void deleteApprovalLines(Long doc_seq) {
+		mybatis.delete("Approval.deleteApprovalLines", doc_seq);
+	}
+	
+	public void deleteReferrers(Long doc_seq) {
+		mybatis.delete("Approval.deleteReferrers", doc_seq);
+	}
+	
+	public void updateVacationDetail(VacationDTO dto) {
+		mybatis.update("Approval.updateVacationDetail", dto);
+	}
+	
+	public void updateGeneralDetail(GeneralDTO dto) {
+		mybatis.update("Approval.updateGeneralDetail", dto);
+	}
+	
+	public Long selectPay_seq(Long doc_seq) {
+		return mybatis.selectOne("Approval.selectPay_seq", doc_seq);
+	}
+	
+	public void deletePaymentItems(Long pay_seq) {
+		mybatis.delete("Approval.deletePaymentItems", pay_seq);
+	}
+	
+	public void updatePaymentDetail(PaymentDTO dto) {
+		mybatis.update("Approval.updatePaymentDetail", dto);
+	}
+	
+	public Long selectPurchase_seq(Long doc_seq) {
+		return mybatis.selectOne("Approval.selectPurchase_seq", doc_seq);
+	}
+	
+	public void deletePurchaseItems(Long purchase_seq) {
+		mybatis.delete("Approval.deletePurchaseItems", purchase_seq);
+	}
+	
+	public void deletePurchaseAttachments(Long purchase_seq) {
+		mybatis.delete("Approval.deletePurchaseAttachments", purchase_seq);
+	}
+	
+	public void updatePurchaseDetail(PurchaseDTO dto) {
+		mybatis.update("Approval.updatePurchaseDetail", dto);
+	}
+	
+	public int countPendingApprovals(String users_id) {
+		return mybatis.selectOne("Approval.countPendingApprovals", users_id);
+	}
+	
+	public int countInProgress(String users_id) {
+		return mybatis.selectOne("Approval.countInProgress", users_id);
+	}
+	
+	public int countApproved(String users_id) {
+		return mybatis.selectOne("Approval.countApproved", users_id);
+	}
+	
+	public int countRejected(String users_id) {
+		return mybatis.selectOne("Approval.countRejected", users_id);
+	}
+	
+	public List<Map<String, Object>> selectRecentDocs(String users_id){
+		return mybatis.selectList("Approval.selectRecentDocs", users_id);
+	}
 	
 	public List<DraftDocumentsDTO> getCcList(String loginId) {
 		return mybatis.selectList("Approval.getCcList", loginId);

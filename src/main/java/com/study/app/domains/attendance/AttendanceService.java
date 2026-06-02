@@ -24,4 +24,17 @@ public class AttendanceService {
 	public int checkOut(AttendanceDTO dto) {
 		return attendDAO.checkOut(dto);
 	}
+	
+	public AttendanceDTO getCntMonth(String loginId) {
+		return attendDAO.getCntMonth(loginId);
+	}
+	
+	public AttendanceDTO getCntWeek(String loginId) {
+		return attendDAO.getCntWeek(loginId);
+	}
+	
+	public void autoAttendanceCheck() {
+		attendDAO.autoAttendanceCheck();
+	}
 }
+

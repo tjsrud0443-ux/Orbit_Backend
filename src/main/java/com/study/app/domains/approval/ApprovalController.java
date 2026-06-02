@@ -44,9 +44,15 @@ public class ApprovalController {
 	}
 
 	@PostMapping("submit/vacation")
-	public ResponseEntity<Void> submitVacation(@RequestBody VacationDTO dto){ 
-		appServ.insertVacation(dto);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<String> submitVacation(@RequestBody VacationDTO dto){ 
+		try{
+			appServ.insertVacation(dto);
+			return ResponseEntity.ok("기안 상신이 완료되었습니다.");
+		}catch(IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}catch (Exception e) {
+	        return ResponseEntity.internalServerError().body("서버 오류 발생");
+	    }
 	}
 	
 	@PostMapping("submit/general")
@@ -86,129 +92,62 @@ public class ApprovalController {
 		}
 	}    
 
-//	@PutMapping("approve/{doc_seq}")
-//	public ResponseEntity<Void> approveDraft(@PathVariable Long doc_seq,
-//												@RequestParam String users_id){
-//		appServ.approveDraft(doc_seq, users_id);
-//		return ResponseEntity.ok().build();
-//	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@PutMapping("approve/{doc_seq}")
+	public ResponseEntity<Void> approveDraft(@PathVariable Long doc_seq,
+												@RequestAttribute String loginId,
+												@RequestParam String doc_type){
+		appServ.approveDraft(doc_seq, loginId, doc_type);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("reject/{doc_seq}")
+	public ResponseEntity<Void> rejectApproval(@PathVariable Long doc_seq,
+												@RequestAttribute String loginId,
+												@RequestBody Map<String, Object> data){
+		
+		String reject_reason = String.valueOf(data.get("reject_reason"));
+		appServ.rejectApproval(doc_seq, loginId, reject_reason);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("update/vacation/{doc_seq}")
+	public ResponseEntity<Void> updateVacation(@PathVariable Long doc_seq,
+												@RequestBody VacationDTO dto){
+		
+		appServ.updateVacation(doc_seq, dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("update/general/{doc_seq}")
+	public ResponseEntity<Void> updateGeneral(@PathVariable Long doc_seq,
+												@RequestBody GeneralDTO dto){
+		
+		appServ.updateGeneral(doc_seq, dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("update/payment/{doc_seq}")
+	public ResponseEntity<Void> updatePayment(@PathVariable Long doc_seq,
+												@RequestPart("dto") PaymentDTO dto,
+												@RequestPart(value = "files", required = false) List<MultipartFile> files){
+		
+		appServ.updatePayment(doc_seq, dto, files);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("update/purchase/{doc_seq}")
+	public ResponseEntity<Void> updatePurchase(@PathVariable Long doc_seq,
+												@RequestPart("dto") PurchaseDTO dto,
+												@RequestPart(value = "files", required = false) List<MultipartFile> files){
+		
+		appServ.updatePurchase(doc_seq, dto, files);
+		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/home")
+	public ResponseEntity<Map<String, Object>> getApprovalHomeData(@RequestAttribute String loginId) {
+	    return ResponseEntity.ok(appServ.getApprovalHomeData(loginId));
+	}
 	
 	@GetMapping("/cc")
 	public ResponseEntity<List<DraftDocumentsDTO>> getCcDocuments(@RequestAttribute String loginId) {
@@ -257,10 +196,10 @@ public class ApprovalController {
 		return ResponseEntity.ok(result);
 	}
 	
-	@DeleteMapping("/tempDelete/{doc_seq}")
-	public ResponseEntity<Void> deleteTempDoc(@PathVariable Long doc_seq, 
+	@DeleteMapping("/delete/{doc_seq}")
+	public ResponseEntity<Void> deleteDoc(@PathVariable Long doc_seq, 
 			@RequestParam String doc_type) {
-		appServ.deleteTempDoc(doc_seq, doc_type);
+		appServ.deleteDoc(doc_seq, doc_type);
 		return ResponseEntity.ok().build();
 	}
 }

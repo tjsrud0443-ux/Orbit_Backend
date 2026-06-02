@@ -139,135 +139,29 @@
     WHERE u.status = 'ACTIVE'
 	</select>
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	<select id="getMyPageInfo" resultType="com.study.app.domains.users.UsersDTO">
+	    SELECT
+	        u.users_seq,
+	        u.name,
+	        u.id,
+	        u.phone,
+	        u.email,
+	        u.zonecode,
+	        u.address1,
+	        u.address2,
+	        u.hire_date,
+	        d.dept_seq,
+	        d.dept_name,
+	        r.rank_seq,
+	        r.rank_name
+	    FROM users u
+	    LEFT JOIN departments d ON u.dept_seq = d.dept_seq
+	    LEFT JOIN rank r ON u.rank_seq = r.rank_seq
+	    WHERE u.id = #{loginId}
+	</select>
+<update id="updateMyPageInfo">
+	update users set 
+		phone=#{phone}, email=#{email}, zonecode=#{zonecode}, address1=#{address1}, address2=#{address2} 
+	where id = #{id}
+</update>
 </mapper>

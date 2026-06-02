@@ -1,11 +1,15 @@
 package com.study.app.domains.file;
 
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +17,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.google.common.net.HttpHeaders;
 
 @Service
 public class FileService {
@@ -53,6 +58,22 @@ public class FileService {
 		}
 		return blob.getContent();
 	}
-
-
+	
+	// 첨부파일 다운로드 기능
+	public ResponseEntity<Resource> download(String sysname) throws Exception{
+		Blob blob = storage.get(BlobId.of(bucketName, sysname));
+		
+		if(blob == null || !blob.exists()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		sysname = new String(sysname.getBytes("utf8"),"ISO-8859-1");
+		String oriname = sysname.split("_" ,2)[1];
+		
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(blob.getContent()));
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + oriname + "\"")
+				.header(HttpHeaders.CONTENT_TYPE, blob.getContentType())
+				.body(resource);
+	}
 }

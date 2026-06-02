@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AnnualLeave">
+
+	<select id="selectAnnualLeaveData" resultType="map">
+		select used_days as "used_days", remaining_days as "remaining_days" from annual_leave where users_id = #{users_id}
+	</select>
+	
+	<update id="updateAnnualLeaveUsedDays">
+		update annual_leave set used_days = #{used_days}, remaining_days = #{remaining_days} where users_id = #{users_id}
+	</update>
+</mapper>

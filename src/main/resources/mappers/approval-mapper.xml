@@ -21,8 +21,8 @@
 	</insert>
 	
 	<insert id="insertVacationDetail">
-		insert into vacation values (vac_seq.nextval, #{doc_seq}, #{vac_type}, #{start_date}, 
-		#{end_date}, #{days}, #{reason})
+		insert into vacation values (vac_seq.nextval, #{doc_seq}, #{vac_type}, #{start_date, jdbcType=DATE}, 
+		#{end_date, jdbcType=DATE}, #{days}, #{reason})
 	</insert>
 	
 	<insert id="insertGeneralDetail">
@@ -145,176 +145,158 @@
 		from purchase_attachments where purchase_seq = #{purchase_seq} order by attachment_seq
 	</select>
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	<select id="selectMyApprovalLine" resultType="map">
+		select
+			users_id as "users_id", step_order as "step_order"
+		from approval_lines where doc_seq = #{doc_seq} and users_id = #{users_id}
+	</select>
+	
+	<select id="selectNextApprovalLine" resultType="map">
+		select
+			users_id as "users_id", step_order as "step_order"
+		from approval_lines where doc_seq = #{doc_seq} and step_order = #{step_order} + 1
+	</select>
+	
+	<update id="updateApprovalLineStatus">
+		update approval_lines set status = #{status}, handle_at = sysdate where doc_seq = #{doc_seq} and users_id = #{users_id} 
+	</update>
+	
+	<update id="updateNextApprovalLineStatus">
+		update approval_lines set status = #{status} where doc_seq = #{doc_seq} and users_id = #{users_id}
+	</update>
+	
+	<update id="updateDocumentStatus">
+		update draft_documents set status = #{status} where doc_seq = #{doc_seq}
+	</update>
+	
+	<update id="updateApprovalLineStatusToReject">
+		update approval_lines set status = #{status}, handle_at = sysdate, reject_reason = #{reject_reason}
+		where doc_seq = #{doc_seq} and users_id = #{users_id}
+	</update>
+	
+	<update id="updateDocumentStatusToReject">
+		update draft_documents set status = #{status}, reject_reason = #{reject_reason} where doc_seq = #{doc_seq}
+	</update>
+	
+	<select id="selectVacationDays" resultType="map">
+		select 
+			d.users_id as "users_id", v.days as "days"
+		from draft_documents d
+		join vacation v on d.doc_seq = v.doc_seq
+		where d.doc_seq = #{doc_seq}
+	</select>
+	
+	<update id="updateDraftDocument">
+		update draft_documents 
+		set title = #{title}, status = #{status}, is_temp = #{is_temp}, 
+			temp_expires_at = TO_DATE(#{temp_expires_at, jdbcType=VARCHAR}, 'YYYY-MM-DD'), 
+			created_at = sysdate, updated_at = sysdate
+		where doc_seq = #{doc_seq}
+	</update>
+	
+	<delete id="deleteApprovalLines">
+		delete from approval_lines where doc_seq  = #{doc_seq}
+	</delete>
+	
+	<delete id="deleteReferrers">
+		delete from approval_cc where doc_seq = #{doc_seq}
+	</delete>
+	
+	<update id="updateVacationDetail">
+		update vacation 
+		set vac_type = #{vac_type}, start_date = #{start_date, jdbcType=DATE}, end_date = #{end_date, jdbcType=DATE}, 
+			days = #{days}, reason = #{reason}
+		where doc_seq = #{doc_seq}
+	</update>
+	
+	<update id="updateGeneralDetail">
+		update general set purpose = #{purpose, jdbcType=VARCHAR}, content = #{content, jdbcType=VARCHAR} where doc_seq = #{doc_seq}
+	</update>
+	
+	<select id="selectPay_seq" resultType="long">
+		select pay_seq from payment where doc_seq = #{doc_seq}
+	</select>
+	
+	<delete id="deletePaymentItems">
+		delete from payment_items where pay_seq = #{pay_seq}
+	</delete>
+	
+	<update id="updatePaymentDetail">
+		update payment 
+		set pay_date = #{pay_date, jdbcType=DATE}, total_amount = #{total_amount, jdbcType=NUMERIC}, 
+			pay_reason = #{pay_reason, jdbcType=VARCHAR}, account_info = #{account_info, jdbcType=VARCHAR}
+		where pay_seq = #{pay_seq}
+	</update>
+	
+	<select id="selectPurchase_seq" resultType="long">
+		select purchase_seq from purchase where doc_seq = #{doc_seq}
+	</select>
+	
+	<delete id="deletePurchaseItems">
+		delete from purchase_items where purchase_seq = #{purchase_seq}
+	</delete>
+	
+	<delete id="deletePurchaseAttachments">
+		delete from purchase_attachments where purchase_seq = #{purchase_seq}
+	</delete>
+	
+	<update id="updatePurchaseDetail">
+		update purchase 
+		set total_amount = #{total_amount, jdbcType=NUMERIC}, purpose = #{purpose, jdbcType=VARCHAR}, 
+		vendor = #{vendor, jdbcType=VARCHAR}, purchase_date = #{purchase_date, jdbcType=DATE}
+		where purchase_seq = #{purchase_seq}
+	</update>
+	
+	<select id="countPendingApprovals" resultType="int">
+		select count(*) 
+	    from approval_lines al
+	    JOIN draft_documents d ON al.doc_seq = d.doc_seq where al.users_id = #{users_id} 
+	    	and al.status = 'IN_PROGRESS'
+	    	and TO_CHAR(d.created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
+	
+	<select id="countInProgress" resultType="int">
+		select count(*) from draft_documents 
+		where users_id = #{users_id} 
+			and status = 'IN_PROGRESS'
+			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
+	
+	<select id="countApproved" resultType="int">
+		select count(*) from draft_documents 
+		where users_id = #{users_id} 
+			and status = 'APPROVED'
+			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
+	
+	<select id="countRejected" resultType="int">
+		select count(*) from draft_documents 
+		where users_id = #{users_id} 
+			and status = 'REJECTED'
+			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
+	
+	<select id="selectRecentDocs" resultType="map">
+	    select * from (
+	        select
+	            d.doc_seq as "doc_seq",
+	            d.title as "title",
+	            d.doc_type as "doc_type",
+	            TO_CHAR(d.created_at, 'YYYY-MM-DD') as "created_at",
+	            d.status as "status",
+	            u.name as "approver_name",
+	            u.sysname as "sysname",
+	            r.rank_name as "approver_rank"
+	        from draft_documents d
+	        left join approval_lines al
+	            on d.doc_seq = al.doc_seq and al.status = 'IN_PROGRESS'
+	        left join users u on al.users_id = u.id
+	        left join rank r on u.rank_seq = r.rank_seq
+	        where d.users_id = #{users_id}
+	        and d.is_temp = 0
+	        order by d.created_at desc
+	    ) where rownum &lt;= 5
+	</select>
 	
 	<select id="getCcList" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
 		select d.*, u.name as name 
