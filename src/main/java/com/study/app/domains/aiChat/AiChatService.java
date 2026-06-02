@@ -12,20 +12,30 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import jakarta.annotation.PostConstruct;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class AiChatService {
 
-	private final RestClient restClient =
-			RestClient.builder()
-			.baseUrl("http://localhost:8000")
-			.build();
+	@Value("${python.api.url}")
+    private String pythonApiUrl;
+
+	private RestClient restClient;
+	
+	@PostConstruct
+	public void init() {
+		restClient = RestClient.builder()
+				.baseUrl(pythonApiUrl)
+				.build();
+	}
+			
 
 	@Autowired
 	@Qualifier("googleGenAiChatModel")
