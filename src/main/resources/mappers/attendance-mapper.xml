@@ -5,12 +5,6 @@
 	INSERT INTO ATTENDANCE (ATTENDANCE_SEQ, USERS_ID, WORK_DATE, CHECK_IN)
 	VALUES (ATTENDANCE_SEQ.NEXTVAL, #{users_id}, TRUNC(SYSDATE), SYSTIMESTAMP)
 </insert>
-<select id="getAttendance" resultType="com.study.app.domains.attendance.AttendanceDTO">
-    SELECT CHECK_IN, CHECK_OUT
-    FROM ATTENDANCE
-    WHERE USERS_ID = #{users_id}
-    AND WORK_DATE = TRUNC(SYSDATE)
-</select>
 <update id="checkOut">
 	UPDATE ATTENDANCE
 	SET CHECK_OUT = SYSTIMESTAMP,
@@ -20,4 +14,84 @@
 	WHERE USERS_ID = #{users_id}
 	AND WORK_DATE = TRUNC(SYSDATE)
 </update>
+<update id="autoAttendanceCheck">
+	UPDATE ATTENDANCE A
+	SET 
+	    CHECK_IN = CASE
+	        WHEN A.CHECK_IN IS NULL THEN
+	            CASE
+	          <!-- 오전반차(승인) 휴가가 있으면 오후 출근 처리-->
+	                WHEN EXISTS (
+	                    SELECT 1 FROM VAC V
+	                    JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
+	                    WHERE D.USERS_ID = A.USERS_ID
+	                    AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
+	                    AND V.VAC_TYPE = '오전반차'
+	                    AND D.STATUS = '승인'
+	                ) THEN TRUNC(A.WORK_DATE) + 13/24 <!-- 오전반차 → 13:00 출근-->
+	                ELSE TRUNC(A.WORK_DATE) + 9/24     <!--정상 출근 → 09:00-->
+	            END
+	        ELSE A.CHECK_IN <!--체크인 기록 있음 → 기존 값 유지-->
+	    END,
+	    CHECK_OUT = CASE
+	       <!-- 오후반차(승인) 휴가가 있으면 오전 퇴근 처리-->
+	        WHEN EXISTS (
+	            SELECT 1 FROM VAC V
+	            JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
+	            WHERE D.USERS_ID = A.USERS_ID
+	            AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
+	            AND V.VAC_TYPE = '오후반차'
+	            AND D.STATUS = '승인'
+	        ) THEN TRUNC(A.WORK_DATE) + 13/24   <!--오후반차 → 13:00 퇴근-->
+	        ELSE TRUNC(A.WORK_DATE) + 18/24     <!--정상/오전반차 → 18:00 퇴근-->
+	    END,
+	    TOTAL_WORK_MIN = CASE
+	     <!-- 오후반차 → 09:00~13:00 = 4시간(240분)-->
+	        WHEN EXISTS (
+	            SELECT 1 FROM VAC V
+	            JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
+	            WHERE D.USERS_ID = A.USERS_ID
+	            AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
+	            AND V.VAC_TYPE = '오후반차'
+	            AND D.STATUS = '승인'
+	        ) THEN 240   
+	        ELSE 480    
+	    END
+	WHERE A.WORK_DATE &lt; TRUNC(SYSDATE)
+	AND (A.CHECK_IN IS NULL OR A.CHECK_OUT IS NULL)
+</update>
+<select id="getAttendance" resultType="com.study.app.domains.attendance.AttendanceDTO">
+    SELECT CHECK_IN, CHECK_OUT
+    FROM ATTENDANCE
+    WHERE USERS_ID = #{users_id}
+    AND WORK_DATE = TRUNC(SYSDATE)
+</select>
+<select id="getCntMonth" resultType="com.study.app.domains.attendance.AttendanceDTO">
+	SELECT 
+	  COUNT(*) AS work_days,
+	  ROUND(SUM(TOTAL_WORK_MIN) / 60, 1) AS total_hours,
+	  SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt
+	FROM ATTENDANCE
+	WHERE USERS_ID = #{loginId}
+	AND TO_CHAR(WORK_DATE, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
+</select>
+<!--<select id="getMonthLeave" resultType="Integer">
+	SELECT USED_DAYS
+	FROM LEAVE
+	WHERE USERS_ID = #{loginId}
+	AND YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
+</select>-->
+<select id="getCntWeek" resultType="com.study.app.domains.attendance.AttendanceDTO">
+	  <![CDATA[
+	    SELECT
+	      COUNT(*) AS work_days,
+	      SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt,
+	      ROUND(SUM(TOTAL_WORK_MIN) / 60, 1) AS overtime_hours
+	    FROM ATTENDANCE
+	    WHERE USERS_ID = #{loginId}
+	    AND WORK_DATE >= TRUNC(SYSDATE, 'IW')
+	    AND WORK_DATE < TRUNC(SYSDATE, 'IW') + 7
+	  ]]>
+</select>
+
 </mapper>
