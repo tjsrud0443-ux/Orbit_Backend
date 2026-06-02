@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +44,18 @@ public class AttendanceController {
 	    return ResponseEntity.ok(attendance);
 	}
 	
+	@GetMapping("/monthCount")
+	public ResponseEntity<AttendanceDTO> getCntMonth(@RequestAttribute String loginId){
+		AttendanceDTO monthCount = attendServ.getCntMonth(loginId);
+		return ResponseEntity.ok(monthCount);
+	}
+	
+	@GetMapping("/weekCount")
+	public ResponseEntity<AttendanceDTO> getCntWeek(@RequestAttribute String loginId){
+		AttendanceDTO weekCount = attendServ.getCntWeek(loginId);
+		return ResponseEntity.ok(weekCount);
+	}
+//	
 	@PutMapping("/checkOut")
 	public ResponseEntity<Void> checkOut(@RequestHeader("Authorization") String token){
 		String usersId = jwtUtil.getSubject(token.replace("Bearer ", ""));
