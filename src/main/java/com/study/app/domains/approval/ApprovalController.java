@@ -149,117 +149,6 @@ public class ApprovalController {
 	    return ResponseEntity.ok(appServ.getApprovalHomeData(loginId));
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@GetMapping("/cc")
 	public ResponseEntity<List<DraftDocumentsDTO>> getCcDocuments(@RequestAttribute String loginId) {
 		List<DraftDocumentsDTO> list = appServ.getCcWithLine(loginId);
@@ -307,10 +196,10 @@ public class ApprovalController {
 		return ResponseEntity.ok(result);
 	}
 	
-	@DeleteMapping("/tempDelete/{doc_seq}")
-	public ResponseEntity<Void> deleteTempDoc(@PathVariable Long doc_seq, 
+	@DeleteMapping("/delete/{doc_seq}")
+	public ResponseEntity<Void> deleteDoc(@PathVariable Long doc_seq, 
 			@RequestParam String doc_type) {
-		appServ.deleteTempDoc(doc_seq, doc_type);
+		appServ.deleteDoc(doc_seq, doc_type);
 		return ResponseEntity.ok().build();
 	}
 }
