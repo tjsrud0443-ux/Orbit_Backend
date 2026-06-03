@@ -16,49 +16,64 @@
 </update>
 <update id="autoAttendanceCheck">
 	UPDATE ATTENDANCE A
-	SET 
+		SET
+	    <!--1. 출근 시간 보정-->
 	    CHECK_IN = CASE
-	        WHEN A.CHECK_IN IS NULL THEN
+	        WHEN A.CHECK_IN IS NOT NULL THEN A.CHECK_IN -- 기존 기록 있으면 유지
+	        ELSE
 	            CASE
-	          <!-- 오전반차(승인) 휴가가 있으면 오후 출근 처리-->
+	                <!--오전반차 승인자면 13시 출근-->
 	                WHEN EXISTS (
-	                    SELECT 1 FROM VAC V
-	                    JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
-	                    WHERE D.USERS_ID = A.USERS_ID
-	                    AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
-	                    AND V.VAC_TYPE = '오전반차'
-	                    AND D.STATUS = '승인'
-	                ) THEN TRUNC(A.WORK_DATE) + 13/24 <!-- 오전반차 → 13:00 출근-->
-	                ELSE TRUNC(A.WORK_DATE) + 9/24     <!--정상 출근 → 09:00-->
+	                    SELECT 1 FROM VACATION V JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
+	                    WHERE D.USERS_ID = A.USERS_ID AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
+	                    AND V.VAC_TYPE = '오전반차' AND D.STATUS = 'APPROVED'
+	                ) THEN TRUNC(A.WORK_DATE) + 13/24
+	                <!--정상 출근자는 09시 출근-->
+	                ELSE TRUNC(A.WORK_DATE) + 9/24
 	            END
-	        ELSE A.CHECK_IN <!--체크인 기록 있음 → 기존 값 유지-->
-	    END,
+	    END,	    
+	    <!-- 2. 퇴근 시간 보정-->
 	    CHECK_OUT = CASE
-	       <!-- 오후반차(승인) 휴가가 있으면 오전 퇴근 처리-->
-	        WHEN EXISTS (
-	            SELECT 1 FROM VAC V
-	            JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
-	            WHERE D.USERS_ID = A.USERS_ID
-	            AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
-	            AND V.VAC_TYPE = '오후반차'
-	            AND D.STATUS = '승인'
-	        ) THEN TRUNC(A.WORK_DATE) + 13/24   <!--오후반차 → 13:00 퇴근-->
-	        ELSE TRUNC(A.WORK_DATE) + 18/24     <!--정상/오전반차 → 18:00 퇴근-->
+	        WHEN A.CHECK_OUT IS NOT NULL THEN A.CHECK_OUT -- 기존 기록 있으면 유지
+	        ELSE
+	            CASE
+	                <!--오후반차 승인자면 13시 퇴근-->
+	                WHEN EXISTS (
+	                    SELECT 1 FROM VACATION V JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
+	                    WHERE D.USERS_ID = A.USERS_ID AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
+	                    AND V.VAC_TYPE = '오후반차' AND D.STATUS = 'APPROVED'
+	                ) THEN TRUNC(A.WORK_DATE) + 13/24
+	                <!--정상 출근자 및 오전반차 사용자는 18시 퇴근-->
+	                ELSE TRUNC(A.WORK_DATE) + 18/24
+	            END
 	    END,
-	    TOTAL_WORK_MIN = CASE
-	     <!-- 오후반차 → 09:00~13:00 = 4시간(240분)-->
-	        WHEN EXISTS (
-	            SELECT 1 FROM VAC V
-	            JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
-	            WHERE D.USERS_ID = A.USERS_ID
-	            AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
-	            AND V.VAC_TYPE = '오후반차'
-	            AND D.STATUS = '승인'
-	        ) THEN 240   
-	        ELSE 480    
+	    
+	    <!-- 3. 총 근무 시간 계산 (하드코딩 대신 유연한 계산식 적용)-->
+	    TOTAL_WORK_MIN = CASE 
+	        WHEN A.TOTAL_WORK_MIN IS NOT NULL THEN A.TOTAL_WORK_MIN -- 이미 계산되어 있으면 유지
+	        ELSE
+	            ROUND((
+	                CASE
+	                    WHEN A.CHECK_OUT IS NOT NULL THEN A.CHECK_OUT
+	                    WHEN EXISTS (SELECT 1 FROM VACATION V JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ WHERE D.USERS_ID = A.USERS_ID AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE AND V.VAC_TYPE = '오후반차' AND D.STATUS = 'APPROVED') THEN TRUNC(A.WORK_DATE) + 13/24
+	                    ELSE TRUNC(A.WORK_DATE) + 18/24
+	                END
+	                CASE
+	                    WHEN A.CHECK_IN IS NOT NULL THEN A.CHECK_IN
+	                    WHEN EXISTS (SELECT 1 FROM VACATION V JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ WHERE D.USERS_ID = A.USERS_ID AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE AND V.VAC_TYPE = '오전반차' AND D.STATUS = 'APPROVED') THEN TRUNC(A.WORK_DATE) + 13/24
+	                    ELSE TRUNC(A.WORK_DATE) + 9/24
+	                END
+	            ) * 24 * 60)
 	    END
 	WHERE A.WORK_DATE &lt; TRUNC(SYSDATE)
 	AND (A.CHECK_IN IS NULL OR A.CHECK_OUT IS NULL)
+	<!--중요: 하루 통째로 쉬는 '연차' 승인자는 자동 출결 보정 대상에서 완전히 제외-->
+	AND NOT EXISTS (
+	    SELECT 1 FROM VACATION V JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ
+	    WHERE D.USERS_ID = A.USERS_ID 
+	    AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE
+	    AND V.VAC_TYPE = '연차' AND D.STATUS = 'APPROVED'
+	)
 </update>
 <select id="getAttendance" resultType="com.study.app.domains.attendance.AttendanceDTO">
     SELECT CHECK_IN, CHECK_OUT
@@ -70,28 +85,48 @@
 	SELECT 
 	  COUNT(*) AS work_days,
 	  ROUND(SUM(TOTAL_WORK_MIN) / 60, 1) AS total_hours,
-	  SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt
+	  SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt,
+	  (SELECT COUNT(*) FROM VACATION v
+         JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
+         WHERE dd.USERS_ID = #{loginId}
+         AND dd.STATUS = 'APPROVED'
+         AND TO_CHAR(v.START_DATE, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
+        ) AS vac_cnt
 	FROM ATTENDANCE
 	WHERE USERS_ID = #{loginId}
 	AND TO_CHAR(WORK_DATE, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
+	GROUP BY USERS_ID
 </select>
-<!--<select id="getMonthLeave" resultType="Integer">
-	SELECT USED_DAYS
-	FROM LEAVE
-	WHERE USERS_ID = #{loginId}
-	AND YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
-</select>-->
 <select id="getCntWeek" resultType="com.study.app.domains.attendance.AttendanceDTO">
-	  <![CDATA[
-	    SELECT
-	      COUNT(*) AS work_days,
-	      SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt,
-	      ROUND(SUM(TOTAL_WORK_MIN) / 60, 1) AS overtime_hours
-	    FROM ATTENDANCE
-	    WHERE USERS_ID = #{loginId}
-	    AND WORK_DATE >= TRUNC(SYSDATE, 'IW')
-	    AND WORK_DATE < TRUNC(SYSDATE, 'IW') + 7
-	  ]]>
+	<![CDATA[
+	    SELECT 
+	        -- 안쪽에서 이미 집계된 1행짜리 데이터이므로 그냥 꺼내오면 됩니다!
+	        NVL(A.work_days, 0) AS "work_days",
+	        NVL(A.late_cnt, 0) AS "late_cnt",
+	        NVL(A.overtime_hours, 0) AS "overtime_hours",
+	        
+	        -- 이제 독립적인 서브쿼리가 같이 있어도 에러가 나지 않습니다.
+	        (SELECT COUNT(*) 
+	         FROM VACATION v
+	         JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
+	         WHERE dd.USERS_ID = #{loginId}
+	           AND dd.STATUS = 'APPROVED'
+	           AND v.START_DATE >= TRUNC(SYSDATE, 'IW')
+	           AND v.START_DATE < TRUNC(SYSDATE, 'IW') + 7
+	        ) AS "vac_cnt"
+	    FROM (
+	        -- [출퇴근 데이터 집계부] 
+	        -- 여기서 무조건 1행의 결과만 반환하므로, 바깥에서 MAX()를 감쌀 필요가 없었던 것입니다.
+	        SELECT 
+	            COUNT(*) AS work_days,
+	            SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt,
+	            ROUND(SUM(CASE WHEN TOTAL_WORK_MIN > 480 THEN TOTAL_WORK_MIN - 480 ELSE 0 END) / 60, 1) AS overtime_hours
+	        FROM ATTENDANCE
+	        WHERE USERS_ID = #{loginId}
+	          AND WORK_DATE >= TRUNC(SYSDATE, 'IW')
+	          AND WORK_DATE < TRUNC(SYSDATE, 'IW') + 7
+	    ) A
+	    ]]>
 </select>
 
 </mapper>

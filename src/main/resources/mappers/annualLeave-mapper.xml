@@ -6,6 +6,16 @@
 		select used_days as "used_days", remaining_days as "remaining_days" from annual_leave where users_id = #{users_id}
 	</select>
 	
+	<select id="getAnnualLeaveSummary" resultType="com.study.app.domains.annualLeave.AnnualLeaveDTO">
+		SELECT
+	        TOTAL_DAYS,
+	        USED_DAYS,
+	        REMAINING_DAYS
+	    FROM ANNUAL_LEAVE
+	    WHERE USERS_ID = #{loginId}
+	    AND YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
+	</select>
+
 	<update id="updateAnnualLeaveUsedDays">
 		update annual_leave set used_days = #{used_days}, remaining_days = #{remaining_days} where users_id = #{users_id}
 	</update>
