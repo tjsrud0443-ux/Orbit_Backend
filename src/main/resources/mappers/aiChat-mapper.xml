@@ -24,13 +24,16 @@
 	</select>
 	
 	<select id="detailChat" resultType="com.study.app.domains.aiChat.AiMessagesDTO">
-		select role, content from ai_messages where chat_seq = #{chat_seq}
-			order by msg_seq
+		select a.role, a.content, q.status
+		from ai_messages a
+		left join ai_unanswered_questions q on a.chat_seq = q.chat_seq
+		where a.chat_seq = #{chat_seq}
+			order by a.msg_seq
 	</select>
 	
 	<insert id="insertQuestion">
 		insert into ai_unanswered_questions 
-		(question_seq, users_id, category, question, dept_seq, status, created_at)
-		values (question_seq.nextval, #{users_id}, #{dto.category}, #{dto.question}, #{dto.dept_seq}, 'PENDING', sysdate)
+		(question_seq, users_id, category, question, dept_seq, status, created_at, chat_seq)
+		values (question_seq.nextval, #{users_id}, #{dto.category}, #{dto.question}, #{dto.dept_seq}, 'PENDING', sysdate, #{dto.chat_seq})
 	</insert>
 </mapper>

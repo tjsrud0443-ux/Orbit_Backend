@@ -8,11 +8,12 @@ public class AiMessagesDTO {
 	private String content;
 	private String ref_chunk_ids;
 	private String created_at;
+	private String status;
 	
 	public AiMessagesDTO() {}
 	
 	public AiMessagesDTO(Long msg_seq, Long chat_seq, String role, String content, String ref_chunk_ids,
-			String created_at) {
+			String created_at, String status) {
 		super();
 		this.msg_seq = msg_seq;
 		this.chat_seq = chat_seq;
@@ -20,6 +21,7 @@ public class AiMessagesDTO {
 		this.content = content;
 		this.ref_chunk_ids = ref_chunk_ids;
 		this.created_at = created_at;
+		this.status = status;
 	}
 	
 	public Long getMsg_seq() {
@@ -57,5 +59,11 @@ public class AiMessagesDTO {
 	}
 	public void setCreated_at(String created_at) {
 		this.created_at = created_at;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }
