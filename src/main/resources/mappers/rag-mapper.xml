@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Rag">
+
+	<insert id="insertRagDocuments"
+		parameterType="com.study.app.domains.aiChat.RagDocumentsDTO">
+
+		<selectKey keyProperty="rag_doc_seq"
+			resultType="Long"
+			order="BEFORE">
+			select rag_doc_seq.nextval from dual
+		</selectKey>
+		insert into rag_documents ( rag_doc_seq, source_type, source_seq, file_name,
+		file_ext, raw_text, extract_status, created_at )
+		 
+		values ( #{rag_doc_seq}, #{source_type}, #{source_seq} , #{file_name}, #{file_ext}, #{raw_text},
+		'DONE', sysdate )
+	</insert>
+
+	<insert id="insertRagChunks"
+		parameterType="com.study.app.domains.aiChat.RagChunksDTO">
+
+		<selectKey keyProperty="chunk_seq"
+			resultType="Long"
+			order="BEFORE">
+			select chunk_seq.nextval from dual
+		</selectKey> 
+		insert into rag_chunks ( chunk_seq, rag_doc_seq, chunk_index, chunk_text,
+		embed_status, created_at ) 
+		
+		values ( #{chunk_seq}, #{rag_doc_seq},#{chunk_index}, #{chunk_text}, 
+		'PENDING', sysdate ) 
+	</insert>
+	
+	<select id="findAllChunks"
+        resultType="com.study.app.domains.aiChat.RagChunksDTO">
+
+	    select
+	        chunk_seq,
+	        rag_doc_seq,
+	        chunk_text
+	    from rag_chunks
+	    order by chunk_seq
+
+	</select>
+</mapper>
