@@ -68,6 +68,29 @@ public class UsersDAO {
 		return batis.update("Users.updateMyPageInfo",dto);
 	}
 	
+	public int isExistForId(String name, String email) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("email", email);
+		return batis.selectOne("Users.isExistForId", params);
+	}
 	
-
+	public int isExistForPw(String name, String id, String email) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("id", id);
+		params.put("email", email);
+		return batis.selectOne("Users.isExistForPw", params);
+	}
+	
+	public String findIdByEmail(String email) {
+		return batis.selectOne("Users.findIdByEmail", email);
+	}
+	
+	public void changePw(String email, String pw) {
+		Map<String, String> params = new HashMap<>();
+		params.put("email", email);
+		params.put("pw", pw);
+		batis.update("Users.changePw", params);
+	}
 }
