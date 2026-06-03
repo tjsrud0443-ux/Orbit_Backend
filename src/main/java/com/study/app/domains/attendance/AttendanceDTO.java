@@ -9,19 +9,19 @@ public class AttendanceDTO {
     private LocalDate work_date;     
     private LocalDateTime check_in;     
     private LocalDateTime check_out;    
-    private Integer total_work_in;      // NUMBER → Integer (null 가능)
+    private Integer total_work_in;      
  // DB 컬럼에 없음
     private int work_days;
     private double total_hours;
     private int late_cnt;
     private double overtime_hours;
-    private int vac_cnt;
+    private double vac_cnt;
     
     public AttendanceDTO() {}
 
 	public AttendanceDTO(Long attendance_seq, String users_id, LocalDate work_date, LocalDateTime check_in,
 			LocalDateTime check_out, Integer total_work_in, int work_days, double total_hours, int late_cnt,
-			double overtime_hours, int vac_cnt) {
+			double overtime_hours, double vac_cnt) {
 		super();
 		this.attendance_seq = attendance_seq;
 		this.users_id = users_id;
@@ -116,14 +116,13 @@ public class AttendanceDTO {
 		this.overtime_hours = overtime_hours;
 	}
 
-	public int getVac_cnt() {
+	public double getVac_cnt() {
 		return vac_cnt;
 	}
 
-	public void setVac_cnt(int vac_cnt) {
+	public void setVac_cnt(double vac_cnt) {
 		this.vac_cnt = vac_cnt;
 	}
 
 	
-    
 }

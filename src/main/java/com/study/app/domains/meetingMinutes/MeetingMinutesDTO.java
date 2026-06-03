@@ -1,35 +1,39 @@
 package com.study.app.domains.meetingMinutes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MeetingMinutesDTO {
-	private Long minute_seq;
+    private Long minute_seq;
     private String title;
-    private LocalDateTime meetingDt;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String mainContent;
+    private LocalDate meeting_dt;
+    private LocalDateTime start_time;
+    private LocalDateTime end_time;
+    private String main_content;
     private String decisions;
     private String todos;
-    private String usersId;
-    private LocalDateTime createdAt;
+    private String users_id;
+    private LocalDateTime created_at;
+    private List<MinutesAttendeesDTO> attendees;
     
 	public MeetingMinutesDTO() {}
 
-	public MeetingMinutesDTO(Long minute_seq, String title, LocalDateTime meetingDt, LocalDateTime startTime,
-			LocalDateTime endTime, String mainContent, String decisions, String todos, String usersId,
-			LocalDateTime createdAt) {
+	public MeetingMinutesDTO(Long minute_seq, String title, LocalDate meeting_dt, LocalDateTime start_time,
+			LocalDateTime end_time, String main_content, String decisions, String todos, String users_id,
+			LocalDateTime created_at, List<MinutesAttendeesDTO> attendees) {
 		super();
 		this.minute_seq = minute_seq;
 		this.title = title;
-		this.meetingDt = meetingDt;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.mainContent = mainContent;
+		this.meeting_dt = meeting_dt;
+		this.start_time = start_time;
+		this.end_time = end_time;
+		this.main_content = main_content;
 		this.decisions = decisions;
 		this.todos = todos;
-		this.usersId = usersId;
-		this.createdAt = createdAt;
+		this.users_id = users_id;
+		this.created_at = created_at;
+		this.attendees = attendees;
 	}
 
 	public Long getMinute_seq() {
@@ -48,36 +52,36 @@ public class MeetingMinutesDTO {
 		this.title = title;
 	}
 
-	public LocalDateTime getMeetingDt() {
-		return meetingDt;
+	public LocalDate getMeeting_dt() {
+		return meeting_dt;
 	}
 
-	public void setMeetingDt(LocalDateTime meetingDt) {
-		this.meetingDt = meetingDt;
+	public void setMeeting_dt(LocalDate meeting_dt) {
+		this.meeting_dt = meeting_dt;
 	}
 
-	public LocalDateTime getStartTime() {
-		return startTime;
+	public LocalDateTime getStart_time() {
+		return start_time;
 	}
 
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
+	public void setStart_time(LocalDateTime start_time) {
+		this.start_time = start_time;
 	}
 
-	public LocalDateTime getEndTime() {
-		return endTime;
+	public LocalDateTime getEnd_time() {
+		return end_time;
 	}
 
-	public void setEndTime(LocalDateTime endTime) {
-		this.endTime = endTime;
+	public void setEnd_time(LocalDateTime end_time) {
+		this.end_time = end_time;
 	}
 
-	public String getMainContent() {
-		return mainContent;
+	public String getMain_content() {
+		return main_content;
 	}
 
-	public void setMainContent(String mainContent) {
-		this.mainContent = mainContent;
+	public void setMain_content(String main_content) {
+		this.main_content = main_content;
 	}
 
 	public String getDecisions() {
@@ -96,22 +100,30 @@ public class MeetingMinutesDTO {
 		this.todos = todos;
 	}
 
-	public String getUsersId() {
-		return usersId;
+	public String getUsers_id() {
+		return users_id;
 	}
 
-	public void setUsersId(String usersId) {
-		this.usersId = usersId;
+	public void setUsers_id(String users_id) {
+		this.users_id = users_id;
 	}
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
+	public LocalDateTime getCreated_at() {
+		return created_at;
 	}
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
+	public void setCreated_at(LocalDateTime created_at) {
+		this.created_at = created_at;
 	}
+
+	public List<MinutesAttendeesDTO> getAttendees() {
+		return attendees;
+	}
+
+	public void setAttendees(List<MinutesAttendeesDTO> attendees) {
+		this.attendees = attendees;
+	}
+
 	
-    
 }
 
