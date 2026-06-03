@@ -31,6 +31,6 @@
 	<insert id="insertQuestion">
 		insert into ai_unanswered_questions 
 		(question_seq, users_id, category, question, dept_seq, status, created_at)
-		values ()
+		values (question_seq.nextval, #{users_id}, #{dto.category}, #{dto.question}, #{dto.dept_seq}, 'PENDING', sysdate)
 	</insert>
 </mapper>

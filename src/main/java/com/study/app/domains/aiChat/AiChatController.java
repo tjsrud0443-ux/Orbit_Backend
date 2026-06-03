@@ -26,20 +26,22 @@ public class AiChatController {
 		Map<String, Object> aiResponse = aiServ.getRagResponse(loginId, chat_seq, role, content);
 		return ResponseEntity.ok(aiResponse);
 	}
-	
+
 	@GetMapping("/sideChatTitleList")
 	public ResponseEntity<List<AiChatDTO>> sideChatTitleList(@RequestAttribute String loginId) {
 		return ResponseEntity.ok(aiServ.sideChatTitleList(loginId));
 	}
-	
+
 	@GetMapping("/detailChat")
 	public ResponseEntity<List<AiMessagesDTO>> detailChat(@RequestParam Long chat_seq) {
 		return ResponseEntity.ok(aiServ.detailChat(chat_seq));
 	}
-	
+
 	@PostMapping("/insertQuestion")
 	public ResponseEntity<Void> insertQuestion(@RequestAttribute String loginId,
 			@RequestBody AiUnansweredQuestionsDTO dto) {
-		return ResponseEntity.ok().build(aiServ.insertQuestion(loginId, dto));
+
+		aiServ.insertQuestion(loginId, dto);
+		return ResponseEntity.ok().build();
 	}
 }
