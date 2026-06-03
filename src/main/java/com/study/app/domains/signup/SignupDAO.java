@@ -19,6 +19,10 @@ public class SignupDAO {
 		return mybatis.selectOne("Signup.isExistId", id);
 	}
 	
+	public int isExistEmail(String email) {
+		return mybatis.selectOne("Signup.isExistEmail", email);
+	}
+	
 	public void signupRequest(SignupDTO dto) {
 		mybatis.insert("Signup.signupRequest", dto);
 	}

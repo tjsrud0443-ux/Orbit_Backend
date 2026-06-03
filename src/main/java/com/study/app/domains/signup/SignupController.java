@@ -19,9 +19,15 @@ public class SignupController {
 	@Autowired
 	private SignupService signupServ;
 	
-	@GetMapping("duplCheck")
+	@GetMapping("idDuplCheck")
 	public ResponseEntity<Boolean> isExistId(@RequestParam String id){
 		boolean result = signupServ.isExistId(id);
+		return ResponseEntity.ok(result);
+	}
+	
+	@GetMapping("emailDuplCheck")
+	public ResponseEntity<Boolean> isExistEmail(@RequestParam String email){
+		boolean result = signupServ.isExistEmail(email);
 		return ResponseEntity.ok(result);
 	}
 	

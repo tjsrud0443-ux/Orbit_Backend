@@ -13,6 +13,10 @@ public class AnnualLeaveDAO {
 	@Autowired
 	private SqlSessionTemplate mybatis;
 	
+	public void insertAnnualLeave(String users_id) {
+		mybatis.insert("AnnualLeave.insertAnnualLeave", users_id);
+	}
+	
 	public Map<String, Object> selectAnnualLeaveData(String users_id){
 		return mybatis.selectOne("AnnualLeave.selectAnnualLeaveData", users_id);
 	}

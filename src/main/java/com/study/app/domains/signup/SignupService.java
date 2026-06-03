@@ -29,6 +29,10 @@ public class SignupService {
 		return dao.isExistId(id) > 0;
 	}
 	
+	public boolean isExistEmail(String email) {
+		return dao.isExistEmail(email) > 0;
+	}
+	
 	@Transactional
 	public void signupRequest(SignupDTO dto, MultipartFile profile) {
 		

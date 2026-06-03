@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="AnnualLeave">
-
+	
+	<insert id="insertAnnualLeave">
+		insert into annual_leave values (leave_seq.nextval, #{users_id}, TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY')), 0, 0, 0)
+	</insert>
+	
 	<select id="selectAnnualLeaveData" resultType="map">
 		select used_days as "used_days", remaining_days as "remaining_days" from annual_leave where users_id = #{users_id}
 	</select>

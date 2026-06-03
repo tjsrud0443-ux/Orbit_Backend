@@ -3,8 +3,11 @@
 <mapper namespace="Signup">
 
 	<select id="isExistId" resultType="int">
-		select count(*) from signup where id = #{id} and status in
-		('PENDING','APPROVED')
+		select count(*) from signup where id = #{id} and status in ('PENDING','APPROVED')
+	</select>
+	
+	<select id="isExistEmail" resultType="int">
+		select count(*) from signup where email = #{email} and status in ('PENDING','APPROVED')
 	</select>
 
 	<insert id="signupRequest">

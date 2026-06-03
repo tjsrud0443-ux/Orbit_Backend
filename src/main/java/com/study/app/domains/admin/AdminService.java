@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
+import com.study.app.domains.annualLeave.AnnualLeaveDAO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDAO;
 import com.study.app.domains.departments.DepartmentsDTO;
@@ -33,6 +34,8 @@ public class AdminService {
 	private SignupDAO signupDao;
 	@Autowired
 	private AdminDAO adminDao;
+	@Autowired
+	private AnnualLeaveDAO alDao;
 
 	public List<DepartmentsDTO> getDeptList() {
 		return departmentsDao.getDeptList();
@@ -66,6 +69,7 @@ public class AdminService {
 		dto.setRank_seq(request.getRank_seq());
 
 		usersDao.insertUser(dto);
+		alDao.insertAnnualLeave(signupInfo.getId());
 
 		signupDao.updateStatusToApproved(request.getSignup_seq());
 	}
