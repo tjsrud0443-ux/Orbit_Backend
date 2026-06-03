@@ -24,4 +24,8 @@ public class AnnualLeaveDAO {
 		params.put("remaining_days", newRemaining);
 		mybatis.update("AnnualLeave.updateAnnualLeaveUsedDays", params);
 	}
+	
+	public AnnualLeaveDTO getAnnualLeaveSummary(String loginId) {
+		return mybatis.selectOne("AnnualLeave.getAnnualLeaveSummary",loginId);
+	}
 }

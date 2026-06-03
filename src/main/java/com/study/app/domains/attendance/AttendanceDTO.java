@@ -14,11 +14,14 @@ public class AttendanceDTO {
     private int work_days;
     private double total_hours;
     private int late_cnt;
+    private double overtime_hours;
+    private int vac_cnt;
     
     public AttendanceDTO() {}
 
 	public AttendanceDTO(Long attendance_seq, String users_id, LocalDate work_date, LocalDateTime check_in,
-			LocalDateTime check_out, Integer total_work_in, int work_days, double total_hours, int late_cnt) {
+			LocalDateTime check_out, Integer total_work_in, int work_days, double total_hours, int late_cnt,
+			double overtime_hours, int vac_cnt) {
 		super();
 		this.attendance_seq = attendance_seq;
 		this.users_id = users_id;
@@ -29,30 +32,8 @@ public class AttendanceDTO {
 		this.work_days = work_days;
 		this.total_hours = total_hours;
 		this.late_cnt = late_cnt;
-	}
-
-	public int getWork_days() {
-		return work_days;
-	}
-
-	public void setWork_days(int work_days) {
-		this.work_days = work_days;
-	}
-
-	public double getTotal_hours() {
-		return total_hours;
-	}
-
-	public void setTotal_hours(double total_hours) {
-		this.total_hours = total_hours;
-	}
-
-	public int getLate_cnt() {
-		return late_cnt;
-	}
-
-	public void setLate_cnt(int late_cnt) {
-		this.late_cnt = late_cnt;
+		this.overtime_hours = overtime_hours;
+		this.vac_cnt = vac_cnt;
 	}
 
 	public Long getAttendance_seq() {
@@ -102,6 +83,47 @@ public class AttendanceDTO {
 	public void setTotal_work_in(Integer total_work_in) {
 		this.total_work_in = total_work_in;
 	}
+
+	public int getWork_days() {
+		return work_days;
+	}
+
+	public void setWork_days(int work_days) {
+		this.work_days = work_days;
+	}
+
+	public double getTotal_hours() {
+		return total_hours;
+	}
+
+	public void setTotal_hours(double total_hours) {
+		this.total_hours = total_hours;
+	}
+
+	public int getLate_cnt() {
+		return late_cnt;
+	}
+
+	public void setLate_cnt(int late_cnt) {
+		this.late_cnt = late_cnt;
+	}
+
+	public double getOvertime_hours() {
+		return overtime_hours;
+	}
+
+	public void setOvertime_hours(double overtime_hours) {
+		this.overtime_hours = overtime_hours;
+	}
+
+	public int getVac_cnt() {
+		return vac_cnt;
+	}
+
+	public void setVac_cnt(int vac_cnt) {
+		this.vac_cnt = vac_cnt;
+	}
+
 	
     
 }

@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="MeetingMinutes">
+<insert id="insertMinutes">
+	    INSERT INTO MINUTES (
+        MINUTE_SEQ,
+        TITLE,
+        MEETING_DT,
+        START_TIME,
+        END_TIME,
+        MAIN_CONTENT,
+        DECISIONS,
+        TODOS,
+        USERS_ID,
+        CREATED_AT
+    ) VALUES (
+        MINUTES_SEQ.NEXTVAL,
+        #{title},
+        #{meetingDt},
+        #{startTime},
+        #{endTime},
+        #{mainContent},
+        #{decisions, jdbcType=VARCHAR},
+        #{todos, jdbcType=VARCHAR},
+        #{usersId},
+        SYSDATE
+    )
+</insert>
 </mapper>
