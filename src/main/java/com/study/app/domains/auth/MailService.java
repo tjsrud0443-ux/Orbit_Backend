@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -23,6 +24,9 @@ public class MailService {
 	
 	@Autowired
 	private UsersDAO usersDao;
+	
+	@Value("${app.mail.from}")
+    private String fromEmail;
 	
 	private final JavaMailSender mailSender;
     // 서버 메모리에 이메일과 인증정보를 저장하는 맵
@@ -61,7 +65,7 @@ public class MailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom("sbkim099@naver.com");
+            helper.setFrom(fromEmail);
             helper.setTo(email);
             helper.setSubject("[Orbit] 회원 인증 번호 안내");
             helper.setText("""
