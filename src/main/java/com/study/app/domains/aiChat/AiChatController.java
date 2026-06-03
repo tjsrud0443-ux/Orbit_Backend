@@ -40,7 +40,6 @@ public class AiChatController {
 	@PostMapping("/insertQuestion")
 	public ResponseEntity<Void> insertQuestion(@RequestAttribute String loginId,
 			@RequestBody AiUnansweredQuestionsDTO dto) {
-		
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().build(aiServ.insertQuestion(loginId, dto));
 	}
 }
