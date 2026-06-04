@@ -50,6 +50,14 @@
 	</delete>
 	
 	<select id="myQuestions" resultType="com.study.app.domains.aiChat.AiUnansweredQuestionsDTO">
-		select * from ai_unanswered_questions where users_id = #{loginId}
+		select q.*,
+			u.name as name from ai_unanswered_questions q 
+			left join users u on q.users_handle_id = u.id
+			where q.users_id = #{loginId}
+		order by q.created_at
 	</select>
+	
+	<delete id="deleteMyQuestions">
+		delete from ai_unanswered_questions where question_seq = #{question_seq}
+	</delete>
 </mapper>

@@ -14,11 +14,13 @@ public class AiUnansweredQuestionsDTO {
 	private String answer_at;
 	private String created_at;
 	private Long chat_seq;
+	private String name;
 	
 	public AiUnansweredQuestionsDTO() {}
 	
 	public AiUnansweredQuestionsDTO(Long question_seq, String users_id, String category, String question, Long dept_seq,
-			String handle_answer, String users_handle_id, String status, String answer_at, String created_at, Long chat_seq) {
+			String handle_answer, String users_handle_id, String status, String answer_at, String created_at, Long chat_seq,
+			String name) {
 		super();
 		this.question_seq = question_seq;
 		this.users_id = users_id;
@@ -31,6 +33,7 @@ public class AiUnansweredQuestionsDTO {
 		this.answer_at = answer_at;
 		this.created_at = created_at;
 		this.chat_seq = chat_seq;
+		this.name = name;
 	}
 	
 	public Long getQuestion_seq() {
@@ -98,5 +101,11 @@ public class AiUnansweredQuestionsDTO {
 	}
 	public void setChat_seq(Long chat_seq) {
 		this.chat_seq = chat_seq;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }

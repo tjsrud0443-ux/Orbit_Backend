@@ -52,4 +52,8 @@ public class AiChatDAO {
 	public List<AiUnansweredQuestionsDTO> myQuestions(String loginId) {
 		return batis.selectList("AiChat.myQuestions", loginId);
 	}
+	
+	public void deleteMyQuestions(Long question_seq) {
+		batis.delete("AiChat.deleteMyQuestions", question_seq);
+	}
 }

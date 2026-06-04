@@ -26,4 +26,9 @@ public class MypageService {
 	public List<AiUnansweredQuestionsDTO> myQuestions(String loginId) {
 		return aiChatDao.myQuestions(loginId);
 	}
+	
+	public void deleteMyQuestions(Long question_seq) {
+		aiChatDao.deleteMyQuestions(question_seq);
+	}
+	
 }
