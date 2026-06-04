@@ -1,5 +1,7 @@
 package com.study.app.domains.meetingMinutes;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -12,4 +14,21 @@ public class MeetingMinutesDAO {
 	public int insertMinutes(MeetingMinutesDTO dto) {
 		return mybatis.insert("MeetingMinutes.insertMinutes",dto);
 	}
+	
+	public List<MeetingMinutesDTO> getMinutesList() {
+		return mybatis.selectList("MeetingMinutes.getMinutesList");
+	}
+	
+	public MeetingMinutesDTO getMinutesDetail(Long minute_seq) {
+		return mybatis.selectOne("MeetingMinutes.getMinutesDetail",minute_seq);
+	}
+	
+	public int deleteMinutes(Long minute_seq) {
+		return mybatis.delete("MeetingMinutes.deleteMinutes",minute_seq);
+	}
+	
+	public int updateMinutes(MeetingMinutesDTO dto) {
+		return mybatis.delete("MeetingMinutes.updateMinutes",dto);
+	}
+	
 }

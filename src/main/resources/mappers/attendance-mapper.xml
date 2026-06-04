@@ -58,7 +58,7 @@
 	                    WHEN EXISTS (SELECT 1 FROM VACATION V JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ WHERE D.USERS_ID = A.USERS_ID AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE AND V.VAC_TYPE = '오후반차' AND D.STATUS = 'APPROVED') THEN TRUNC(A.WORK_DATE) + 13/24
 	                    ELSE TRUNC(A.WORK_DATE) + 18/24
 	                END
-	                CASE
+	                -  CASE
 	                    WHEN A.CHECK_IN IS NOT NULL THEN A.CHECK_IN
 	                    WHEN EXISTS (SELECT 1 FROM VACATION V JOIN DOCUMENT D ON V.DOC_SEQ = D.DOC_SEQ WHERE D.USERS_ID = A.USERS_ID AND A.WORK_DATE BETWEEN V.START_DATE AND V.END_DATE AND V.VAC_TYPE = '오전반차' AND D.STATUS = 'APPROVED') THEN TRUNC(A.WORK_DATE) + 13/24
 	                    ELSE TRUNC(A.WORK_DATE) + 9/24
@@ -86,12 +86,12 @@
 	  COUNT(*) AS work_days,
 	  ROUND(SUM(TOTAL_WORK_MIN) / 60, 1) AS total_hours,
 	  SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt,
-	  (SELECT COUNT(*) FROM VACATION v
-         JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
-         WHERE dd.USERS_ID = #{loginId}
-         AND dd.STATUS = 'APPROVED'
-         AND TO_CHAR(v.START_DATE, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
-        ) AS vac_cnt
+		(SELECT NVL(SUM(v.DAYS), 0) FROM VACATION v
+		    JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
+		    WHERE dd.USERS_ID = #{loginId}
+		    AND dd.STATUS = 'APPROVED'
+		    AND TO_CHAR(v.START_DATE, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
+		) AS vac_cnt
 	FROM ATTENDANCE
 	WHERE USERS_ID = #{loginId}
 	AND TO_CHAR(WORK_DATE, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
@@ -106,14 +106,14 @@
 	        NVL(A.overtime_hours, 0) AS "overtime_hours",
 	        
 	        -- 이제 독립적인 서브쿼리가 같이 있어도 에러가 나지 않습니다.
-	        (SELECT COUNT(*) 
-	         FROM VACATION v
-	         JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
-	         WHERE dd.USERS_ID = #{loginId}
-	           AND dd.STATUS = 'APPROVED'
-	           AND v.START_DATE >= TRUNC(SYSDATE, 'IW')
-	           AND v.START_DATE < TRUNC(SYSDATE, 'IW') + 7
-	        ) AS "vac_cnt"
+	(SELECT NVL(SUM(v.DAYS), 0)
+	    FROM VACATION v
+	    JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
+	    WHERE dd.USERS_ID = #{loginId}
+	      AND dd.STATUS = 'APPROVED'
+	      AND v.START_DATE >= TRUNC(SYSDATE, 'IW')
+	      AND v.START_DATE < TRUNC(SYSDATE, 'IW') + 7
+	) AS "vac_cnt"
 	    FROM (
 	        -- [출퇴근 데이터 집계부] 
 	        -- 여기서 무조건 1행의 결과만 반환하므로, 바깥에서 MAX()를 감쌀 필요가 없었던 것입니다.
