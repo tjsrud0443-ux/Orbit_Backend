@@ -13,6 +13,8 @@ import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDAO;
 import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
+import com.study.app.domains.documents.DocumentsDAO;
+import com.study.app.domains.documents.DocumentsDTO;
 import com.study.app.domains.rank.RankDAO;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDAO;
@@ -36,6 +38,8 @@ public class AdminService {
 	private AdminDAO adminDao;
 	@Autowired
 	private AnnualLeaveDAO alDao;
+	@Autowired
+	private DocumentsDAO docDao;
 
 	public List<DepartmentsDTO> getDeptList() {
 		return departmentsDao.getDeptList();
@@ -153,5 +157,9 @@ public class AdminService {
 	
 	public List<AiUnansweredQuestionsDTO> getAiQuestions() {
 		return adminDao.getAiQuestions();
+	}
+	
+	public List<DocumentsDTO> getAllDocs(){
+		return docDao.getAllDocs();
 	}
 }

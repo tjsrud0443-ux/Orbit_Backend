@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Documents">
+
+	<select id="getAllDocs" resultType="com.study.app.domains.documents.DocumentsDTO">
+		select 
+		    d.document_seq, d.title, d.users_id, d.created_at,
+		    f.file_seq, f.document_seq, f.file_oriname, f.file_sysname, f.file_path, f.mime_type, f.upload_at
+		from documents d
+		LEFT JOIN document_files f ON d.document_seq = f.document_seq
+	</select>
+	
+	<insert id="addDoc">
+	    <selectKey keyProperty="document_seq" resultType="long" order="BEFORE">
+	      select document_seq.nextval from dual
+	    </selectKey>
+		insert into documents values (#{document_seq}, #{title}, #{users_id}, sysdate)
+	</insert>
+	
+  	<insert id="insertDocFile">
+  		insert into document_files values 
+  		(d_file_seq.nextval, #{document_seq}, #{file_oriname}, #{file_sysname}, #{file_path}, #{mime_type}, sysdate)
+	</insert>
 </mapper>

@@ -1,6 +1,5 @@
 package com.study.app.domains.admin;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
+import com.study.app.domains.documents.DocumentsDTO;
+import com.study.app.domains.documents.DocumentsService;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
@@ -41,6 +43,8 @@ public class AdminController {
 	private SignupService signupServ;
 	@Autowired
 	private UsersService userServ;
+	@Autowired
+	private DocumentsService docServ;
 
 	@GetMapping("/hr/allRequest")
 	public ResponseEntity<Map<String, Object>> getAllRequest(@RequestParam Long cPage,
@@ -157,5 +161,19 @@ public class AdminController {
 	public ResponseEntity<List<AiUnansweredQuestionsDTO>> getAiQuestions() {
 		return ResponseEntity.ok(adminServ.getAiQuestions());
 	}
-
+	
+	@GetMapping("getAllDocs")
+	public ResponseEntity<List<DocumentsDTO>> getAllDocs(){
+		List<DocumentsDTO> resp = adminServ.getAllDocs();
+		return ResponseEntity.ok(resp);
+	}
+	
+	@PostMapping("addDocument")
+	public ResponseEntity<Void> addDoc(@RequestParam String title,
+										 @RequestParam String users_id,
+										 @RequestParam MultipartFile file) {
+	    
+		docServ.addDoc(title, users_id, file);
+	    return ResponseEntity.ok().build();
+	}
 }
