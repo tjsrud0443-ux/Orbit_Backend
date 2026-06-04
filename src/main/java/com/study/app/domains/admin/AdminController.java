@@ -157,5 +157,61 @@ public class AdminController {
 	public ResponseEntity<List<AiUnansweredQuestionsDTO>> getAiQuestions() {
 		return ResponseEntity.ok(adminServ.getAiQuestions());
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@GetMapping("/ai/myDeptQuestion")
+	public ResponseEntity<List<AiUnansweredQuestionsDTO>> myDeptQuestion(
+			@RequestParam Long dept_seq, @RequestParam String auth_group) {
+		return ResponseEntity.ok(adminServ.myDeptQuestion(dept_seq, auth_group));
+	}
 
 }

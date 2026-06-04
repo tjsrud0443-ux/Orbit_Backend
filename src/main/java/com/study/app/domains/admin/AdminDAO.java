@@ -1,6 +1,7 @@
 package com.study.app.domains.admin;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +68,55 @@ public class AdminDAO {
 	
 	public List<AiUnansweredQuestionsDTO> getAiQuestions() {
 		return batis.selectList("Admin.getAiQuestions");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public List<AiUnansweredQuestionsDTO> myDeptQuestion(Map<String, Object> params) {
+		return batis.selectList("Admin.myDeptQuestion", params);
 	}
 }

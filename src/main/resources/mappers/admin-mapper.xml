@@ -105,4 +105,81 @@
 		select question, created_at from ai_unanswered_questions where status = 'PENDING'
 		order by created_at desc
 	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<select id="myDeptQuestion" resultType="com.study.app.domains.aiChat.AiUnansweredQuestionsDTO">
+		select q.*, u1.name as user_name, u2.name as admin_name
+			from ai_unanswered_questions q
+			left join users u1 on q.users_id = u1.id
+			left join users u2 on q.users_handle_id = u2.id
+			
+			<where>
+				<if test="auth_group != 'ROLE_SUPER_ADMIN'">
+					q.dept_seq = #{dept_seq}
+				</if>
+			</where>
+			order by q.created_at
+	</select>
 </mapper>
