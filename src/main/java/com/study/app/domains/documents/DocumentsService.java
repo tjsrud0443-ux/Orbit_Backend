@@ -1,14 +1,14 @@
 package com.study.app.domains.documents;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.cloud.storage.Storage;
+import com.study.app.domains.file.FileService;
 
 @Service
 public class DocumentsService {
@@ -16,9 +16,7 @@ public class DocumentsService {
 	@Autowired
 	private DocumentsDAO dao;
 	@Autowired
-	private Storage storage;
-	@Value("${gcs.bucket.url}") 
-    private String bucketUrl;
+	private FileService fileServ;
 	
 	@Transactional
     public void addDoc(String title, String users_id, MultipartFile file) {
@@ -33,16 +31,17 @@ public class DocumentsService {
             
             dao.addDoc(docDTO);
             Long document_seq = docDTO.getDocument_seq();
-
-            String oriname = file.getOriginalFilename();
-            String sysname = UUID.randomUUID().toString() + "_" + oriname; 
             
+            Map<String, String> uploadResult = fileServ.upload(file);
+
+            String oriname = uploadResult.get("oriname");
+            String sysname = uploadResult.get("sysname");
+            String file_path = uploadResult.get("file_path");
             String mime_type = file.getContentType();
             
-            String file_path = bucketUrl + "/" + sysname;
 
             DocumentsFilesDTO docFileDTO = new DocumentsFilesDTO();
-            docFileDTO.setDocument_seq(document_seq); // [1]에서 생성된 문서 SEQ 연동
+            docFileDTO.setDocument_seq(document_seq);
             docFileDTO.setFile_oriname(oriname);
             docFileDTO.setFile_sysname(sysname);
             docFileDTO.setFile_path(file_path);

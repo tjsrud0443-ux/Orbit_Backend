@@ -27,6 +27,8 @@ public class FileService {
 	
 	@Value("${spring.cloud.gcp.bucket}")
 	private String bucketName;
+	@Value("${gcs.bucket.url}") 
+    private String bucketUrl;
 	
 	public Map<String, String> upload(MultipartFile file) throws Exception{
 		
@@ -45,7 +47,10 @@ public class FileService {
 
         result.put("oriname", oriname);
         result.put("sysname", sysname);
-
+        
+        String filePath = bucketUrl + "/" + sysname;
+        result.put("file_path", filePath);
+        
         return result;
 	}
 	
