@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="MinutesAttendees">
-<!--<insert id="insertMinutes">
-	    INSERT INTO MINUTES
-</insert>-->
+	<insert id="insertMinutesAttendees">
+		INSERT INTO MINUTES_ATTENDEES (
+	        ATTENDEE_SEQ,
+	        MINUTE_SEQ,
+	        USERS_ID
+	    ) VALUES (
+	        ATTENDEE_SEQ.NEXTVAL,
+	        #{minute_seq},
+	        #{users_id, jdbcType=VARCHAR}
+	    )
+	</insert>
+	<delete id="deleteMinutesAttendees">
+	    DELETE FROM MINUTES_ATTENDEES WHERE MINUTE_SEQ = #{minute_seq}
+	</delete>
+	
 </mapper>
