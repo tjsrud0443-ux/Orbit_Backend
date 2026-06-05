@@ -350,4 +350,8 @@ public class AdminDAO {
 	public List<AiUnansweredQuestionsDTO> myDeptQuestion(Map<String, Object> params) {
 		return batis.selectList("Admin.myDeptQuestion", params);
 	}
+	
+	public void insertAnswer(Map<String, Object> params) {
+		batis.insert("Admin.insertAnswer", params);
+	}
 }

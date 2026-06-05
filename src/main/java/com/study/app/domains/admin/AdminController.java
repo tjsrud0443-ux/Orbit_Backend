@@ -352,5 +352,12 @@ public class AdminController {
 			@RequestParam Long dept_seq, @RequestParam String auth_group) {
 		return ResponseEntity.ok(adminServ.myDeptQuestion(dept_seq, auth_group));
 	}
+	
+	@PostMapping("/ai/insertAnswer")
+	public ResponseEntity<Void> insertAnswer(
+			@RequestParam Long question_seq, @RequestParam String handle_answer) {
+		adminServ.insertAnswer(question_seq, handle_answer);
+		return ResponseEntity.ok().build();
+	}
 
 }
