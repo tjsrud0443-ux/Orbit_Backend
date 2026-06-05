@@ -361,9 +361,16 @@
 			order by q.created_at
 	</select>
 	
-	<update id="updateAnswer">
+	<update id="insertUpdateAnswer">
 		update ai_unanswered_questions set handle_answer = #{handle_answer} , 
 		users_handle_id = #{users_handle_id}, status = 'ANSWERED', answer_at = sysdate
 		where question_seq = #{question_seq}
 	</update>
+	
+	<update id="deleteAnswer">
+		update ai_unanswered_questions set handle_answer = null , 
+		users_handle_id = null, status = 'PENDING', answer_at = null
+		where question_seq = #{question_seq}
+	</update>
+	
 </mapper>

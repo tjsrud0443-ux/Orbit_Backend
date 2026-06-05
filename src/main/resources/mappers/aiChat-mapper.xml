@@ -51,7 +51,7 @@
 	
 	<select id="myQuestions" resultType="com.study.app.domains.aiChat.AiUnansweredQuestionsDTO">
 		select q.*,
-			u.name as name from ai_unanswered_questions q 
+			u.name as admin_name from ai_unanswered_questions q 
 			left join users u on q.users_handle_id = u.id
 			where q.users_id = #{loginId}
 		order by q.created_at

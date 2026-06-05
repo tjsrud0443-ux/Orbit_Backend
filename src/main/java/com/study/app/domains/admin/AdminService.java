@@ -362,7 +362,11 @@ public class AdminService {
 		return adminDao.myDeptQuestion(params);
 	}
 	
-	public void updateAnswer(AiUnansweredQuestionsDTO dto) {
-		adminDao.updateAnswer(dto);
+	public void insertUpdateAnswer(AiUnansweredQuestionsDTO dto) {
+		adminDao.insertUpdateAnswer(dto);
+	}
+	
+	public void deleteAnswer(Long question_seq) {
+		adminDao.deleteAnswer(question_seq);
 	}
 }
