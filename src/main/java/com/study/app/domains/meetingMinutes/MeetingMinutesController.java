@@ -48,7 +48,7 @@ public class MeetingMinutesController {
 		minutesServ.deleteMinutesAll(minute_seq);
 		return ResponseEntity.ok().build();
 	}
-	
+	//회의록 테이블과 참석자 테이블은 분리 되어있음 -> 회의록은 그냥 수정 하면 되는데 참석자는 수정시 delete 후 재 insert 하는 방식으로 해야함
 	@PutMapping("/update")
     public ResponseEntity<Map<String, Object>> updateMinutesAll(@RequestBody MeetingMinutesDTO dto) {
         Map<String, Object> response = new HashMap<>();
