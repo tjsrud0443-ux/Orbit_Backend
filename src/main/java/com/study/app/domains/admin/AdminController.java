@@ -176,7 +176,7 @@ public class AdminController {
     public ResponseEntity<Void> editDocument(
     		@RequestParam Long document_seq,
             @RequestParam String title,
-            @RequestParam MultipartFile file) throws Exception {
+            @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
         docServ.editDoc(document_seq, title, file);
         return ResponseEntity.ok().build();
     }
