@@ -48,4 +48,22 @@ public class DocumentsDAO {
 	public void deleteDocument(Long document_seq) {
 		mybatis.delete("Documents.deleteDocument", document_seq);
 	}
+	
+	public List<DocumentBookmarksDTO> getFavorites(String users_id){
+		return mybatis.selectList("Documents.getFavorites", users_id);
+	}
+	
+	public void addFavorite(Long document_seq, String users_id) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("document_seq", document_seq);
+		params.put("users_id", users_id);
+		mybatis.insert("Documents.addFavorite", params);
+	}
+	
+	public void removeFavorite(Long document_seq, String users_id) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("document_seq", document_seq);
+		params.put("users_id", users_id);
+		mybatis.delete("Documents.removeFavorite", params);
+	}
 }

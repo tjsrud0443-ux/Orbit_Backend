@@ -45,4 +45,120 @@
 	<delete id="deleteDocument">
 		delete from documents where document_seq = #{document_seq}
 	</delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<select id="getFavorites" resultType="com.study.app.domains.documents.DocumentBookmarksDTO">
+		select document_seq from document_bookmarks where users_id = #{users_id} order by created_at desc
+	</select>
+	
+	<insert id="addFavorite">
+		insert into document_bookmarks values (bookmark_seq.nextval, #{users_id}, #{document_seq}, sysdate)
+	</insert>
+	
+	<delete id="removeFavorite">
+		delete from document_bookmarks where document_seq = #{document_seq} and users_id = #{users_id}
+	</delete>
 </mapper>
