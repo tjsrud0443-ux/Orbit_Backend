@@ -53,4 +53,21 @@
 		update rag_chunks set qdrant_point_id = #{qdrant_point_id},
 			embed_at = sysdate where chunk_seq = #{chunk_seq}
 	</update>
+	
+	<select id="findRagDocSeq" resultType="long">
+		select rag_doc_seq from rag_documents 
+			where source_type = #{source_type} and source_seq = #{source_seq}
+	</select>
+	
+	<select id="findPointIdsByRagDocSeq" resultType="string">
+		select qdrant_point_id from rag_chunks where rag_doc_seq = #{rag_doc_seq}
+	</select>
+	
+	<delete id="deleteRagChunksByRagDocSeq">
+		delete from rag_chunks where rag_doc_seq = #{rag_doc_seq}
+	</delete>
+	
+	<delete id="deleteRagDocumentsByRagDocSeq">
+		delete from rag_documents where rag_doc_seq = #{rag_doc_seq}
+	</delete>
 </mapper>

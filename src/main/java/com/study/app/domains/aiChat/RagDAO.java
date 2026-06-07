@@ -37,4 +37,24 @@ public class RagDAO {
 		batis.update("Rag.updateChunkEmbed", params);
 	}
 	
+	public Long findRagDocSeq(String source_type, Long source_seq) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("source_type", source_type);
+		params.put("source_seq", source_seq);
+		return batis.selectOne("Rag.findRagDocSeq", params);
+	}
+	
+	public List<String> findPointIdsByRagDocSeq(Long rag_doc_seq) {
+		return batis.selectList("Rag.findPointIdsByRagDocSeq", rag_doc_seq);
+	}
+	
+	public void deleteRagChunksByRagDocSeq(Long rag_doc_seq) {
+    	batis.delete("Rag.deleteRagChunksByRagDocSeq", rag_doc_seq);
+    }
+    
+    public void deleteRagDocumentsByRagDocSeq(Long rag_doc_seq) {
+    	batis.delete("Rag.deleteRagDocumentsByRagDocSeq", rag_doc_seq);
+    }
+	
+	
 }

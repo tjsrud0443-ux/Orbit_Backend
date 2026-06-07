@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiChatService;
+import com.study.app.domains.aiChat.RagDAO;
 import com.study.app.domains.file.FileService;
 
 @Service
@@ -92,6 +93,7 @@ public class DocumentsService {
         if (fileDTO != null) {
             fileServ.deleteFromGCS(fileDTO.getFile_sysname());
         }
+        aiChatServ.deleteDocumentRag(document_seq);
         dao.deleteDocFileByDocSeq(document_seq);
         dao.deleteDocument(document_seq);
     }

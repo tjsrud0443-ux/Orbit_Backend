@@ -238,7 +238,7 @@ public class AiChatService {
 		ragDoc.setFile_ext("MEETING");
 		ragDoc.setRaw_text(raw_text);
 		ragDoc.setExtract_status("DONE");
-		
+
 		ragDao.insertRagDocuments(ragDoc);
 
 
@@ -254,8 +254,8 @@ public class AiChatService {
 			mainChunk.setChunk_index(chunkIndex++);
 			mainChunk.setChunk_text(
 					"회의명 : " + dto.getTitle() + "\n" +
-					"회의 일자: " + dto.getMeeting_dt() + 
-					"\n\n[주요 내용]\n" + dto.getMain_content());
+							"회의 일자: " + dto.getMeeting_dt() + 
+							"\n\n[주요 내용]\n" + dto.getMain_content());
 			mainChunk.setEmbed_status("PENDING");
 			ragDao.insertRagChunks(mainChunk);
 		}
@@ -269,8 +269,8 @@ public class AiChatService {
 			decisionChunk.setChunk_index(chunkIndex++);
 			decisionChunk.setChunk_text(
 					"회의명 : " + dto.getTitle() + "\n" +
-					"회의 일자: " + dto.getMeeting_dt() + 
-					"\n\n[결정 사항]\n" + dto.getDecisions());
+							"회의 일자: " + dto.getMeeting_dt() + 
+							"\n\n[결정 사항]\n" + dto.getDecisions());
 			decisionChunk.setEmbed_status("PENDING");
 			ragDao.insertRagChunks(decisionChunk);
 		}
@@ -283,8 +283,8 @@ public class AiChatService {
 			todoChunk.setChunk_index(chunkIndex++);
 			todoChunk.setChunk_text(
 					"회의명 : " + dto.getTitle() + "\n" +
-					"회의 일자: " + dto.getMeeting_dt() + 
-					"\n\n[할 일]\n" + dto.getTodos());
+							"회의 일자: " + dto.getMeeting_dt() + 
+							"\n\n[할 일]\n" + dto.getTodos());
 			todoChunk.setEmbed_status("PENDING");
 			ragDao.insertRagChunks(todoChunk);
 		}
@@ -350,6 +350,25 @@ public class AiChatService {
 		aiDao.deleteQuestions(chat_seq);
 		aiDao.deleteAiMessages(chat_seq);
 		aiDao.deleteAiChat(chat_seq);
+	}
+
+	@Transactional
+	public void deleteDocumentRag(Long document_seq) {
+		Long ragDocSeq = ragDao.findRagDocSeq("DOCUMENTS", document_seq);
+
+		List<String> pointIds = ragDao.findPointIdsByRagDocSeq(ragDocSeq);
+
+		DeletePointIdsRequestDTO request = new DeletePointIdsRequestDTO();
+		request.setPoint_ids(pointIds);
+
+		restClient.post()
+		.uri("/delete/points")
+		.body(request)
+		.retrieve()
+		.toBodilessEntity();
+
+		ragDao.deleteRagChunksByRagDocSeq(ragDocSeq);
+	    ragDao.deleteRagDocumentsByRagDocSeq(ragDocSeq);
 	}
 
 
