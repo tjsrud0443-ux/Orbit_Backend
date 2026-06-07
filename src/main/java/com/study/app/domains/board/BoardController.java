@@ -7,9 +7,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -111,5 +113,42 @@ public class BoardController {
     public ResponseEntity<BoardPostsDTO> getPostDetail(@PathVariable Long post_seq){
     	BoardPostsDTO detail = boardServ.getPostDetail(post_seq);
     	return ResponseEntity.ok(detail);
+    }
+    
+    @DeleteMapping("/{post_seq}")
+    public ResponseEntity<String> deletePost(@PathVariable Long post_seq) {
+        try {
+            boardServ.deletePost(post_seq);
+            return ResponseEntity.ok("게시글이 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("삭제 중 오류가 발생했습니다.");
+        }
+    }
+    
+    @PutMapping("/{post_seq}")
+    public ResponseEntity<String> updatePost(
+            @PathVariable Long post_seq,
+            @RequestAttribute String loginId,
+            @RequestParam("category") String category,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam(value = "newFiles", required = false) List<MultipartFile> newFiles,
+            @RequestParam(value = "deletedFileSeqs", required = false) List<Long> deletedFileSeqs) {
+        try {
+            BoardPostsDTO post = new BoardPostsDTO();
+            post.setPost_seq(post_seq);
+            post.setCategory(category);
+            post.setTitle(title);
+            post.setContent(content);
+
+            boardServ.updatePost(post, newFiles, deletedFileSeqs);
+            return ResponseEntity.ok("게시글이 수정되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("수정 중 오류가 발생했습니다.");
+        }
     }
 }
