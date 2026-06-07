@@ -41,7 +41,10 @@ public class MeetingMinutesService {
 		return minutesDAO.getMinutesDetail(minute_seq);
 	}
 	
+	@Transactional
 	public void deleteMinutesAll(Long minute_seq) {
+		aiChatServ.deleteMeetingRag(minute_seq);
+		
 		// 1. 자식 테이블(참석자) 데이터 먼저 삭제
 		minutesAttendeesDAO.deleteMinutesAttendees(minute_seq);
 	    

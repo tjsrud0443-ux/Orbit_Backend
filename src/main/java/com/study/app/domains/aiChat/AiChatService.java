@@ -368,7 +368,26 @@ public class AiChatService {
 		.toBodilessEntity();
 
 		ragDao.deleteRagChunksByRagDocSeq(ragDocSeq);
-	    ragDao.deleteRagDocumentsByRagDocSeq(ragDocSeq);
+		ragDao.deleteRagDocumentsByRagDocSeq(ragDocSeq);
+	}
+
+	@Transactional
+	public void deleteMeetingRag(Long minute_seq) {
+		Long ragDocSeq = ragDao.findRagDocSeq("MEETING_MINUTES", minute_seq);
+
+		List<String> pointIds = ragDao.findPointIdsByRagDocSeq(ragDocSeq);
+
+		DeletePointIdsRequestDTO request = new DeletePointIdsRequestDTO();
+		request.setPoint_ids(pointIds);
+
+		restClient.post()
+		.uri("/delete/points")
+		.body(request)
+		.retrieve()
+		.toBodilessEntity();
+
+		ragDao.deleteRagChunksByRagDocSeq(ragDocSeq);
+		ragDao.deleteRagDocumentsByRagDocSeq(ragDocSeq);
 	}
 
 
