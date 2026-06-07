@@ -18,6 +18,7 @@ public class InterceptorConfig implements WebMvcConfigurer{
 		registry.addInterceptor(interceptor)
 		.addPathPatterns("/**")
 		.excludePathPatterns("/signup/**")
-		.excludePathPatterns("/auth/**");
+		.excludePathPatterns("/auth/**")
+		.excludePathPatterns("/board/editorImage/**");
 	}
 }
