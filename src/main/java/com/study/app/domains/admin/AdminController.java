@@ -214,6 +214,12 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@DeleteMapping("ga/deleteMeetingRoom/{room_seq}")
+	public ResponseEntity<Void> deleteMeetingRoom(@PathVariable Long room_seq){
+		roomServ.deleteMeetingRoom(room_seq);
+		return ResponseEntity.ok().build();
+	}
+	
 	
 	
 	

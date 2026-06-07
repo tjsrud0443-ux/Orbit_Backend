@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RoomRsvn">
+
+	<select id="selectRsvnSeqByRoomSeq" resultType="long">
+		select rsvn_seq from room_rsvn where room_seq = #{room_seq}
+	</select>
+	
+	<delete id="deleteRsvnMember">
+		delete from room_rsvn_member 
+		where rsvn_seq in
+		<foreach collection="list" item="rsvn_seq" open="(" separator="," close=")">
+			#{rsvn_seq}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteRsvn">
+		delete from room_rsvn where room_seq = #{room_seq}
+	</delete>
+</mapper>

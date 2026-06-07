@@ -10,7 +10,7 @@
 		insert into meeting_rooms values (room_seq.nextval, #{room_name}, #{max_people}, #{oriname}, #{sysname}, #{room_floor})
 	</insert>
 	
-	<select id="selectOldSysname" resultType="String">
+	<select id="selectSysname" resultType="String">
 		select sysname from meeting_rooms where room_seq = #{room_seq}
 	</select>
 	
@@ -18,4 +18,8 @@
 		update meeting_rooms set room_name = #{room_name}, max_people = #{max_people}, oriname = #{oriname}, 
 			sysname = #{sysname}, room_floor = #{room_floor} where room_seq = #{room_seq}
 	</update>
+	
+	<delete id="deleteMeetingRoom">
+		delete from meeting_rooms where room_seq = #{room_seq}
+	</delete>
 </mapper>

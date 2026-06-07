@@ -16,6 +16,8 @@ public class MeetingRoomsService {
 	@Autowired
 	private MeetingRoomsDAO dao;
 	@Autowired
+	private RoomRsvnDAO rsvnDao;
+	@Autowired
 	private FileService fileServ;
 	
 	public List<MeetingRoomsDTO> getAllRooms(){
@@ -41,7 +43,7 @@ public class MeetingRoomsService {
 	public void editMeetingRoom(MeetingRoomsDTO dto, MultipartFile file) {
 		if(file != null && !file.isEmpty()) {
 			try {
-				String sysname = dao.selectOldSysname(dto.getRoom_seq());
+				String sysname = dao.selectSysname(dto.getRoom_seq());
 				fileServ.deleteFromGCS(sysname);
 				Map<String, String> fileInfo = fileServ.upload(file);
 				
@@ -52,5 +54,18 @@ public class MeetingRoomsService {
 			}
 		}
 		dao.editMeetingRoom(dto);
+	}
+	
+	@Transactional
+	public void deleteMeetingRoom(Long room_seq) {
+		fileServ.deleteFromGCS(dao.selectSysname(room_seq));
+		
+		List<Long> rsvnList = rsvnDao.selectRsvnSeqByRoomSeq(room_seq);
+		if (rsvnList != null && !rsvnList.isEmpty()) {
+	        rsvnDao.deleteRsvnMember(rsvnList);
+	    }
+		rsvnDao.deleteRsvn(room_seq);
+		
+		dao.deleteMeetingRoom(room_seq);
 	}
 }
