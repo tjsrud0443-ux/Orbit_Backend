@@ -206,7 +206,13 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
-	
+	@PutMapping("ga/editMeetingRoom")
+	public ResponseEntity<Void> editMeetingRoom(@RequestPart("input") MeetingRoomsDTO dto,
+												@RequestPart(value = "file", required = false) MultipartFile file){
+		
+		roomServ.editMeetingRoom(dto, file);
+		return ResponseEntity.ok().build();
+	}
 	
 	
 	

@@ -19,4 +19,12 @@ public class MeetingRoomsDAO {
 	public void addMeetingRoom(MeetingRoomsDTO dto) {
 		mybatis.insert("MeetingRooms.addMeetingRoom", dto);
 	}
+	
+	public String selectOldSysname(Long room_seq) {
+		return mybatis.selectOne("MeetingRooms.selectOldSysname", room_seq);
+	}
+	
+	public void editMeetingRoom(MeetingRoomsDTO dto) {
+		mybatis.update("MeetingRooms.editMeetingRoom", dto);
+	}
 }

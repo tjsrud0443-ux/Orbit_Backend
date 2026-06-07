@@ -36,4 +36,21 @@ public class MeetingRoomsService {
 		}
 		dao.addMeetingRoom(dto);
 	}
+	
+	@Transactional
+	public void editMeetingRoom(MeetingRoomsDTO dto, MultipartFile file) {
+		if(file != null && !file.isEmpty()) {
+			try {
+				String sysname = dao.selectOldSysname(dto.getRoom_seq());
+				fileServ.deleteFromGCS(sysname);
+				Map<String, String> fileInfo = fileServ.upload(file);
+				
+				dto.setOriname(fileInfo.get("oriname"));
+				dto.setSysname(fileInfo.get("sysname"));
+			}catch(Exception e) {
+				throw new RuntimeException("파일 업로드 실패", e);
+			}
+		}
+		dao.editMeetingRoom(dto);
+	}
 }
