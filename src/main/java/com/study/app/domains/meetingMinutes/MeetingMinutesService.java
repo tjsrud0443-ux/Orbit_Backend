@@ -57,7 +57,8 @@ public class MeetingMinutesService {
 	public void updateMinutesAll(MeetingMinutesDTO dto) {
 	    // 1. 회의록 본문 내용 수정 (제목, 내용 등 수정)
 	    minutesDAO.updateMinutes(dto); 
-	    
+	    aiChatServ.deleteMeetingRag(dto.getMinute_seq());
+	    aiChatServ.createMeetingChunk(dto);
 	    // 2. [재사용 1] 기존 참석자 싹 지우기
 	    minutesAttendeesDAO.deleteMinutesAttendees(dto.getMinute_seq()); 
 	    
