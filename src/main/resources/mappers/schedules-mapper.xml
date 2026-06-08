@@ -1,29 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Schedules">
-<insert id="insertSchedules">
-	 insert into schedules values(
-        schedule_seq.nextval,
-        #{title},
-        #{schedule_type},
-        #{users_id},
-        #{start_dt, jdbcType=TIMESTAMP},
-        #{end_dt, jdbcType=TIMESTAMP},
-        #{sked_reason, jdbcType=VARCHAR},
-        #{is_public, jdbcType=INTEGER},
-        #{ref_seq, jdbcType=NUMERIC},
-        #{ref_type, jdbcType=VARCHAR},
-        sysdate
-    )
-</insert>
-<select id="getSchedules" resultType="com.study.app.domains.schedules.SchedulesDTO">
-	select * from schedules where users_id = #{users_id}
-</select>
-<delete id="deleteSchedules">
-	delete from schedules where Schedule_seq=#{schedule_seq}
-</delete>
-<update id="updateSchedules">
-	update schedules set title=#{title},schedule_type=#{schedule_type},
-	start_dt=#{start_dt},end_dt=#{end_dt},sked_reason=#{sked_reason} where Schedule_seq=#{schedule_seq}
-</update>
+	<insert id="insertSchedules">
+		 insert into schedules values(
+	        schedule_seq.nextval,
+	        #{title},
+	        #{schedule_type},
+	        #{users_id},
+	        #{start_dt, jdbcType=TIMESTAMP},
+	        #{end_dt, jdbcType=TIMESTAMP},
+	        #{sked_reason, jdbcType=VARCHAR},
+	        #{is_public, jdbcType=INTEGER},
+	        #{ref_seq, jdbcType=NUMERIC},
+	        #{ref_type, jdbcType=VARCHAR},
+	        sysdate
+	    )
+	</insert>
+	<select id="getSchedules" resultType="com.study.app.domains.schedules.SchedulesDTO">
+		select * from schedules where users_id = #{users_id}
+	</select>
+	<delete id="deleteSchedules">
+		delete from schedules where Schedule_seq=#{schedule_seq}
+	</delete>
+	<update id="updateSchedules">
+		update schedules set title=#{title},schedule_type=#{schedule_type},
+		start_dt=#{start_dt},end_dt=#{end_dt},sked_reason=#{sked_reason} where Schedule_seq=#{schedule_seq}
+	</update>
+	
+	<insert id="addMeetingSchedules">
+		insert into schedules values (schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, #{start_dt}, #{end_dt}, 
+			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate)
+	</insert>
 </mapper>

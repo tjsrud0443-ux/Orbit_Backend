@@ -1,6 +1,8 @@
 package com.study.app.domains.meetingRooms;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +28,20 @@ public class RoomRsvnDAO {
 	
 	public List<RoomRsvnDTO> getAllMyMeetRsvn(String users_id) {
 		return mybatis.selectList("RoomRsvn.getAllMyMeetRsvn", users_id);
+	}
+	
+	public void createReservation(RoomRsvnDTO dto) {
+		mybatis.insert("RoomRsvn.createReservation", dto);
+	}
+	
+	public void addRsvnMembers(RoomRsvnMemberDTO dto) {
+		mybatis.insert("RoomRsvn.addRsvnMembers", dto);
+	}
+	
+	public List<RoomRsvnDTO> getReservations(String date, Long room_seq) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("date", date);
+		params.put("room_seq", room_seq);
+		return mybatis.selectList("RoomRsvn.getReservations", params);
 	}
 }

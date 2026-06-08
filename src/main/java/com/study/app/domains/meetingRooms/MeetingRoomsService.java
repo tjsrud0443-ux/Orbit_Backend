@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.file.FileService;
+import com.study.app.domains.schedules.SchedulesService;
 
 @Service
 public class MeetingRoomsService {
@@ -19,6 +20,8 @@ public class MeetingRoomsService {
 	private RoomRsvnDAO rsvnDao;
 	@Autowired
 	private FileService fileServ;
+	@Autowired
+	private SchedulesService scheServ;
 	
 	public List<MeetingRoomsDTO> getAllRooms(){
 		return dao.getAllRooms();
@@ -71,5 +74,24 @@ public class MeetingRoomsService {
 	
 	public List<RoomRsvnDTO> getAllMyMeetRsvn(String loginId) {
 		return rsvnDao.getAllMyMeetRsvn(loginId);
+	}
+	
+	@Transactional
+	public void createReservation(RoomRsvnDTO dto, String loginId) {
+		dto.setUsers_id(loginId);
+		rsvnDao.createReservation(dto);
+		scheServ.addMeetingSchedules(dto, loginId);
+		
+		if (dto.getAttendees() != null && !dto.getAttendees().isEmpty()) {
+			for (RoomRsvnMemberDTO member : dto.getAttendees()) {
+				member.setRsvn_seq(dto.getRsvn_seq());
+				rsvnDao.addRsvnMembers(member);
+				scheServ.addMeetingSchedules(dto, member.getUsers_id());
+			}
+		}
+	}
+	
+	public List<RoomRsvnDTO> getReservations(String date, Long room_seq) {
+		return rsvnDao.getReservations(date, room_seq);
 	}
 }

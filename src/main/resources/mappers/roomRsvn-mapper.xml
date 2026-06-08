@@ -24,4 +24,23 @@
 		left outer join meeting_rooms m on r.room_seq = m.room_seq
 		where r.users_id = #{users_id}
 	</select>
+	
+	<insert id="createReservation">
+		<selectKey keyProperty="rsvn_seq" resultType="long" order="BEFORE">
+	        select rsvn_seq.nextval from dual
+	    </selectKey>
+	    insert into room_rsvn values (#{rsvn_seq}, #{room_seq}, #{users_id}, #{title}, #{start_dt}, #{end_dt}, sysdate)
+	</insert>
+	
+	<insert id="addRsvnMembers">
+		insert into room_rsvn_member values (rm_seq.nextval, #{rsvn_seq}, #{users_id})
+	</insert>
+	
+	<select id="getReservations" resultType="com.study.app.domains.meetingRooms.RoomRsvnDTO">
+		select r.*, u.name as name
+		from room_rsvn r
+		JOIN users u ON u.id = r.users_id
+		where r.room_seq = #{room_seq}
+		and TO_CHAR(r.start_dt, 'YYYY-MM-DD') = #{date}
+	</select>
 </mapper>

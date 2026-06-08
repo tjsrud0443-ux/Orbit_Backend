@@ -5,7 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,6 +22,22 @@ public class MeetingRoomsController {
 	@GetMapping("getAllRooms")
 	public ResponseEntity<List<MeetingRoomsDTO>> getAllRooms(){
 		List<MeetingRoomsDTO> list = roomServ.getAllRooms();
+		return ResponseEntity.ok(list);
+	}
+	
+	@PostMapping("createReservation")
+	public ResponseEntity<Void> createReservation(@RequestBody RoomRsvnDTO dto,
+													@RequestAttribute String loginId) {
+		
+		roomServ.createReservation(dto, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("getReservations")
+	public ResponseEntity<List<RoomRsvnDTO>> getReservations(@RequestParam String date,
+															 @RequestParam Long room_seq) {
+		
+		List<RoomRsvnDTO> list = roomServ.getReservations(date, room_seq);
 		return ResponseEntity.ok(list);
 	}
 }
