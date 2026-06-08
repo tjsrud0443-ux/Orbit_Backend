@@ -288,12 +288,28 @@ public class ApprovalDAO {
 		mybatis.delete("Approval.deleteGenDoc", doc_seq);
 	}
 	
+	public Long findPaySeq(Long doc_seq) {
+		return mybatis.selectOne("Approval.findPaySeq", doc_seq);
+	}
+	
+	public List<String> findPaymentFile (Long pay_seq) {
+		return mybatis.selectList("Approval.findPaymentFile", pay_seq);
+	}
+	
 	public void deletePayItem(Long doc_seq) {
 		mybatis.delete("Approval.deletePayItem", doc_seq);
 	}
 	
 	public void deletePayDoc(Long doc_seq) {
 		mybatis.delete("Approval.deletePayDoc", doc_seq);
+	}
+	
+	public Long findPurSeq(Long doc_seq) {
+		return mybatis.selectOne("Approval.findPurSeq", doc_seq);
+	}
+	
+	public List<String> findPurAttach(Long purchase_seq) {
+		return mybatis.selectList("Approval.findPurAttach", purchase_seq);
 	}
 	
 	public void deletePurAttach(Long doc_seq) {
