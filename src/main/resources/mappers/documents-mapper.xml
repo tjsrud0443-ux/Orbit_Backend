@@ -19,8 +19,11 @@
 	</insert>
 	
   	<insert id="insertDocFile">
+  		<selectKey keyProperty="file_seq" resultType="long" order="BEFORE">
+        	select d_file_seq.nextval from dual
+    	</selectKey>
   		insert into document_files values 
-  		(d_file_seq.nextval, #{document_seq}, #{file_oriname}, #{file_sysname}, #{file_path}, #{mime_type}, sysdate)
+  		(#{file_seq}, #{document_seq}, #{file_oriname}, #{file_sysname}, #{file_path}, #{mime_type}, sysdate)
 	</insert>
 	
 	<update id="updateDocumentTitle">

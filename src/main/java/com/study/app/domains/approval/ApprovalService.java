@@ -16,6 +16,7 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.study.app.domains.annualLeave.AnnualLeaveDAO;
+import com.study.app.domains.file.FileService;
 
 @Service
 public class ApprovalService {
@@ -24,6 +25,8 @@ public class ApprovalService {
 	private ApprovalDAO dao;
 	@Autowired
 	private AnnualLeaveDAO annualDao;
+	@Autowired
+	private FileService fileServ;
 	@Autowired
 	private Storage storage;
 	@Value("${spring.cloud.gcp.bucket}")
@@ -620,6 +623,12 @@ public class ApprovalService {
 	
 	// 지출결의서 (임시문서)
 	private void deletePaymentDoc(Long doc_seq) {
+		Long paySeq = dao.findPaySeq(doc_seq);
+		List<String> file = dao.findPaymentFile(paySeq);
+		
+		for(String sysname : file) {
+			fileServ.deleteFromGCS(sysname);
+		}
 		dao.deletePayItem(doc_seq);
 		dao.deletePayDoc(doc_seq);
 		
@@ -628,6 +637,12 @@ public class ApprovalService {
 	
 	// 구매신청서 (임시문서)
 	private void deletePurchaseDoc(Long doc_seq) {
+		Long purchaseSeq = dao.findPurSeq(doc_seq);
+		List<String> file = dao.findPurAttach(purchaseSeq);
+		
+		for(String sysname : file) {
+			fileServ.deleteFromGCS(sysname);
+		}
 		dao.deletePurAttach(doc_seq);
 		dao.deletePurItem(doc_seq);
 		dao.deletePurDoc(doc_seq);

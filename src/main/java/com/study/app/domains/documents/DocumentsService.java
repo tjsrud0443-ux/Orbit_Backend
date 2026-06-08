@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.study.app.domains.aiChat.AiChatService;
+import com.study.app.domains.aiChat.RagDAO;
 import com.study.app.domains.file.FileService;
 
 @Service
@@ -17,6 +19,8 @@ public class DocumentsService {
 	private DocumentsDAO dao;
 	@Autowired
 	private FileService fileServ;
+	@Autowired
+	private AiChatService aiChatServ;
 	
 	@Transactional
     public void addDoc(String title, String users_id, MultipartFile file) {
@@ -48,6 +52,11 @@ public class DocumentsService {
             docFileDTO.setMime_type(mime_type);
 
             dao.insertDocFile(docFileDTO);
+            
+            Long file_seq = docFileDTO.getFile_seq();
+            String signedUrl = fileServ.createSignedUrl(sysname);
+            
+            aiChatServ.createChunk(file_seq, document_seq, oriname, signedUrl, mime_type);
 
         } catch (Exception e) {
             throw new RuntimeException("문서 및 파일 등록 실패: " + e.getMessage(), e);
@@ -84,6 +93,7 @@ public class DocumentsService {
         if (fileDTO != null) {
             fileServ.deleteFromGCS(fileDTO.getFile_sysname());
         }
+        aiChatServ.deleteDocumentRag(document_seq);
         dao.deleteDocFileByDocSeq(document_seq);
         dao.deleteDocument(document_seq);
     }

@@ -10,11 +10,11 @@
 			order="BEFORE">
 			select rag_doc_seq.nextval from dual
 		</selectKey>
-		insert into rag_documents ( rag_doc_seq, source_type, source_seq, file_name,
+		insert into rag_documents ( rag_doc_seq, source_type, source_seq, file_seq, file_name,
 		file_ext, raw_text, extract_status, created_at )
 		 
-		values ( #{rag_doc_seq}, #{source_type}, #{source_seq} , #{file_name}, #{file_ext}, #{raw_text},
-		'DONE', sysdate )
+		values ( #{rag_doc_seq}, #{source_type}, #{source_seq} , #{file_seq, jdbcType=NUMERIC}, #{file_name}, #{file_ext}, #{raw_text},
+		#{extract_status}, sysdate )
 	</insert>
 
 	<insert id="insertRagChunks"
@@ -29,18 +29,45 @@
 		embed_status, created_at ) 
 		
 		values ( #{chunk_seq}, #{rag_doc_seq},#{chunk_index}, #{chunk_text}, 
-		'PENDING', sysdate ) 
+		#{embed_status}, sysdate ) 
 	</insert>
 	
 	<select id="findAllChunks"
         resultType="com.study.app.domains.aiChat.RagChunksDTO">
 
-	    select
-	        chunk_seq,
-	        rag_doc_seq,
-	        chunk_text
+	    select chunk_seq, rag_doc_seq, chunk_text
 	    from rag_chunks
 	    order by chunk_seq
 
 	</select>
+	
+	<select id="findChunksByRagDocSeq"
+        resultType="com.study.app.domains.aiChat.RagChunksDTO">
+
+	    select chunk_seq, rag_doc_seq, chunk_text
+	    from rag_chunks where rag_doc_seq = #{rag_doc_seq}
+	    order by chunk_index
+	</select>
+	
+	<update id="updateChunkEmbed">
+		update rag_chunks set qdrant_point_id = #{qdrant_point_id},
+			embed_at = sysdate where chunk_seq = #{chunk_seq}
+	</update>
+	
+	<select id="findRagDocSeq" resultType="long">
+		select rag_doc_seq from rag_documents 
+			where source_type = #{source_type} and source_seq = #{source_seq}
+	</select>
+	
+	<select id="findPointIdsByRagDocSeq" resultType="string">
+		select qdrant_point_id from rag_chunks where rag_doc_seq = #{rag_doc_seq}
+	</select>
+	
+	<delete id="deleteRagChunksByRagDocSeq">
+		delete from rag_chunks where rag_doc_seq = #{rag_doc_seq}
+	</delete>
+	
+	<delete id="deleteRagDocumentsByRagDocSeq">
+		delete from rag_documents where rag_doc_seq = #{rag_doc_seq}
+	</delete>
 </mapper>

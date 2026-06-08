@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.study.app.domains.aiChat.AiChatService;
+
 @Service
 public class MeetingMinutesService {
 	@Autowired
@@ -14,6 +16,10 @@ public class MeetingMinutesService {
 	@Autowired
 	private MinutesAttendeesDAO minutesAttendeesDAO;
 	
+	@Autowired
+	private AiChatService aiChatServ;
+	
+	@Transactional
 	public int insertMinutes(MeetingMinutesDTO dto) {
 	    int result = minutesDAO.insertMinutes(dto);  // insert 후 dto.minuteSeq에 자동으로 생성된 seq 담김
 	    
@@ -23,6 +29,7 @@ public class MeetingMinutesService {
 	        	 minutesAttendeesDAO.insertMinutesAttendees(attendee);            
 	        }
 	    }
+	    aiChatServ.createMeetingChunk(dto);
 	    return result;		
 	}
 	
@@ -34,7 +41,10 @@ public class MeetingMinutesService {
 		return minutesDAO.getMinutesDetail(minute_seq);
 	}
 	
+	@Transactional
 	public void deleteMinutesAll(Long minute_seq) {
+		aiChatServ.deleteMeetingRag(minute_seq);
+		
 		// 1. 자식 테이블(참석자) 데이터 먼저 삭제
 		minutesAttendeesDAO.deleteMinutesAttendees(minute_seq);
 	    
@@ -47,7 +57,8 @@ public class MeetingMinutesService {
 	public void updateMinutesAll(MeetingMinutesDTO dto) {
 	    // 1. 회의록 본문 내용 수정 (제목, 내용 등 수정)
 	    minutesDAO.updateMinutes(dto); 
-	    
+	    aiChatServ.deleteMeetingRag(dto.getMinute_seq());
+	    aiChatServ.createMeetingChunk(dto);
 	    // 2. [재사용 1] 기존 참석자 싹 지우기
 	    minutesAttendeesDAO.deleteMinutesAttendees(dto.getMinute_seq()); 
 	    
