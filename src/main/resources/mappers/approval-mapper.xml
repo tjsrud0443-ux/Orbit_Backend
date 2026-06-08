@@ -465,6 +465,14 @@
 		delete from general where doc_seq = #{doc_seq}
 	</delete>
 	
+	<select id="findPaySeq" resultType="long">
+		select pay_seq from payment where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="findPaymentFile" resultType="string">
+		select sysname from payment_items where pay_seq = #{pay_seq}
+	</select>
+	
 	<delete id ="deletePayItem">
 		delete from payment_items where pay_seq in
 			(select pay_seq from payment where doc_seq = #{doc_seq}
@@ -474,6 +482,14 @@
 	<delete id ="deletePayDoc">
 		delete from payment where doc_seq = #{doc_seq}
 	</delete>
+	
+	<select id="findPurSeq" resultType="long">
+		select purchase_seq from purchase where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="findPurAttach" resultType="string">
+		select sysname from purchase_attachments where purchase_seq = #{purchase_seq}
+	</select>
 	
 	<delete id ="deletePurAttach">
 		delete from purchase_attachments where purchase_seq in
@@ -490,5 +506,5 @@
 	<delete id ="deletePurDoc">
 		delete from purchase where doc_seq = #{doc_seq}
 	</delete>
-	
+
 </mapper>

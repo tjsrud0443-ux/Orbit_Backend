@@ -1,11 +1,13 @@
 package com.study.app.domains.aiChat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
@@ -18,6 +20,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+
+import com.study.app.domains.meetingMinutes.MeetingMinutesDTO;
 
 import jakarta.annotation.PostConstruct;
 import tools.jackson.databind.ObjectMapper;
@@ -43,6 +47,9 @@ public class AiChatService {
 
 	@Autowired
 	private AiChatDAO aiDao;
+
+	@Autowired
+	private RagDAO ragDao;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -93,18 +100,15 @@ public class AiChatService {
 		System.out.println("=================");
 		System.out.println("최고 유사도 : " + maxScore);
 		System.out.println("=================");
-		// 연차 사용 : 0.7673025
-		// 이니셔티브별 현황 : 0.8592471
-		// 출근 전 준비할 사항 : 0.8780443
 
-		double threshold = 0.53;
-		
+		double threshold = 0.20;
+
 		List<SearchResultDTO> filteredDocs = similarDocs.stream()
-					.filter(doc -> doc.getScore() != null)
-					.filter(doc -> doc.getScore() >= threshold)
-					.limit(5)
-					.collect(Collectors.toList());
-		
+				.filter(doc -> doc.getScore() != null)
+				.filter(doc -> doc.getScore() >= threshold)
+				.limit(10)
+				.collect(Collectors.toList());
+
 		System.out.println("=================");
 		System.out.println("필터링 후 청크 수 : " + filteredDocs.size());
 		filteredDocs.forEach(doc -> {
@@ -118,7 +122,7 @@ public class AiChatService {
 			aiResult.put("chat_seq", chat_seq);
 
 			String aiAnswer = "사내 데이터베이스에서 '" + content + "'와(과) 관련된 규정이나 가이드를 찾지 못했습니다. 😢\n"
-							+ "정확한 안내를 위해 해당 질문은 관리자에게 문의해 주세요.";
+					+ "정확한 안내를 위해 해당 질문은 관리자에게 문의해 주세요.";
 
 
 			aiDao.insertMessage(new AiMessagesDTO(0L,chat_seq,"AI",
@@ -176,6 +180,153 @@ public class AiChatService {
 		return aiResult;
 	}
 
+	public void createChunk(Long file_seq, Long document_seq, 
+			String fileName, String signedUrl, String mimeType) {
+		Map<String, Object> body = new HashMap<>();
+
+		body.put("fileName", fileName);
+		body.put("signedUrl", signedUrl);
+		body.put("mimeType", mimeType);
+
+		ChunkResponseDTO response = 
+				restClient.post()
+				.uri("/document/chunk")
+				.body(body)
+				.retrieve()
+				.body(ChunkResponseDTO.class);
+
+		RagDocumentsDTO ragDoc = new RagDocumentsDTO();
+
+		ragDoc.setSource_type("DOCUMENTS");
+		ragDoc.setSource_seq(document_seq);
+		ragDoc.setFile_seq(file_seq);
+		ragDoc.setFile_name(fileName);
+		ragDoc.setFile_ext(FilenameUtils.getExtension(fileName));
+		ragDoc.setRaw_text(response.getRaw_text());
+		ragDoc.setExtract_status("DONE");
+
+		ragDao.insertRagDocuments(ragDoc);
+
+		Long ragDocSeq = ragDoc.getRag_doc_seq();
+		for(ChunkItemDTO chunk : response.getChunks()) {
+
+			RagChunksDTO dto = new RagChunksDTO();
+
+			dto.setRag_doc_seq(ragDocSeq);
+			dto.setChunk_index(chunk.getChunk_index());
+			dto.setChunk_text(chunk.getChunk_text());
+			dto.setEmbed_status("PENDING");
+
+			ragDao.insertRagChunks(dto);
+		} 
+		embedChunk(ragDocSeq, fileName);
+	}
+
+	public void createMeetingChunk(MeetingMinutesDTO dto) {
+		String raw_text = 
+				"회의명 : " + dto.getTitle() + "\n\n" +
+						"[주요 내용] : " + dto.getMain_content() + "\n\n" +
+						"[결정 사항] : " + dto.getDecisions() + " \n\n" + 
+						"[할 일] : " + dto.getTodos();
+
+		RagDocumentsDTO ragDoc = new RagDocumentsDTO();
+
+		ragDoc.setSource_type("MEETING_MINUTES");
+		ragDoc.setSource_seq(dto.getMinute_seq());
+		ragDoc.setFile_seq(null);
+		ragDoc.setFile_name(dto.getTitle());
+		ragDoc.setFile_ext("MEETING");
+		ragDoc.setRaw_text(raw_text);
+		ragDoc.setExtract_status("DONE");
+
+		ragDao.insertRagDocuments(ragDoc);
+
+
+		Long ragDocSeq = ragDoc.getRag_doc_seq();
+
+		Long chunkIndex = 0L;
+
+		if(dto.getMain_content() != null 
+				&& !dto.getMain_content().isEmpty()) {
+			RagChunksDTO mainChunk = new RagChunksDTO();
+
+			mainChunk.setRag_doc_seq(ragDocSeq);
+			mainChunk.setChunk_index(chunkIndex++);
+			mainChunk.setChunk_text(
+					"회의명 : " + dto.getTitle() + "\n" +
+							"회의 일자: " + dto.getMeeting_dt() + 
+							"\n\n[주요 내용]\n" + dto.getMain_content());
+			mainChunk.setEmbed_status("PENDING");
+			ragDao.insertRagChunks(mainChunk);
+		}
+
+
+		if(dto.getDecisions() != null 
+				&& !dto.getDecisions().isEmpty()) {
+			RagChunksDTO decisionChunk = new RagChunksDTO();
+
+			decisionChunk.setRag_doc_seq(ragDocSeq);
+			decisionChunk.setChunk_index(chunkIndex++);
+			decisionChunk.setChunk_text(
+					"회의명 : " + dto.getTitle() + "\n" +
+							"회의 일자: " + dto.getMeeting_dt() + 
+							"\n\n[결정 사항]\n" + dto.getDecisions());
+			decisionChunk.setEmbed_status("PENDING");
+			ragDao.insertRagChunks(decisionChunk);
+		}
+
+		if(dto.getTodos() != null 
+				&& !dto.getTodos().isEmpty()) {
+			RagChunksDTO todoChunk = new RagChunksDTO();
+
+			todoChunk.setRag_doc_seq(ragDocSeq);
+			todoChunk.setChunk_index(chunkIndex++);
+			todoChunk.setChunk_text(
+					"회의명 : " + dto.getTitle() + "\n" +
+							"회의 일자: " + dto.getMeeting_dt() + 
+							"\n\n[할 일]\n" + dto.getTodos());
+			todoChunk.setEmbed_status("PENDING");
+			ragDao.insertRagChunks(todoChunk);
+		}
+
+		embedChunk(ragDocSeq, dto.getTitle());
+	}
+
+	public void embedChunk(Long rag_doc_seq, String fileName) {
+		List<RagChunksDTO> chunks = ragDao.findChunksByRagDocSeq(rag_doc_seq);
+
+		List<EmbedChunkDTO> items = new ArrayList<>();
+
+		for(RagChunksDTO chunk : chunks) {
+			EmbedChunkDTO dto = new EmbedChunkDTO();
+
+			dto.setChunk_seq(chunk.getChunk_seq());
+			dto.setRag_doc_seq(chunk.getRag_doc_seq());
+			dto.setFile_name(fileName);
+			dto.setChunk_text(chunk.getChunk_text());
+
+			items.add(dto);
+		}
+
+		EmbedRequestDTO request = new EmbedRequestDTO();
+
+		request.setChunks(items);
+
+		EmbedResponseDTO response =
+				restClient.post()
+				.uri("/embed/chunks")
+				.body(request)
+				.retrieve()
+				.body(EmbedResponseDTO.class);
+
+		if(response != null && response.isSuccess()) {
+
+			for(PointInfoDTO point : response.getPoints()) {
+				ragDao.updateChunkEmbed(point.getChunk_seq(),point.getPoint_id());
+			}
+		}
+	}
+
 	public List<AiChatDTO> sideChatTitleList(String loginId) {
 		return aiDao.sideChatTitleList(loginId);
 	}
@@ -183,17 +334,17 @@ public class AiChatService {
 	public List<AiMessagesDTO> detailChat(Long chat_seq) {
 		return aiDao.detailChat(chat_seq);
 	}
-	
+
 	public void insertQuestion(String loginId, 
 			AiUnansweredQuestionsDTO dto) {
 		Map<String, Object> params = new HashMap<>();
-		
+
 		params.put("users_id", loginId);
 		params.put("dto", dto);
-		
+
 		aiDao.insertQuestion(params);
 	}
-	
+
 	@Transactional
 	public void deleteChat(Long chat_seq) {
 		aiDao.deleteQuestions(chat_seq);
@@ -201,5 +352,43 @@ public class AiChatService {
 		aiDao.deleteAiChat(chat_seq);
 	}
 
-	
+	@Transactional
+	public void deleteDocumentRag(Long document_seq) {
+		Long ragDocSeq = ragDao.findRagDocSeq("DOCUMENTS", document_seq);
+
+		List<String> pointIds = ragDao.findPointIdsByRagDocSeq(ragDocSeq);
+
+		DeletePointIdsRequestDTO request = new DeletePointIdsRequestDTO();
+		request.setPoint_ids(pointIds);
+
+		restClient.post()
+		.uri("/delete/points")
+		.body(request)
+		.retrieve()
+		.toBodilessEntity();
+
+		ragDao.deleteRagChunksByRagDocSeq(ragDocSeq);
+		ragDao.deleteRagDocumentsByRagDocSeq(ragDocSeq);
+	}
+
+	@Transactional
+	public void deleteMeetingRag(Long minute_seq) {
+		Long ragDocSeq = ragDao.findRagDocSeq("MEETING_MINUTES", minute_seq);
+
+		List<String> pointIds = ragDao.findPointIdsByRagDocSeq(ragDocSeq);
+
+		DeletePointIdsRequestDTO request = new DeletePointIdsRequestDTO();
+		request.setPoint_ids(pointIds);
+
+		restClient.post()
+		.uri("/delete/points")
+		.body(request)
+		.retrieve()
+		.toBodilessEntity();
+
+		ragDao.deleteRagChunksByRagDocSeq(ragDocSeq);
+		ragDao.deleteRagDocumentsByRagDocSeq(ragDocSeq);
+	}
+
+
 }

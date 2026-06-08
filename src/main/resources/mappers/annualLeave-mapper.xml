@@ -23,4 +23,18 @@
 	<update id="updateAnnualLeaveUsedDays">
 		update annual_leave set used_days = #{used_days}, remaining_days = #{remaining_days} where users_id = #{users_id}
 	</update>
+	
+	<select id="findOneYearUsers" resultType="com.study.app.domains.annualLeave.AnnualLeaveUpdateDTO">
+		select u.id, to_char(u.hire_date, 'YYYY-MM-DD') as hire_date,
+			a.leave_seq, a.used_days
+		from users u
+		join annual_leave a on u.id = a.users_id
+		where floor(months_between(sysdate, u.hire_date)) &lt; 12
+      	and a.year = extract(year from sysdate)
+	</select>
+	
+	<update id="updateAnnualLeave">
+		update annual_leave set total_days = #{total_days}, remaining_days = #{remaining_days} 
+		where leave_seq = #{leave_seq}
+	</update>
 </mapper>

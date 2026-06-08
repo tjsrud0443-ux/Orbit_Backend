@@ -1,15 +1,13 @@
 package com.study.app.domains.file;
 
-import java.io.ByteArrayInputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,5 +82,21 @@ public class FileService {
 	
 	public void deleteFromGCS(String sysname) {
 	    storage.delete(bucketName, sysname);
+	}
+	
+	// Signed URL 생성
+	public String createSignedUrl(String sysname) {
+	    BlobInfo blobInfo =
+	            BlobInfo.newBuilder(bucketName, sysname)
+	                    .build();
+
+	    URL signedUrl = storage.signUrl(
+	            blobInfo,
+	            15,
+	            TimeUnit.MINUTES,
+	            Storage.SignUrlOption.withV4Signature()
+	    );
+
+	    return signedUrl.toString();
 	}
 }
