@@ -63,7 +63,17 @@ public class BoardService {
     }
     
     public BoardPostsDTO getPostDetail(Long post_seq) {
-    	return boardDAO.getPostDetail(post_seq);
+    	boardDAO.incrementViewCount(post_seq);  // 조회수 +1
+    	BoardPostsDTO post = boardDAO.getPostDetail(post_seq);
+    	
+        // 파일 목록 따로 조회해서 set
+        List<BoardFileDTO> files = boardDAO.getFilesByPostSeq(post_seq);
+        post.setFiles(files);
+        return post;
+    }
+    
+    public BoardFileDTO getFileBySeq(Long fileSeq) {
+        return boardDAO.getFileBySeq(fileSeq);
     }
     
     /*삭제*/

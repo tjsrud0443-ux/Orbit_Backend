@@ -3,6 +3,9 @@ package com.study.app.domains.board;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * 
+ */
 public class BoardPostsDTO {
 	private Long post_seq;       // POST_SEQ (NUMBER)
     private String title;        // TITLE (VARCHAR2)
@@ -12,12 +15,12 @@ public class BoardPostsDTO {
     private int view_count;      // VIEW_COUNT (NUMBER)
     private LocalDateTime created_at;     // CREATED_AT (DATE)
     private String author_name;
-    private String author_sysname;
+    private String author_sysname;   
+    //쿼리에 없
+    private List<BoardFileDTO> files;
     
-    public BoardPostsDTO() {}
-
-	public BoardPostsDTO(Long post_seq, String title, String category, String content, String users_id, int view_count,
-			LocalDateTime created_at, String author_name, String author_sysname) {
+    public BoardPostsDTO(Long post_seq, String title, String category, String content, String users_id, int view_count,
+			LocalDateTime created_at, String author_name, String author_sysname, List<BoardFileDTO> files) {
 		super();
 		this.post_seq = post_seq;
 		this.title = title;
@@ -28,7 +31,10 @@ public class BoardPostsDTO {
 		this.created_at = created_at;
 		this.author_name = author_name;
 		this.author_sysname = author_sysname;
+		this.files = files;
 	}
+
+	public BoardPostsDTO() {}
 
 	public Long getPost_seq() {
 		return post_seq;
@@ -100,6 +106,14 @@ public class BoardPostsDTO {
 
 	public void setAuthor_sysname(String author_sysname) {
 		this.author_sysname = author_sysname;
+	}
+
+	public List<BoardFileDTO> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<BoardFileDTO> files) {
+		this.files = files;
 	}
 
 }

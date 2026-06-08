@@ -115,6 +115,19 @@ public class BoardController {
     	return ResponseEntity.ok(detail);
     }
     
+    //파일 다운
+    @GetMapping("/download/{fileSeq}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable Long fileSeq) throws Exception {
+        BoardFileDTO file = boardServ.getFileBySeq(fileSeq);
+        byte[] fileBytes = fileService.getFileBytes(file.getFile_sysname());
+        
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + 
+                    java.net.URLEncoder.encode(file.getFile_oriname(), "UTF-8") + "\"")
+                .header("Content-Type", "application/octet-stream")
+                .body(fileBytes);
+    }
+    
     @DeleteMapping("/{post_seq}")
     public ResponseEntity<String> deletePost(@PathVariable Long post_seq) {
         try {

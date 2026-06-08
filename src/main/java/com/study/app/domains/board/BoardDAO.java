@@ -20,6 +20,7 @@ public class BoardDAO {
     public int insertPostFile(BoardFileDTO dto) {
     	return mybatis.insert("Board.insertPostFile",dto);
     }
+    
     /*출력*/
     public List<BoardPostsDTO> getBoardList(Map<String, Object> params){
     	return mybatis.selectList("Board.getBoardList",params);
@@ -31,12 +32,22 @@ public class BoardDAO {
     
     public BoardPostsDTO getPostDetail(Long post_seq) {
     	return mybatis.selectOne("Board.getPostDetail", post_seq);
-    }
-    /*삭제*/
+    }  
+    
     public List<BoardFileDTO> getFilesByPostSeq(Long post_seq) {
         return mybatis.selectList("Board.getFilesByPostSeq", post_seq);
     }
-
+    
+    public BoardFileDTO getFileBySeq(Long fileSeq) {
+        return mybatis.selectOne("Board.getFileBySeq", fileSeq);
+    }
+    
+    /*조회수*/
+    public void incrementViewCount(Long post_seq) {
+        mybatis.update("Board.incrementViewCount", post_seq);
+    }
+    
+    /*삭제*/
     public void deleteFiles(Long post_seq) {
         mybatis.delete("Board.deleteFiles", post_seq);
     }
@@ -48,10 +59,6 @@ public class BoardDAO {
     /*수정*/
     public void updatePost(BoardPostsDTO post) {
         mybatis.update("Board.updatePost", post);
-    }
-    
-    public BoardFileDTO getFileBySeq(Long fileSeq) {
-        return mybatis.selectOne("Board.getFileBySeq", fileSeq);
     }
     
     public void deleteFile(Long fileSeq) {

@@ -48,6 +48,7 @@
 	    )
 	    WHERE rn BETWEEN #{start} AND #{end}
 	</select>
+	
 	<select id="getBoardCount" resultType="int">
 	    SELECT COUNT(*) FROM BOARD_POSTS
 	    <where>
@@ -57,6 +58,11 @@
 	        </if>
 	    </where>
 	</select>
+	
+	<select id="getFileBySeq" resultType="com.study.app.domains.board.BoardFileDTO">
+	    SELECT * FROM BOARD_FILE WHERE FILE_SEQ = #{fileSeq}
+	</select>
+	
 	<select id="getPostDetail" resultType="com.study.app.domains.board.BoardPostsDTO">
 	    SELECT
 	        b.POST_SEQ,
@@ -72,14 +78,19 @@
 	    LEFT JOIN USERS u ON b.USERS_ID = u.ID
 	    WHERE b.POST_SEQ = #{post_seq}    
 	</select>	
+	
 	<!-- 파일 목록 조회 (GCS 삭제용) -->
 	<select id="getFilesByPostSeq" resultType="com.study.app.domains.board.BoardFileDTO">
 	    SELECT * FROM BOARD_FILE WHERE POST_SEQ = #{post_seq}
 	</select>
 	
-	<!-- 파일 삭제 -->
+	<!-- 글 삭제 시 파일 삭제 -->
 	<delete id="deleteFiles">
 	    DELETE FROM BOARD_FILE WHERE POST_SEQ = #{post_seq}
+	</delete>
+	<!--파일 개별 삭제-->
+	<delete id="deleteFile" parameterType="long">
+	    DELETE FROM BOARD_FILE WHERE FILE_SEQ = #{file_seq}
 	</delete>
 	
 	<!-- 게시글 삭제 -->
@@ -87,6 +98,14 @@
 	    DELETE FROM BOARD_POSTS WHERE POST_SEQ = #{post_seq}
 	</delete>
 	
+	<!--조회수-->
+	<update id="incrementViewCount">
+	    UPDATE BOARD_POSTS
+	    SET VIEW_COUNT = VIEW_COUNT + 1
+	    WHERE POST_SEQ = #{post_seq}
+	</update>
+
+	<!--게시글 수정-->
 	<update id="updatePost">
 	    UPDATE BOARD_POSTS
 	    SET TITLE = #{title},
