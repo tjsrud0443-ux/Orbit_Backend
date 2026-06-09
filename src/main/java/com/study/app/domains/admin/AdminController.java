@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,8 @@ import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
 import com.study.app.domains.documents.DocumentsDTO;
 import com.study.app.domains.documents.DocumentsService;
+import com.study.app.domains.meetingRooms.MeetingRoomsDTO;
+import com.study.app.domains.meetingRooms.MeetingRoomsService;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
@@ -45,6 +48,8 @@ public class AdminController {
 	private UsersService userServ;
 	@Autowired
 	private DocumentsService docServ;
+	@Autowired
+	private MeetingRoomsService roomServ;
 
 	@GetMapping("/hr/allRequest")
 	public ResponseEntity<Map<String, Object>> getAllRequest(@RequestParam Long cPage,
@@ -187,12 +192,33 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 	
+	@GetMapping("ga/getAllRooms")
+	public ResponseEntity<List<MeetingRoomsDTO>> getAllRooms() {
+		List<MeetingRoomsDTO> result = roomServ.getAllRooms();
+		return ResponseEntity.ok(result);
+	}
 	
+	@PostMapping("ga/addMeetingRoom")
+	public ResponseEntity<Void> addMeetingRoom(@RequestPart("input") MeetingRoomsDTO dto,
+												@RequestPart("file") MultipartFile file){
+		
+		roomServ.addMeetingRoom(dto, file);
+		return ResponseEntity.ok().build();
+	}
 	
+	@PutMapping("ga/editMeetingRoom")
+	public ResponseEntity<Void> editMeetingRoom(@RequestPart("input") MeetingRoomsDTO dto,
+												@RequestPart(value = "file", required = false) MultipartFile file){
+		
+		roomServ.editMeetingRoom(dto, file);
+		return ResponseEntity.ok().build();
+	}
 	
-	
-	
-	
+	@DeleteMapping("ga/deleteMeetingRoom/{room_seq}")
+	public ResponseEntity<Void> deleteMeetingRoom(@PathVariable Long room_seq){
+		roomServ.deleteMeetingRoom(room_seq);
+		return ResponseEntity.ok().build();
+	}
 	
 	
 	
