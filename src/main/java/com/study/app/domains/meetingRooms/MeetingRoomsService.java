@@ -120,5 +120,6 @@ public class MeetingRoomsService {
 				scheServ.insertMeetAddMember(dto, member.getUsers_id());
 			}
 		}
+		scheServ.updateMeetSchedule(dto);
 	}
 }

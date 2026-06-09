@@ -72,6 +72,6 @@ public class RoomRsvnDAO {
 		Map<String, Object> params = new HashMap<>();
 		params.put("rsvn_seq", rsvn_seq);
 		params.put("users_id", users_id);
-		mybatis.delete("RoomRsvn.insertAddMember", params);
+		mybatis.insert("RoomRsvn.insertAddMember", params);
 	}
 }

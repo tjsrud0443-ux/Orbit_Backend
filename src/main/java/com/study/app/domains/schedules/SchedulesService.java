@@ -56,4 +56,8 @@ public class SchedulesService {
 		
 		schedDAO.insertMeetAddMember(dto);
 	}
+	
+	public void updateMeetSchedule(RoomRsvnDTO dto) {
+		schedDAO.updateMeetSchedule(dto);
+	}
 }

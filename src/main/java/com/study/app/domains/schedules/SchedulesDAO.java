@@ -8,6 +8,8 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.study.app.domains.meetingRooms.RoomRsvnDTO;
+
 @Repository
 public class SchedulesDAO {
 	
@@ -43,5 +45,9 @@ public class SchedulesDAO {
 	
 	public void insertMeetAddMember(SchedulesDTO dto) {
 		mybatis.insert("Schedules.insertMeetAddMember", dto);
+	}
+	
+	public void updateMeetSchedule(RoomRsvnDTO dto) {
+		mybatis.update("Schedules.updateMeetSchedule", dto);
 	}
 }
