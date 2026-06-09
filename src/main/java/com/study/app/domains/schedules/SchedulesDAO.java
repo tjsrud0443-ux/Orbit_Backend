@@ -50,4 +50,8 @@ public class SchedulesDAO {
 	public void updateMeetSchedule(RoomRsvnDTO dto) {
 		mybatis.update("Schedules.updateMeetSchedule", dto);
 	}
+	
+	public void cancelMeetRsvn(Long ref_seq) {
+		mybatis.delete("Schedules.cancelMeetRsvn", ref_seq);
+	}
 }

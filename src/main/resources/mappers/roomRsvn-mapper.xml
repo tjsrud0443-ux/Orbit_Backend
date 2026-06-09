@@ -94,4 +94,12 @@
 	<insert id="insertAddMember">
 		insert into room_rsvn_member values (rm_seq.nextval, #{rsvn_seq}, #{users_id})
 	</insert>
+	
+	<delete id="deleteMeetMember">
+		delete from room_rsvn_member where rsvn_seq = #{rsvn_seq}
+	</delete>
+	
+	<delete id="deleteMeetRsvn">
+		delete from room_rsvn where rsvn_seq = #{rsvn_seq}
+	</delete>
 </mapper>

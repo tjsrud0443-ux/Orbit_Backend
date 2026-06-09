@@ -122,4 +122,11 @@ public class MeetingRoomsService {
 		}
 		scheServ.updateMeetSchedule(dto);
 	}
+	
+	@Transactional
+	public void cancelMeetRsvn(Long rsvn_seq) {
+		scheServ.cancelMeetRsvn(rsvn_seq);
+		rsvnDao.deleteMeetMember(rsvn_seq);
+		rsvnDao.deleteMeetRsvn(rsvn_seq);
+	}
 }

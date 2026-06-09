@@ -45,4 +45,8 @@
 		update schedules set title = #{title}, start_dt = #{start_dt}, end_dt = #{end_dt}, sked_reason = #{title}
 		where ref_seq = #{rsvn_seq} and schedule_type = 'MEETING'
 	</update>
+	
+	<delete id="cancelMeetRsvn">
+		delete from schedules where schedule_type = 'MEETING' and ref_seq = #{ref_seq}
+	</delete>
 </mapper>

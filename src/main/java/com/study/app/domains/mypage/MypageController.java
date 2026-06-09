@@ -76,4 +76,10 @@ public class MypageController {
 		mypageServ.updateMeetRsvn(dto);
 		return ResponseEntity.ok().build();
 	}
+	
+	@DeleteMapping("cancelMeetRsvn/{rsvn_seq}")
+	public ResponseEntity<Void> cancelMeetRsvn(@PathVariable Long rsvn_seq) {
+		mypageServ.cancelMeetRsvn(rsvn_seq);
+		return ResponseEntity.ok().build();
+	}
 }

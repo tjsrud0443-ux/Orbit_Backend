@@ -55,4 +55,8 @@ public class MypageService {
 	public void updateMeetRsvn(RoomRsvnDTO dto) {
 		roomServ.updateMeetRsvn(dto);
 	}
+	
+	public void cancelMeetRsvn(Long rsvn_seq) {
+		roomServ.cancelMeetRsvn(rsvn_seq);
+	}
 }

@@ -60,4 +60,8 @@ public class SchedulesService {
 	public void updateMeetSchedule(RoomRsvnDTO dto) {
 		schedDAO.updateMeetSchedule(dto);
 	}
+	
+	public void cancelMeetRsvn(Long rsvn_seq) {
+		schedDAO.cancelMeetRsvn(rsvn_seq);
+	}
 }

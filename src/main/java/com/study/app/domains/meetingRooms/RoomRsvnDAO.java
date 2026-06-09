@@ -74,4 +74,12 @@ public class RoomRsvnDAO {
 		params.put("users_id", users_id);
 		mybatis.insert("RoomRsvn.insertAddMember", params);
 	}
+	
+	public void deleteMeetMember(Long rsvn_seq) {
+		mybatis.delete("RoomRsvn.deleteMeetMember", rsvn_seq);
+	}
+	
+	public void deleteMeetRsvn(Long rsvn_seq) {
+		mybatis.delete("RoomRsvn.deleteMeetRsvn", rsvn_seq);
+	}
 }
