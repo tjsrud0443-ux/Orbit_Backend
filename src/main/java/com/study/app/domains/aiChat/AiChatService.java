@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import com.study.app.domains.meetingMinutes.MeetingMinutesDAO;
 import com.study.app.domains.meetingMinutes.MeetingMinutesDTO;
 
 import jakarta.annotation.PostConstruct;
@@ -52,7 +53,10 @@ public class AiChatService {
 
 	@Autowired
 	private RagDAO ragDao;
-
+	
+	@Autowired
+	private MeetingMinutesDAO meetingMinutesDao;
+	
 	@Autowired
 	private ObjectMapper objectMapper;
 
@@ -101,22 +105,20 @@ public class AiChatService {
 		System.out.println("최고 유사도 : " + maxScore);
 		System.out.println("=================");
 
-		double threshold = maxScore * 0.80;
-
 		List<SearchResultDTO> filteredDocs = similarDocs.stream()
-				//				.filter(doc -> doc.getScore() != null)
-				//				.filter(doc -> doc.getScore() >= threshold)
 				.limit(5)
 				.collect(Collectors.toList());
 
 		System.out.println("=================");
-		System.out.println("필터링 후 청크 수 : " + filteredDocs.size());
+		System.out.println("청크 수 : " + filteredDocs.size());
 		filteredDocs.forEach(doc -> {
-			System.out.println("필터링 된 각 score : " + doc.getScore());
-			System.out.println("필터링된 반환 내용 : " + doc.getText());
+			System.out.println("각 score : " + doc.getScore());
+			System.out.println("반환 내용 : " + doc.getText());
 			System.out.println("=================");
 		});
-
+		
+		List<Long> meetingSeqs = meetingMinutesDao.meetingSeqs(loginId);
+		
 		List<Long> ragDocSeqs = filteredDocs.stream()
 				.sorted(
 						Comparator.comparing(

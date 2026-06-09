@@ -109,4 +109,10 @@
 			MAIN_CONTENT = #{main_content, jdbcType=CLOB}
 	    WHERE MINUTE_SEQ = #{minute_seq}
 	</update>
+	
+<!--	<select id="meetingSeqs" resultType="com.study.app.domains.meetingMinutes.MeetingMinutesDTO">-->
+<!--		select m.minute_seq -->
+<!--		from meeting_minutes m-->
+		
+<!--	</select>-->
 </mapper>

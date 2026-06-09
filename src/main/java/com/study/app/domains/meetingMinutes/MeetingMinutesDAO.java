@@ -31,4 +31,7 @@ public class MeetingMinutesDAO {
 		return mybatis.delete("MeetingMinutes.updateMinutes",dto);
 	}
 	
+	public List<Long> meetingSeqs(String loginId) {
+		return mybatis.selectList("MeetingMinutes.meetingSeqs", loginId);
+	}
 }
