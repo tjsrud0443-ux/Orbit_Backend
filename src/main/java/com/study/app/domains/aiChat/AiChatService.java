@@ -98,6 +98,7 @@ public class AiChatService {
 				.orElse(0.0);
 
 		System.out.println("=================");
+		System.out.println("질문 사항 : " + content);
 		System.out.println("최고 유사도 : " + maxScore);
 		System.out.println("=================");
 
@@ -311,19 +312,25 @@ public class AiChatService {
 		EmbedRequestDTO request = new EmbedRequestDTO();
 
 		request.setChunks(items);
-
+//		long embedStart = System.currentTimeMillis();
 		EmbedResponseDTO response =
 				restClient.post()
 				.uri("/embed/chunks")
 				.body(request)
 				.retrieve()
 				.body(EmbedResponseDTO.class);
-
+//		System.out.println("임베딩 API 호출 = " + (System.currentTimeMillis() - embedStart)  + "ms");
 		if(response != null && response.isSuccess()) {
+//			long updateStart = System.currentTimeMillis();
 
+//		    System.out.println(
+//		            "point update 시작");
 			for(PointInfoDTO point : response.getPoints()) {
 				ragDao.updateChunkEmbed(point.getChunk_seq(),point.getPoint_id());
 			}
+//			System.out.println(
+//		            "point update 종료 = "
+//		            + (System.currentTimeMillis() - updateStart) + "ms");
 		}
 	}
 
