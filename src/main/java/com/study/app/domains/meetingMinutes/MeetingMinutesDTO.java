@@ -14,6 +14,7 @@ public class MeetingMinutesDTO {
     private String decisions;
     private String todos;
     private String users_id;
+    private String host_users_id;
     private LocalDateTime created_at;
     private List<MinutesAttendeesDTO> attendees;
     
@@ -21,7 +22,7 @@ public class MeetingMinutesDTO {
 
 	public MeetingMinutesDTO(Long minute_seq, String title, LocalDate meeting_dt, LocalDateTime start_time,
 			LocalDateTime end_time, String main_content, String decisions, String todos, String users_id,
-			LocalDateTime created_at, List<MinutesAttendeesDTO> attendees) {
+			String host_users_id, LocalDateTime created_at, List<MinutesAttendeesDTO> attendees) {
 		super();
 		this.minute_seq = minute_seq;
 		this.title = title;
@@ -32,6 +33,7 @@ public class MeetingMinutesDTO {
 		this.decisions = decisions;
 		this.todos = todos;
 		this.users_id = users_id;
+		this.host_users_id = host_users_id;
 		this.created_at = created_at;
 		this.attendees = attendees;
 	}
@@ -108,6 +110,14 @@ public class MeetingMinutesDTO {
 		this.users_id = users_id;
 	}
 
+	public String getHost_users_id() {
+		return host_users_id;
+	}
+
+	public void setHost_users_id(String host_users_id) {
+		this.host_users_id = host_users_id;
+	}
+
 	public LocalDateTime getCreated_at() {
 		return created_at;
 	}
@@ -124,6 +134,5 @@ public class MeetingMinutesDTO {
 		this.attendees = attendees;
 	}
 
-	
 }
 
