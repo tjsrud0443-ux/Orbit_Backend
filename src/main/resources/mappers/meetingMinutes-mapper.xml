@@ -8,23 +8,25 @@
 		        TITLE,
 		        MEETING_DT,
 		        START_TIME,
-		        END_TIME,
-		        MAIN_CONTENT,
+		        END_TIME,		        
 		        DECISIONS,
 		        TODOS,
 		        USERS_ID,
-		        CREATED_AT
+		        HOST_USERS_ID,
+		        CREATED_AT,
+		        MAIN_CONTENT
 		    ) VALUES (
 		        MINUTE_SEQ.NEXTVAL,
 		        #{title},
 		        #{meeting_dt},
 		        #{start_time},
-		        #{end_time},
-		        #{main_content},
+		        #{end_time},		        
 		        #{decisions, jdbcType=VARCHAR},
 		        #{todos, jdbcType=VARCHAR},
 		        #{users_id},
-		        SYSDATE
+		        #{host_users_id, jdbcType=VARCHAR},
+		        SYSDATE,
+		        #{main_content, jdbcType=CLOB}
 		    )
 	</insert>
 	
@@ -38,6 +40,7 @@
 	    <result property="decisions" column="DECISIONS"/>
 	    <result property="todos" column="TODOS"/>
 	    <result property="users_id" column="USERS_ID"/>
+	    <result property="host_users_id" column="HOST_USERS_ID"/>
 	    <result property="created_at" column="CREATED_AT"/>	
 	    <collection property="attendees" ofType="com.study.app.domains.meetingMinutes.MinutesAttendeesDTO">
 	        <id property="attendee_seq" column="ATTENDEE_SEQ"/>
@@ -59,6 +62,7 @@
 	        m.TODOS,
 	        m.USERS_ID,
 	        m.CREATED_AT, 
+	        m.HOST_USERS_ID,
 	        a.ATTENDEE_SEQ,
 	        a.USERS_ID AS ATTENDEE_USER_ID,
 	        u.NAME AS ATTENDEE_NAME,       
@@ -79,6 +83,7 @@
 	        m.TODOS,
 	        m.USERS_ID,
 	        m.CREATED_AT,
+	        m.HOST_USERS_ID, 
 	        a.ATTENDEE_SEQ,
 	        a.USERS_ID AS ATTENDEE_USER_ID,
 	        u.NAME AS ATTENDEE_NAME,
@@ -98,9 +103,10 @@
 	        MEETING_DT = #{meeting_dt},
 	        START_TIME = #{start_time},
 	        END_TIME = #{end_time},
-	        MAIN_CONTENT = #{main_content},
 	        DECISIONS = #{decisions, jdbcType=VARCHAR},
-			TODOS = #{todos, jdbcType=VARCHAR}
+	        HOST_USERS_ID = #{host_users_id, jdbcType=VARCHAR},
+			TODOS = #{todos, jdbcType=VARCHAR},
+			MAIN_CONTENT = #{main_content, jdbcType=CLOB}
 	    WHERE MINUTE_SEQ = #{minute_seq}
 	</update>
 </mapper>
