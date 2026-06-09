@@ -33,8 +33,5 @@ public class AttendanceService {
 		return attendDAO.getCntWeek(loginId);
 	}
 	
-	public void autoAttendanceCheck() {
-		attendDAO.autoAttendanceCheck();
-	}
 }
 
