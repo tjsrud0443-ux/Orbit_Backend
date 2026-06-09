@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
@@ -81,10 +83,14 @@ public class AiChatService {
 
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, role, content, null, null, null, null));
 
+//		AiMessagesDTO lastUserQuestion = aiDao.lastUserQuestion(chat_seq);
+//		String searchQuery = lastUserQuestion.getContent() + " " + content;
+//		System.out.println(searchQuery);
 		Map<String, Object> aiResult = new HashMap<>();
 		aiResult.put("chat_seq", chat_seq);
 
 		Map<String, Object> requestBody = new HashMap<>();
+//		requestBody.put("query", searchQuery);
 		requestBody.put("query", content);
 		requestBody.put("limit", 10);
 
@@ -220,7 +226,7 @@ public class AiChatService {
 			dbRefChunkValue = "[]";
 			dbRefRagDocValue = "[]";
 		}
-		
+
 		String context = filteredDocs.stream()
 				.map(SearchResultDTO::getText)
 				.collect(Collectors.joining("\n\n"));
@@ -282,14 +288,37 @@ public class AiChatService {
 					+ "10. 답변을 생성하기 전에 먼저 [사내 문서 데이터]가 사용자의 질문에 실제로 답할 수 있는 근거를 포함하는지 판단하십시오."
 					+ " 질문과 직접 관련된 규정, 절차, 정책, 기술 정보, 회의 내용이 존재하지 않으면 답변을 생성하지 말고 반드시 '사내 데이터베이스에서 (질문) 와(과) 관련된 규정이나 가이드를 찾지 못했습니다. 😢'라고 답하십시오."
 					+ " 단순히 일부 단어가 유사하거나 같은 부서 문서가 검색되었다는 이유만으로 답변을 생성해서는 안 됩니다."
+					+ "11. 사용자가 직전 대화와 연결된 후속 질문을 한 경우에는 이미 설명한 내용을 반복하지 말고, 새롭게 질문한 내용만 중심으로 답변하십시오."
+					+ " 예: '연차는?' 이후 '반차는?' 이라고 질문하면 연차 전체 규정을 다시 설명하지 말고 반차 규정만 설명하십시오."
 					+ ""
 					+ "[사내 문서 데이터]"
 					+ "%s".formatted(context);
 		}
 
-		Prompt prompt = new Prompt(List.of(
-				new SystemMessage(systemPrompt),
-				new UserMessage(content)));
+		List<AiMessagesDTO> history = aiDao.recentMessages(chat_seq);
+
+		List<Message> promptMessages = new ArrayList<>();
+
+		promptMessages.add(new SystemMessage(systemPrompt));
+
+		for(AiMessagesDTO msg : history){
+		    if("USER".equals(msg.getRole())){
+		        promptMessages.add(
+		                new UserMessage(msg.getContent())
+		        );
+		    }else if("AI".equals(msg.getRole())){
+		        promptMessages.add(
+		                new AssistantMessage(msg.getContent())
+		        );
+		    }
+		}
+		promptMessages.add(new UserMessage(content));
+
+		Prompt prompt = new Prompt(promptMessages);
+
+//		Prompt prompt = new Prompt(List.of(
+//				new SystemMessage(systemPrompt),
+//				new UserMessage(content)));
 
 		ChatResponse response = chatModel.call(prompt);
 		String aiAnswer = response.getResult().getOutput().getText();
@@ -304,7 +333,7 @@ public class AiChatService {
 		System.out.println(dbRefChunkValue);
 		System.out.println(dbRefRagDocValue);
 		System.out.println("= = = = = = = = = = = = = =");
-		
+
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, dbRefChunkValue, null, null, dbRefRagDocValue));
 		aiResult.put("aiAnswer", aiAnswer);
 		return aiResult;
@@ -459,35 +488,35 @@ public class AiChatService {
 
 	public List<AiMessagesDTO> detailChat(Long chat_seq) {
 		List<AiMessagesDTO> chatResult = aiDao.detailChat(chat_seq);
-		
+
 		for(AiMessagesDTO msg : chatResult) {
 
-		    if(msg.getRef_rag_doc_seq() == null) {
-		        continue;
-		    }
+			if(msg.getRef_rag_doc_seq() == null) {
+				continue;
+			}
 
-		    String value = msg.getRef_rag_doc_seq();
+			String value = msg.getRef_rag_doc_seq();
 
-		    List<Long> ragDocSeqs =
-		            Arrays.stream(
-		                    value.replace("[", "")
-		                         .replace("]", "")
-		                         .split(",")
-		            )
-		            .map(String::trim)
-		            .filter(s -> !s.isEmpty())
-		            .map(Long::parseLong)
-		            .toList();
+			List<Long> ragDocSeqs =
+					Arrays.stream(
+							value.replace("[", "")
+							.replace("]", "")
+							.split(",")
+							)
+					.map(String::trim)
+					.filter(s -> !s.isEmpty())
+					.map(Long::parseLong)
+					.toList();
 
-		    List<RagDocumentsDTO> sources =
-		            ragDao.sourcesByRagDocSeqs(ragDocSeqs);
+			List<RagDocumentsDTO> sources =
+					ragDao.sourcesByRagDocSeqs(ragDocSeqs);
 
-		    msg.setResultSources(sources);
+			msg.setResultSources(sources);
 		}
 
-	    return chatResult;
+		return chatResult;
 	}
-	
+
 
 	public void insertQuestion(String loginId, 
 			AiUnansweredQuestionsDTO dto) {

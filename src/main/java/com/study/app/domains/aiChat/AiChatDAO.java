@@ -56,4 +56,12 @@ public class AiChatDAO {
 	public void deleteMyQuestions(Long question_seq) {
 		batis.delete("AiChat.deleteMyQuestions", question_seq);
 	}
+	
+	public AiMessagesDTO lastUserQuestion(Long chat_seq) {
+		return batis.selectOne("AiChat.lastUserQuestion", chat_seq);
+	}
+	
+	public List<AiMessagesDTO> recentMessages(Long chat_seq) {
+		return batis.selectList("AiChat.recentMessages", chat_seq);
+	}
 }
