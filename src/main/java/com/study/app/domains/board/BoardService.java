@@ -63,7 +63,21 @@ public class BoardService {
     }
     
     public BoardPostsDTO getPostDetail(Long post_seq) {
-    	return boardDAO.getPostDetail(post_seq);
+    	boardDAO.incrementViewCount(post_seq);  // 조회수 +1
+    	BoardPostsDTO post = boardDAO.getPostDetail(post_seq);
+    	
+        // 파일 목록 따로 조회해서 set
+        List<BoardFileDTO> files = boardDAO.getFilesByPostSeq(post_seq);
+        
+        List<BoardCommentsDTO> comments = boardDAO.getComments(post_seq);
+        post.setFiles(files);
+        post.setComments(comments);
+        
+        return post;
+    }
+    
+    public BoardFileDTO getFileBySeq(Long fileSeq) {
+        return boardDAO.getFileBySeq(fileSeq);
     }
     
     /*삭제*/
@@ -97,7 +111,8 @@ public class BoardService {
     }
     
     @Transactional
-    public void updatePost(BoardPostsDTO post, List<MultipartFile> newFiles, List<Long> deletedFileSeqs) throws Exception {
+    public void updatePost(BoardPostsDTO post, List<MultipartFile> newFiles, 
+    		List<Long> deletedFileSeqs, List<String> deletedImageUrls) throws Exception {
         
         // 1. 게시글 수정
         boardDAO.updatePost(post);
@@ -108,6 +123,18 @@ public class BoardService {
                 BoardFileDTO file = boardDAO.getFileBySeq(fileSeq);
                 fileService.deleteFromGCS(file.getFile_sysname());
                 boardDAO.deleteFile(fileSeq);
+            }
+        }
+        
+        // 추가: 삭제된 에디터 이미지 GCS에서 삭제
+        if (deletedImageUrls != null) {
+            for (String url : deletedImageUrls) {
+                java.util.regex.Pattern pattern = java.util.regex.Pattern
+                    .compile("/board/editorImage/([^\"]+)");
+                java.util.regex.Matcher matcher = pattern.matcher(url);
+                if (matcher.find()) {
+                    fileService.deleteFromGCS(matcher.group(1));
+                }
             }
         }
         
@@ -126,4 +153,19 @@ public class BoardService {
             }
         }
     }
+    
+    /*--------------------댓글-------------------*/
+    
+    public void insertComment(BoardCommentsDTO dto) {
+        boardDAO.insertComment(dto);
+    }
+    
+    public void deleteComment(Long comment_seq) {
+    	boardDAO.deleteComment(comment_seq);
+    }
+    
+    public void updateComment(BoardCommentsDTO dto) {
+    	boardDAO.updateComment(dto);
+    }
+    
 }
