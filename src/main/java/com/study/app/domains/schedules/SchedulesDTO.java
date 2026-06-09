@@ -7,18 +7,17 @@ public class SchedulesDTO {
     private String title;
     private String schedule_type;
     private String users_id;
-    private LocalDateTime start_dt;
-    private LocalDateTime end_dt;
+    private String start_dt;
+    private String end_dt;
     private String sked_reason;
     private Integer is_public;
     private Long ref_seq;
     private String ref_type;
-    private LocalDateTime created_at;
+    private String created_at;
     
     public SchedulesDTO() {}
-	public SchedulesDTO(Long schedule_seq, String title, String schedule_type, String users_id, LocalDateTime start_dt,
-			LocalDateTime end_dt, String sked_reason, Integer is_public, Long ref_seq, String ref_type,
-			LocalDateTime created_at) {
+	public SchedulesDTO(Long schedule_seq, String title, String schedule_type, String users_id, String start_dt,
+			String end_dt, String sked_reason, Integer is_public, Long ref_seq, String ref_type, String created_at) {
 		super();
 		this.schedule_seq = schedule_seq;
 		this.title = title;
@@ -56,16 +55,16 @@ public class SchedulesDTO {
 	public void setUsers_id(String users_id) {
 		this.users_id = users_id;
 	}
-	public LocalDateTime getStart_dt() {
+	public String getStart_dt() {
 		return start_dt;
 	}
-	public void setStart_dt(LocalDateTime start_dt) {
+	public void setStart_dt(String start_dt) {
 		this.start_dt = start_dt;
 	}
-	public LocalDateTime getEnd_dt() {
+	public String getEnd_dt() {
 		return end_dt;
 	}
-	public void setEnd_dt(LocalDateTime end_dt) {
+	public void setEnd_dt(String end_dt) {
 		this.end_dt = end_dt;
 	}
 	public String getSked_reason() {
@@ -92,12 +91,10 @@ public class SchedulesDTO {
 	public void setRef_type(String ref_type) {
 		this.ref_type = ref_type;
 	}
-	public LocalDateTime getCreated_at() {
+	public String getCreated_at() {
 		return created_at;
 	}
-	public void setCreated_at(LocalDateTime created_at) {
+	public void setCreated_at(String created_at) {
 		this.created_at = created_at;
 	}
-    
-    
 }

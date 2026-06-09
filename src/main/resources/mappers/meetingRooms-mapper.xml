@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="MeetingRooms">
+
+	<select id="getAllRooms" resultType="com.study.app.domains.meetingRooms.MeetingRoomsDTO">
+		select * from meeting_rooms order by room_seq
+	</select>
+	
+	<insert id="addMeetingRoom">
+		insert into meeting_rooms values (room_seq.nextval, #{room_name}, #{max_people}, #{oriname}, #{sysname}, #{room_floor})
+	</insert>
+	
+	<select id="selectSysname" resultType="String">
+		select sysname from meeting_rooms where room_seq = #{room_seq}
+	</select>
+	
+	<update id="editMeetingRoom">
+		update meeting_rooms set room_name = #{room_name}, max_people = #{max_people}, oriname = #{oriname}, 
+			sysname = #{sysname}, room_floor = #{room_floor} where room_seq = #{room_seq}
+	</update>
+	
+	<delete id="deleteMeetingRoom">
+		delete from meeting_rooms where room_seq = #{room_seq}
+	</delete>
 </mapper>

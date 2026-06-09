@@ -27,4 +27,8 @@ public class SchedulesDAO {
 	public int updateSchedules(SchedulesDTO dto) {
 		return mybatis.update("updateSchedules", dto);
 	}
+	
+	public void addMeetingSchedules(SchedulesDTO dto) {
+		mybatis.insert("addMeetingSchedules", dto);
+	}
 }
