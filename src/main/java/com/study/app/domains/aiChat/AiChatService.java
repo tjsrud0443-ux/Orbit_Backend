@@ -193,19 +193,19 @@ public class AiChatService {
 			return aiResult;
 		}
 
-//		System.out.println("= = = = = = 질문 사항 = = = = =");
-//		System.out.println(content);
-//		System.out.println("= = = = = = 최고 유사도 = = = = =");
-//		System.out.println(maxScore);
-//
-//
-//		System.out.println("= = = = = = 청크 수 = = = = =");
-//		System.out.println(filteredDocs.size());
-//		filteredDocs.forEach(doc -> {
-//			System.out.println("각 score : " + doc.getScore());
-//			System.out.println("반환 내용 : " + doc.getText());
-//			System.out.println("= = = = = = = = = = = = = =");
-//		});
+		System.out.println("= = = = = = 질문 사항 = = = = =");
+		System.out.println(content);
+		System.out.println("= = = = = = 최고 유사도 = = = = =");
+		System.out.println(maxScore);
+
+
+		System.out.println("= = = = = = 청크 수 = = = = =");
+		System.out.println(filteredDocs.size());
+		filteredDocs.forEach(doc -> {
+			System.out.println("각 score : " + doc.getScore());
+			System.out.println("반환 내용 : " + doc.getText());
+			System.out.println("= = = = = = = = = = = = = =");
+		});
 
 
 
