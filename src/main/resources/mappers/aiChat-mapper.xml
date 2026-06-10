@@ -71,8 +71,8 @@
 	    	where rownum = 1
 	</select>
 
-	<select id="recentMessages" resultType="com.study.app.domains.aiChat.AiMessagesDTO">
-		select role, content from ai_messages where chat_seq = #{chat_seq}
-		order by msg_seq desc
-	</select>
+<!--	<select id="recentMessages" resultType="com.study.app.domains.aiChat.AiMessagesDTO">-->
+<!--		select role, content from ai_messages where chat_seq = #{chat_seq}-->
+<!--		order by msg_seq desc-->
+<!--	</select>-->
 </mapper>

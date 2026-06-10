@@ -82,7 +82,7 @@ public class AiChatService {
 		}
 
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, role, content, null, null, null, null));
-
+//		이전 대화 기억하는 로직 (구현 대기 중)
 //		AiMessagesDTO lastUserQuestion = aiDao.lastUserQuestion(chat_seq);
 //		String searchQuery = lastUserQuestion.getContent() + " " + content;
 //		System.out.println(searchQuery);
@@ -90,6 +90,7 @@ public class AiChatService {
 		aiResult.put("chat_seq", chat_seq);
 
 		Map<String, Object> requestBody = new HashMap<>();
+//		이전 대화 기억하는 로직 (구현 대기 중)
 //		requestBody.put("query", searchQuery);
 		requestBody.put("query", content);
 		requestBody.put("limit", 10);
@@ -192,19 +193,19 @@ public class AiChatService {
 			return aiResult;
 		}
 
-		System.out.println("= = = = = = 질문 사항 = = = = =");
-		System.out.println(content);
-		System.out.println("= = = = = = 최고 유사도 = = = = =");
-		System.out.println(maxScore);
-
-
-		System.out.println("= = = = = = 청크 수 = = = = =");
-		System.out.println(filteredDocs.size());
-		filteredDocs.forEach(doc -> {
-			System.out.println("각 score : " + doc.getScore());
-			System.out.println("반환 내용 : " + doc.getText());
-			System.out.println("= = = = = = = = = = = = = =");
-		});
+//		System.out.println("= = = = = = 질문 사항 = = = = =");
+//		System.out.println(content);
+//		System.out.println("= = = = = = 최고 유사도 = = = = =");
+//		System.out.println(maxScore);
+//
+//
+//		System.out.println("= = = = = = 청크 수 = = = = =");
+//		System.out.println(filteredDocs.size());
+//		filteredDocs.forEach(doc -> {
+//			System.out.println("각 score : " + doc.getScore());
+//			System.out.println("반환 내용 : " + doc.getText());
+//			System.out.println("= = = = = = = = = = = = = =");
+//		});
 
 
 
@@ -245,10 +246,17 @@ public class AiChatService {
 					+ "2. **[구체성 유지]**: 주요 논의 내용이나 결정 사항을 작성할 때, 대화의 맥락을 알 수 있도록 구체적인 배경이나 이유를 포함하여 서술하세요. 단어만 나열하는 무성의한 요약은 금지합니다."
 					+ "3. **[담당자 및 기한 명시]**: 할 일을 작성할 때는 회의록에 언급된 **담당자 이름(또는 부서)**과 **완료 목표 기한(Due Date)**을 데이터에서 찾아 명확하게 매칭하여 기록하세요."
 					+ "4. **[엄격한 사실 근거]**: 데이터에 존재하지 않는 내용이나 회의 중 확정되지 않은 추측성 정보, 일반 상식을 답변에 절대 추가하지 마십시오. 오직 제공된 [회의록 데이터]의 내용으로만 답변해야 합니다."
-					+ "5. **[예외 처리]**: 제공된 [회의록 데이터]가 유저가 요청한 질문이나 특정 회의 내용과 전혀 관련이 없거나, 핵심 정보가 부족한 경우 추측하여 답변하지 마십시오."
-					+ " 이 경우에는 반드시 유저의 질문을 포함해 '사내 데이터베이스에서 (유저질문) 와(과) 관련된 회의록 규정이나 내용을 찾지 못했습니다. 😢'라고 답하십시오."
-					+ "6. 임직원을 대하는 격식있고 명확한 비즈니스 어조(한글 존댓말)를 유지하세요. 답변의 마지막에는 항상 '추가로 궁금하신 사항이 있으시면 언제든 말씀해 주시길 바랍니다.'라는 정중한 맺음말을 붙이십시오."
-					+ "7. **[출력 포맷팅]**: 임직원이 보기 편하도록 항목별 줄바꿈을 적극 활용하고, 소분류나 상세 내용에는 -(하이픈)을 활용하여 가독성 높게 출력하세요."
+					+ "5. 사용자가 특정 날짜(예: '6월 10일 회의', '2026-06-10 회의') 또는 특정 회의명으로 회의를 조회한 경우에는 [회의록 데이터] 전체를 검토하여 동일한 회의에 속한 정보들을 종합해 답변하십시오."
+					+ " 회의 개요, 주요 내용, 결정 사항, 할 일 정보가 서로 다른 청크에 나누어 존재할 수 있으므로 단일 청크에 해당 항목이 없더라도 같은 회의의 다른 데이터에서 관련 내용을 찾아 요약해야 합니다."
+					+ " 사용자가 '주요 내용', '결정 사항', '할 일' 중 특정 항목만 요청한 경우에도 해당 회의 전체 맥락을 먼저 파악한 뒤 요청한 항목만 추출하여 답변하십시오."
+					+ " 날짜만 언급된 경우에는 해당 날짜의 회의명과 회의 개요를 먼저 식별한 후 관련 청크를 근거로 답변하십시오."
+					+ " 단, 실제 데이터에 존재하지 않는 내용은 생성하지 마십시오."
+//					+ "6. **[예외 처리]**: 제공된 [회의록 데이터]가 유저가 요청한 질문이나 특정 회의 내용과 전혀 관련이 없거나, 핵심 정보가 부족한 경우 추측하여 답변하지 마십시오."
+//					+ " 이 경우에는 반드시 유저의 질문을 포함해 '사내 데이터베이스에서 (유저질문) 와(과) 관련된 회의록 규정이나 내용을 찾지 못했습니다. 😢'라고 답하십시오."
+					+ " 6. **[예외 처리]**: 동일한 회의에 대한 다른 데이터에도 해당 정보가 존재하지 않는 경우에만 '사내 데이터베이스에서 (유저질문) 와(과) 관련된 회의록 내용을 찾지 못했습니다. 😢'라고 답하십시오."
+					+ " 특정 청크에 정보가 없다는 이유만으로 즉시 찾지 못했다고 답변해서는 안 됩니다."
+					+ "7. 임직원을 대하는 격식있고 명확한 비즈니스 어조(한글 존댓말)를 유지하세요. 답변의 마지막에는 항상 '추가로 궁금하신 사항이 있으시면 언제든 말씀해 주시길 바랍니다.'라는 정중한 맺음말을 붙이십시오."
+					+ "8. **[출력 포맷팅]**: 임직원이 보기 편하도록 항목별 줄바꿈을 적극 활용하고, 소분류나 상세 내용에는 -(하이픈)을 활용하여 가독성 높게 출력하세요."
 					+ ""
 					+ "[지정된 출력 형식 (전체 요약용)]"
 					+ "1. 회의 개요"
@@ -288,51 +296,55 @@ public class AiChatService {
 					+ "10. 답변을 생성하기 전에 먼저 [사내 문서 데이터]가 사용자의 질문에 실제로 답할 수 있는 근거를 포함하는지 판단하십시오."
 					+ " 질문과 직접 관련된 규정, 절차, 정책, 기술 정보, 회의 내용이 존재하지 않으면 답변을 생성하지 말고 반드시 '사내 데이터베이스에서 (질문) 와(과) 관련된 규정이나 가이드를 찾지 못했습니다. 😢'라고 답하십시오."
 					+ " 단순히 일부 단어가 유사하거나 같은 부서 문서가 검색되었다는 이유만으로 답변을 생성해서는 안 됩니다."
-					+ "11. 사용자가 직전 대화와 연결된 후속 질문을 한 경우에는 이미 설명한 내용을 반복하지 말고, 새롭게 질문한 내용만 중심으로 답변하십시오."
-					+ " 예: '연차는?' 이후 '반차는?' 이라고 질문하면 연차 전체 규정을 다시 설명하지 말고 반차 규정만 설명하십시오."
+//					이전 대화 기억하는 로직
+//					+ "11. 사용자가 직전 대화와 연결된 후속 질문을 한 경우에는 이미 설명한 내용을 반복하지 말고, 새롭게 질문한 내용만 중심으로 답변하십시오."
+//					+ " 예: '연차는?' 이후 '반차는?' 이라고 질문하면 연차 전체 규정을 다시 설명하지 말고 반차 규정만 설명하십시오."
 					+ ""
 					+ "[사내 문서 데이터]"
 					+ "%s".formatted(context);
 		}
+//		이전 대화 기억하는 로직
+//		List<AiMessagesDTO> history = aiDao.recentMessages(chat_seq);
+//
+//		List<Message> promptMessages = new ArrayList<>();
+//
+//		promptMessages.add(new SystemMessage(systemPrompt));
+//
+//		for(AiMessagesDTO msg : history){
+//		    if("USER".equals(msg.getRole())){
+//		        promptMessages.add(
+//		                new UserMessage(msg.getContent())
+//		        );
+//		    }else if("AI".equals(msg.getRole())){
+//		        promptMessages.add(
+//		                new AssistantMessage(msg.getContent())
+//		        );
+//		    }
+//		}
+//		promptMessages.add(new UserMessage(content));
+//
+//		Prompt prompt = new Prompt(promptMessages);
 
-		List<AiMessagesDTO> history = aiDao.recentMessages(chat_seq);
-
-		List<Message> promptMessages = new ArrayList<>();
-
-		promptMessages.add(new SystemMessage(systemPrompt));
-
-		for(AiMessagesDTO msg : history){
-		    if("USER".equals(msg.getRole())){
-		        promptMessages.add(
-		                new UserMessage(msg.getContent())
-		        );
-		    }else if("AI".equals(msg.getRole())){
-		        promptMessages.add(
-		                new AssistantMessage(msg.getContent())
-		        );
-		    }
-		}
-		promptMessages.add(new UserMessage(content));
-
-		Prompt prompt = new Prompt(promptMessages);
-
-//		Prompt prompt = new Prompt(List.of(
-//				new SystemMessage(systemPrompt),
-//				new UserMessage(content)));
+		Prompt prompt = new Prompt(List.of(
+				new SystemMessage(systemPrompt),
+				new UserMessage(content)));
 
 		ChatResponse response = chatModel.call(prompt);
 		String aiAnswer = response.getResult().getOutput().getText();
 
-		if(aiAnswer.contains("찾지 못했습니다") || aiAnswer.contains("관련된 규정이나 가이드를 찾지 못했습니다")) {
+		if(context.contains("회의명 :")) {
+		    aiResult.put("resultSources", Collections.emptyList());
+		}
+		else if(aiAnswer.contains("찾지 못했습니다") || aiAnswer.contains("관련된 규정이나 가이드를 찾지 못했습니다")) {
 			aiResult.put("resultSources", Collections.emptyList());
 		}else {
 			aiResult.put("resultSources", resultSources);
 		}
 
-		System.out.println("= = = = = = = = = = = = = =");
-		System.out.println(dbRefChunkValue);
-		System.out.println(dbRefRagDocValue);
-		System.out.println("= = = = = = = = = = = = = =");
+//		System.out.println("= = = = = = = = = = = = = =");
+//		System.out.println(dbRefChunkValue);
+//		System.out.println(dbRefRagDocValue);
+//		System.out.println("= = = = = = = = = = = = = =");
 
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, dbRefChunkValue, null, null, dbRefRagDocValue));
 		aiResult.put("aiAnswer", aiAnswer);
