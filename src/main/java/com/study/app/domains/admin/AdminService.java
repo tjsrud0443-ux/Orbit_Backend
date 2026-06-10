@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
@@ -14,6 +15,8 @@ import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
 import com.study.app.domains.documents.DocumentsDAO;
 import com.study.app.domains.documents.DocumentsDTO;
+import com.study.app.domains.meetingRooms.MeetingRoomsDTO;
+import com.study.app.domains.meetingRooms.MeetingRoomsService;
 import com.study.app.domains.rank.RankDAO;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
@@ -30,6 +33,8 @@ public class AdminService {
 	private SignupService signupServ;
 	@Autowired
 	private UsersService usersServ;
+	@Autowired
+	private MeetingRoomsService roomServ;
 	@Autowired
 	private DepartmentsDAO departmentsDao;
 	@Autowired
@@ -149,197 +154,21 @@ public class AdminService {
 		return docDao.getAllDocs();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public List<MeetingRoomsDTO> getAllRooms() {
+		return roomServ.getAllRooms();
+	}
+	
+	public void addMeetingRoom(MeetingRoomsDTO dto, MultipartFile file) {
+		roomServ.addMeetingRoom(dto, file);
+	}
+	
+	public void editMeetingRoom(MeetingRoomsDTO dto, MultipartFile file) {
+		roomServ.editMeetingRoom(dto, file);
+	}
+	
+	public void deleteMeetingRoom(Long room_seq) {
+		roomServ.deleteMeetingRoom(room_seq);
+	}
 	
 	public List<AiUnansweredQuestionsDTO> getAiQuestions() {
 		return adminDao.getAiQuestions();
