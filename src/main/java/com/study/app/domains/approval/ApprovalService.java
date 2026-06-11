@@ -1,22 +1,19 @@
 package com.study.app.domains.approval;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
 import com.study.app.domains.annualLeave.AnnualLeaveDAO;
 import com.study.app.domains.file.FileService;
+import com.study.app.domains.users.UsersDTO;
+import com.study.app.domains.users.UsersService;
 
 @Service
 public class ApprovalService {
@@ -28,10 +25,12 @@ public class ApprovalService {
 	@Autowired
 	private FileService fileServ;
 	@Autowired
-	private Storage storage;
-	@Value("${spring.cloud.gcp.bucket}")
-	private String bucketName;
-
+	private UsersService usersServ;
+	
+	public List<UsersDTO> getAllEmployees() {
+		return usersServ.getAllEmployees();
+	}
+	
 	private void insertCommonApprovalData(DraftDocumentsDTO dto) {
 		if(dto.getIs_temp() == 1) {
 			LocalDate expireDate = LocalDate.now().plusDays(7);
@@ -39,14 +38,13 @@ public class ApprovalService {
 		}else {
 			dto.setTemp_expires_at(null);
 		}
-		// selectKey(BEFORE)에 의해 실행 후 docSeq 필드에 시퀀스 값이 채워짐
 		dao.insertDraftDocument(dto); 
-		Long docSeq = dto.getDoc_seq(); // 채워진 시퀀스 꺼내기
+		Long docSeq = dto.getDoc_seq();
 
 		// 결재라인 정보 저장
 		if(dto.getApprovers() != null) {
 			for (ApprovalLinesDTO app : dto.getApprovers()) {
-				app.setDoc_seq(docSeq); // 외래키 주입
+				app.setDoc_seq(docSeq);
 				if (app.getStep_order() == 1) {
 					app.setStatus("IN_PROGRESS"); 
 				} else {
@@ -64,6 +62,7 @@ public class ApprovalService {
 			}
 		}
 	}
+	
 	// 휴가 신청서
 	@Transactional
 	public void insertVacation(VacationDTO dto) {
@@ -83,12 +82,14 @@ public class ApprovalService {
 		insertCommonApprovalData(dto);
 		dao.insertVacationDetail(dto);
 	}
+	
 	// 일반 품의서
 	@Transactional
 	public void insertGeneral(GeneralDTO dto) {
 		insertCommonApprovalData(dto);
 		dao.insertGeneralDetail(dto);
 	}
+	
 	// 지출 결의서
 	@Transactional
 	public void insertPayment(PaymentDTO dto, List<MultipartFile> files) {
@@ -104,32 +105,23 @@ public class ApprovalService {
 				item.setItem_order((Long.valueOf(i + 1)));
 
 				if(files != null && i < files.size() && !files.get(i).isEmpty()) {
-					MultipartFile file = files.get(i);
 					try {
-						String oriname = file.getOriginalFilename();
-						String sysname = UUID.randomUUID().toString() + "_" + oriname;
-
-						// GCS 업로드
-						BlobId blobId = BlobId.of(bucketName, sysname);
-						BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-								.setContentType(file.getContentType()).build();
-
-						storage.create(blobInfo, file.getBytes());
+						Map<String, String> upload = fileServ.upload(files.get(i));
 
 						// DB에 저장
-						item.setOriname(oriname);
-						item.setSysname(sysname);
+						item.setOriname(upload.get("oriname"));
+						item.setSysname(upload.get("sysname"));
 
 					}catch(Exception e) {
 						e.printStackTrace();
 						throw new RuntimeException("영수증 파일 업로드 중 오류 발생", e);
 					}
 				}
-
 				dao.insertPaymentItem(item);
 			}
 		}
 	}
+	
 	// 구매 신청서
 	@Transactional
 	public void insertPurchase(PurchaseDTO dto, List<MultipartFile> files) {
@@ -148,29 +140,19 @@ public class ApprovalService {
 		// 구매 첨부파일 리스트
 		if(files != null && !files.isEmpty()) {
 			for(MultipartFile file : files) {
-				if(!file.isEmpty()) {
-					try {
-						String oriname = file.getOriginalFilename();
-						String sysname = UUID.randomUUID().toString() + "_" + oriname;
+				try {
+					Map<String, String> upload = fileServ.upload(file);
 
-						// GCS 업로드
-						BlobId blobId = BlobId.of(bucketName, sysname);
-						BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-								.setContentType(file.getContentType()).build();
+					PurchaseAttachmentsDTO attach = new PurchaseAttachmentsDTO();
+					attach.setPurchase_seq(purchase_seq);
+					attach.setOriname(upload.get("oriname"));
+					attach.setSysname(upload.get("sysname"));
 
-						storage.create(blobInfo, file.getBytes());
+					dao.insertPurchaseAttachment(attach);
 
-						PurchaseAttachmentsDTO attach = new PurchaseAttachmentsDTO();
-						attach.setPurchase_seq(purchase_seq);
-						attach.setOriname(oriname);
-						attach.setSysname(sysname);
-
-						dao.insertPurchaseAttachment(attach);
-
-					}catch(Exception e) {
-						e.printStackTrace();
-						throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
-					}
+				}catch(Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
 				}
 			}
 		}
@@ -344,6 +326,23 @@ public class ApprovalService {
 		Long pay_seq = dao.selectPay_seq(doc_seq);
 		dto.setPay_seq(pay_seq);
 		dao.updatePaymentDetail(dto);
+		
+		List<String> oldSysnames = dao.selectPayOldSysname(pay_seq);
+		
+		List<String> keptSysnames = new ArrayList<>();
+		if(dto.getItems() != null) {
+			for(PaymentItemsDTO item : dto.getItems()) {
+				if(item.getSysname() != null) {
+					keptSysnames.add(item.getSysname());
+				}
+			}
+		}
+		for(String sysname : oldSysnames) {
+			if(sysname != null && !keptSysnames.contains(sysname)) { 
+				fileServ.deleteFromGCS(sysname);
+			}
+		}
+		
 		dao.deletePaymentItems(pay_seq);
 		
 		if(dto.getItems() != null) {
@@ -353,28 +352,15 @@ public class ApprovalService {
 				item.setItem_order((Long.valueOf(i + 1)));
 
 				if(files != null && i < files.size() && !files.get(i).isEmpty()) {
-					MultipartFile file = files.get(i);
 					try {
-						String oriname = file.getOriginalFilename();
-						String sysname = UUID.randomUUID().toString() + "_" + oriname;
-
-						// GCS 업로드
-						BlobId blobId = BlobId.of(bucketName, sysname);
-						BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-								.setContentType(file.getContentType()).build();
-
-						storage.create(blobInfo, file.getBytes());
-
-						// DB에 저장
-						item.setOriname(oriname);
-						item.setSysname(sysname);
-
+						Map<String, String> upload = fileServ.upload(files.get(i));
+						item.setOriname(upload.get("oriname"));
+						item.setSysname(upload.get("sysname"));
 					}catch(Exception e) {
 						e.printStackTrace();
 						throw new RuntimeException("영수증 파일 업로드 중 오류 발생", e);
 					}
 				}
-
 				dao.insertPaymentItem(item);
 			}
 		}
@@ -399,6 +385,20 @@ public class ApprovalService {
 			}
 		}
 		
+		List<String> keptSysnames = new ArrayList<>();
+		if(dto.getAttachments() != null) {
+			for(PurchaseAttachmentsDTO kept : dto.getAttachments()) {
+				keptSysnames.add(kept.getSysname());
+			}
+		}
+		
+		List<String> oldSysnames = dao.selectPurchaseOldSysnames(purchase_seq);
+		for(String sysname : oldSysnames) {
+			if(sysname != null && !keptSysnames.contains(sysname)) {
+				fileServ.deleteFromGCS(sysname);
+			}
+		}
+		
 		dao.deletePurchaseAttachments(purchase_seq);
 		
 		// DTO에 담긴 유지할 기존 파일 재삽입 (프론트에서 삭제 안 한 것들)
@@ -409,28 +409,18 @@ public class ApprovalService {
 	        }
 	    }
 		
-		// 구매 첨부파일 리스트
 		if(files != null) {
 			for(MultipartFile file : files) {
 				if(!file.isEmpty()) {
 					try {
-						String oriname = file.getOriginalFilename();
-						String sysname = UUID.randomUUID().toString() + "_" + oriname;
-
-						// GCS 업로드
-						BlobId blobId = BlobId.of(bucketName, sysname);
-						BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-								.setContentType(file.getContentType()).build();
-
-						storage.create(blobInfo, file.getBytes());
-
+						Map<String, String> upload = fileServ.upload(file);
+						
 						PurchaseAttachmentsDTO attach = new PurchaseAttachmentsDTO();
 						attach.setPurchase_seq(purchase_seq);
-						attach.setOriname(oriname);
-						attach.setSysname(sysname);
+						attach.setOriname(upload.get("oriname"));
+						attach.setSysname(upload.get("sysname"));
 
 						dao.insertPurchaseAttachment(attach);
-
 					}catch(Exception e) {
 						e.printStackTrace();
 						throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
@@ -580,7 +570,6 @@ public class ApprovalService {
 	@Transactional
 	public void deleteDoc(Long doc_seq , String doc_type) {
 		switch(doc_type) {
-		// 기안 문서 종류 (VACATION(연차) / PAYMENT(지출) / GENERAL(일반) / PURCHASE(구매))
 			case "VACATION" :
 				deleteVacationDoc(doc_seq);
 				break;

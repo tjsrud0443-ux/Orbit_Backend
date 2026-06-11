@@ -100,6 +100,7 @@ public class DocumentsService {
             fileServ.deleteFromGCS(fileDTO.getFile_sysname());
         }
         aiChatServ.deleteDocumentRag(document_seq);
+        dao.deleteFavorDocs(document_seq);
         dao.deleteDocFileByDocSeq(document_seq);
         dao.deleteDocument(document_seq);
     }

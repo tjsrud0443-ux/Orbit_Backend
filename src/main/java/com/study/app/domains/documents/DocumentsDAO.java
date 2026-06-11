@@ -41,6 +41,10 @@ public class DocumentsDAO {
 		mybatis.delete("Documents.deleteDocFile", file_seq);
 	}
 	
+	public void deleteFavorDocs(Long document_seq) {
+		mybatis.delete("Documents.deleteFavorDocs", document_seq);
+	}
+	
 	public void deleteDocFileByDocSeq(Long document_seq) {
 		mybatis.delete("Documents.deleteDocFileByDocSeq", document_seq);
 	}

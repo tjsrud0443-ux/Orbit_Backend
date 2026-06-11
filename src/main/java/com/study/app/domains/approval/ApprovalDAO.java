@@ -50,6 +50,10 @@ public class ApprovalDAO {
 		mybatis.insert("Approval.insertPurchaseItem", dto);
 	}
 	
+	public List<String> selectPurchaseOldSysnames(Long purchase_seq) {
+		return mybatis.selectList("Approval.selectPurchaseOldSysnames", purchase_seq);
+	}
+	
 	public void insertPurchaseAttachment(PurchaseAttachmentsDTO dto) {
 		mybatis.insert("Approval.insertPurchaseAttachment", dto);
 	}
@@ -182,6 +186,10 @@ public class ApprovalDAO {
 	
 	public void updatePaymentDetail(PaymentDTO dto) {
 		mybatis.update("Approval.updatePaymentDetail", dto);
+	}
+	
+	public List<String> selectPayOldSysname(Long pay_seq) {
+		return mybatis.selectList("Approval.selectPayOldSysname", pay_seq);
 	}
 	
 	public Long selectPurchase_seq(Long doc_seq) {
