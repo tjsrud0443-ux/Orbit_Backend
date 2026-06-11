@@ -1,5 +1,6 @@
 package com.study.app.domains.admin;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +25,12 @@ import com.study.app.domains.departments.DeptLeaveDTO;
 import com.study.app.domains.documents.DocumentsDTO;
 import com.study.app.domains.documents.DocumentsService;
 import com.study.app.domains.meetingRooms.MeetingRoomsDTO;
-import com.study.app.domains.meetingRooms.MeetingRoomsService;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
+import com.study.app.domains.supplies.SupplyDTO;
+import com.study.app.domains.supplies.SupplyRequestDTO;
+import com.study.app.domains.supplies.SupplyService;
 import com.study.app.domains.users.UsersDTO;
 
 @RestController
@@ -42,6 +45,8 @@ public class AdminController {
 	private AdminService adminServ;
 	@Autowired
 	private DocumentsService docServ;
+	@Autowired
+	private SupplyService supplyServ;
 
 	@GetMapping("/hr/allRequest")
 	public ResponseEntity<Map<String, Object>> getAllRequest(@RequestParam Long cPage,
@@ -235,5 +240,63 @@ public class AdminController {
 		adminServ.deleteAnswer(question_seq);
 		return ResponseEntity.ok().build();
 	}
+	
+	/*비품 관련*/
+	@GetMapping("/supply")
+	public ResponseEntity<List<SupplyDTO>> getSupplyList(){
+		List<SupplyDTO> supplies = adminServ.getSupplyList();
+		return ResponseEntity.ok(supplies);
+	}
+	
+	@GetMapping("/supplyReq")
+	public ResponseEntity<Map<String, Object>> getAdminRequestList(
+	        @RequestParam(defaultValue = "1") int page,
+	        @RequestParam(defaultValue = "8") int size,
+	        @RequestParam(defaultValue = "") String keyword,
+	        @RequestParam(defaultValue = "") String status) {
+
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("keyword", keyword);
+	    params.put("status", status);
+	    params.put("start", (page - 1) * size + 1);
+	    params.put("end", page * size);
+
+	    List<SupplyRequestDTO> list = adminServ.getAdminRequestList(params);
+	    int total = adminServ.getAdminRequestCount(params);
+
+	    // 탭 카운트용 - keyword는 유지, status만 바꿔서 각각 카운트
+	    Map<String, Object> countParams = new HashMap<>();
+	    countParams.put("keyword", keyword);
+
+	    countParams.put("status", "");
+	    int totalCount = adminServ.getAdminRequestCount(countParams);
+
+	    countParams.put("status", "PENDING");
+	    int pendingCount = adminServ.getAdminRequestCount(countParams);
+
+	    countParams.put("status", "APPROVED");
+	    int approvedCount = adminServ.getAdminRequestCount(countParams);
+
+	    countParams.put("status", "REJECTED");
+	    int rejectedCount = adminServ.getAdminRequestCount(countParams);
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("list", list);
+	    result.put("total", total);
+	    result.put("totalPages", (int) Math.ceil((double) total / size));
+	    result.put("totalCount", totalCount);
+	    result.put("pendingCount", pendingCount);
+	    result.put("approvedCount", approvedCount);
+	    result.put("rejectedCount", rejectedCount);
+	    
+	    return ResponseEntity.ok(result);
+	}
+	
+	@PutMapping("/supplyReqStatus")
+	public ResponseEntity<?> supplyReqStatus(@RequestBody SupplyRequestDTO srDto) {
+		adminServ.approveRequest(srDto);
+	    return ResponseEntity.ok().build();
+	}
+	
 
 }

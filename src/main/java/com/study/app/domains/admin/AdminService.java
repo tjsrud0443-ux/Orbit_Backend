@@ -22,6 +22,10 @@ import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
 import com.study.app.domains.signup.SignupService;
+import com.study.app.domains.supplies.SupplyDAO;
+import com.study.app.domains.supplies.SupplyDTO;
+import com.study.app.domains.supplies.SupplyRequestDTO;
+import com.study.app.domains.supplies.SupplyService;
 import com.study.app.domains.users.UsersDAO;
 import com.study.app.domains.users.UsersDTO;
 import com.study.app.domains.users.UsersService;
@@ -36,6 +40,9 @@ public class AdminService {
 	@Autowired
 	private MeetingRoomsService roomServ;
 	@Autowired
+	private SupplyService supplyServ;
+	
+	@Autowired
 	private DepartmentsDAO departmentsDao;
 	@Autowired
 	private RankDAO rankDao;
@@ -45,6 +52,9 @@ public class AdminService {
 	private AdminDAO adminDao;
 	@Autowired
 	private DocumentsDAO docDao;
+	@Autowired
+	private SupplyDAO supplyDAO;
+	
 	
 	public Map<String, Object> getAllRequest(Long cPage, String status, String searchTerm) {
 		return signupServ.getAllRequest(cPage, status, searchTerm);
@@ -188,4 +198,23 @@ public class AdminService {
 	public void deleteAnswer(Long question_seq) {
 		adminDao.deleteAnswer(question_seq);
 	}
+	
+/*비품 관련*/
+	public List<SupplyDTO> getSupplyList(){
+		return supplyServ.getSupplyList();
+	}
+	//비품 신청 관리 목록
+	public List<SupplyRequestDTO> getAdminRequestList(Map<String, Object> params){
+		return supplyServ.getAdminRequestList(params);
+	}
+	
+	public int getAdminRequestCount(Map<String, Object> params) {
+		return supplyDAO.getAdminRequestCount(params);
+	}
+	
+	//비품 신청 상태 및 비품 재고 수정
+	public void approveRequest(SupplyRequestDTO srDto) {
+	    supplyServ.approveRequest(srDto);
+	}
+
 }
