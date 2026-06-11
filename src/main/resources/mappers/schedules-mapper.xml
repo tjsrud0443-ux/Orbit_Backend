@@ -49,4 +49,14 @@
 	<delete id="cancelMeetRsvn">
 		delete from schedules where schedule_type = 'MEETING' and ref_seq = #{ref_seq}
 	</delete>
+	
+	<insert id="insertProjectSchedule">
+		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, #{start_dt}, #{end_dt}, 
+			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate)
+	</insert>
+	
+	<insert id="insertProjectMemberSchedule">
+		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, #{start_dt}, #{end_dt}, 
+			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate)
+	</insert>
 </mapper>

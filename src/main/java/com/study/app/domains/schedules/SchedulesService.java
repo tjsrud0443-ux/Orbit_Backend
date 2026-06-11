@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.study.app.domains.meetingRooms.RoomRsvnDTO;
+import com.study.app.domains.projects.ProjectMembersDTO;
+import com.study.app.domains.projects.ProjectsDTO;
 
 @Service
 public class SchedulesService {
@@ -63,5 +65,27 @@ public class SchedulesService {
 	
 	public void cancelMeetRsvn(Long rsvn_seq) {
 		schedDAO.cancelMeetRsvn(rsvn_seq);
+	}
+	
+	public void insertMyProjectSchedule(String loginId, ProjectsDTO dto) {
+		SchedulesDTO schedDto = new SchedulesDTO();
+		schedDto.setTitle(dto.getProject_name());
+		schedDto.setUsers_id(loginId);
+		schedDto.setStart_dt(dto.getStart_date());
+		schedDto.setEnd_dt(dto.getEnd_date());
+		schedDto.setSked_reason(dto.getProject_name());
+		schedDto.setRef_seq(dto.getProject_seq());
+		schedDAO.insertProjectSchedule(schedDto);
+	}
+	
+	public void insertProjectMemberSchedule(Long project_seq, ProjectsDTO dto, ProjectMembersDTO memberDto) {
+		SchedulesDTO schedDto = new SchedulesDTO();
+		schedDto.setTitle(dto.getProject_name());
+		schedDto.setUsers_id(memberDto.getUsers_id());
+		schedDto.setStart_dt(dto.getStart_date());
+		schedDto.setEnd_dt(dto.getEnd_date());
+		schedDto.setSked_reason(dto.getProject_name());
+		schedDto.setRef_seq(project_seq);
+		schedDAO.insertProjectSchedule(schedDto);
 	}
 }

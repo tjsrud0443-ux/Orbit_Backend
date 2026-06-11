@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Notifications">
+
+	<insert id="insertProjectNoti">
+		insert into Notifications values(noti_seq.nextval, #{users_id}, 'PROJECT', #{content}, 'PROJECTS', #{ref_seq}, sysdate)
+	</insert>
 </mapper>

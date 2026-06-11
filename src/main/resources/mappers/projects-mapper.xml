@@ -3,12 +3,16 @@
 <mapper namespace="Projects">
 
 	<insert id="insertProject">
-		<selectKey keyProperty="seq" resultType="Long" order="BEFORE">
+		<selectKey keyProperty="dto.project_seq" resultType="Long" order="BEFORE">
 			select project_seq.nextval from dual
 		</selectKey>
 		
-			insert into values(
-				#{project_seq}, #{project_name}, #{contents},
-				 #{start_date}, #{end_date}, #{status}, #{loginId}, sysdate)
+			insert into projects values(
+				#{dto.project_seq}, #{dto.project_name}, #{dto.contents},
+				 #{dto.start_date}, #{dto.end_date}, #{dto.status}, #{loginId}, sysdate)
+	</insert>
+	
+	<insert id="insertProjectMembers">
+		insert into project_members values(member_seq.nextval, #{project_seq}, #{users_id}, sysdate)
 	</insert>
 </mapper>

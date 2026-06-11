@@ -1,6 +1,7 @@
 package com.study.app.domains.projects;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -18,5 +19,9 @@ public class ProjectsDAO {
 		params.put("loginId", loginId);
 		params.put("dto", dto);
 		batis.insert("Projects.insertProject", params);
+	}
+	
+	public void insertProjectMembers(ProjectMembersDTO dto) {
+		batis.insert("Projects.insertProjectMembers", dto);
 	}
 }
