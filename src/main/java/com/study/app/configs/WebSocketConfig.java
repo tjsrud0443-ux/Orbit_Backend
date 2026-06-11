@@ -1,5 +1,6 @@
 package com.study.app.configs;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -7,9 +8,14 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import com.study.app.interceptors.JwtInterceptor;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{ //웹소켓 관련 설정 파일
+	
+	@Autowired
+	private JwtInterceptor jwtInterceptor;
 	
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -29,6 +35,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{ //웹�
 	// 웹소켓 검사
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
-		registration.interceptors();
+		registration.interceptors(jwtInterceptor);
 	}
 }

@@ -19,6 +19,7 @@ public class NotificationsService {
 		String message = dto.getContent();
 		notiDao.insertProjectNoti(dto);
 		
-		stomp.convertAndSend("/sub/notification/" + dto.getNoti_seq(), message);
+		stomp.convertAndSend("/sub/notification/" + dto.getUsers_id(), message);
+		System.out.println("/sub/notification/" + " " + dto.getUsers_id() + " " + message);
 	}
 }
