@@ -56,6 +56,10 @@
 		 #{ea, jdbcType=NUMERIC}, #{unit_price, jdbcType=NUMERIC}, #{total_price, jdbcType=NUMERIC}, #{note, jdbcType=VARCHAR})
 	</insert>
 	
+	<select id="selectPurchaseOldSysnames" resultType="string">
+		select sysname from purchase_attachments where purchase_seq = #{purchase_seq}
+	</select>
+	
 	<insert id="insertPurchaseAttachment">
 		insert into purchase_attachments values (attachment_seq.nextval, #{purchase_seq}, #{oriname}, #{sysname}, sysdate)
 	</insert>
@@ -227,6 +231,10 @@
 			pay_reason = #{pay_reason, jdbcType=VARCHAR}, account_info = #{account_info, jdbcType=VARCHAR}
 		where pay_seq = #{pay_seq}
 	</update>
+	
+	<select id="selectPayOldSysname" resultType="string">
+		select sysname from payment_items where pay_seq = #{pay_seq}
+	</select>
 	
 	<select id="selectPurchase_seq" resultType="long">
 		select purchase_seq from purchase where doc_seq = #{doc_seq}

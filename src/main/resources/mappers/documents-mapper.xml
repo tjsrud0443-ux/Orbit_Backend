@@ -4,11 +4,12 @@
 
 	<select id="getAllDocs" resultType="com.study.app.domains.documents.DocumentsDTO">
 		select 
-		    d.document_seq, d.title, d.users_id, d.created_at,
-		    f.file_seq, f.document_seq, f.file_oriname, f.file_sysname, f.file_path, f.mime_type, f.upload_at
+		    d.document_seq, d.title, d.users_id, d.created_at, f.file_seq, f.document_seq, 
+		    f.file_oriname, f.file_sysname, f.file_path, f.mime_type, f.upload_at, u.name
 		from documents d
 		LEFT OUTER JOIN document_files f ON d.document_seq = f.document_seq
-		order by d.document_seq
+		LEFT OUTER JOIN users u ON u.id = d.users_id
+		order by d.document_seq desc
 	</select>
 	
 	<insert id="addDoc">
@@ -36,6 +37,10 @@
 	
 	<delete id="deleteDocFile">
 		delete from document_files where file_seq = #{file_seq}
+	</delete>
+	
+	<delete id="deleteFavorDocs">
+		delete from document_bookmarks where document_seq = #{document_seq}
 	</delete>
 	
 	<delete id="deleteDocFileByDocSeq">

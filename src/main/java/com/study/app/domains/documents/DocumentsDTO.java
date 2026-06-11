@@ -12,13 +12,24 @@ public class DocumentsDTO {
 	private String mime_type;
 	private String upload_at;
 	
+	private String name;
+	
 	public DocumentsDTO() {}
-	public DocumentsDTO(Long document_seq, String title, String users_id, String created_at) {
+	public DocumentsDTO(Long document_seq, String title, String users_id, String created_at, Long file_seq,
+			String file_oriname, String file_sysname, String file_path, String mime_type, String upload_at,
+			String name) {
 		super();
 		this.document_seq = document_seq;
 		this.title = title;
 		this.users_id = users_id;
 		this.created_at = created_at;
+		this.file_seq = file_seq;
+		this.file_oriname = file_oriname;
+		this.file_sysname = file_sysname;
+		this.file_path = file_path;
+		this.mime_type = mime_type;
+		this.upload_at = upload_at;
+		this.name = name;
 	}
 	public Long getDocument_seq() {
 		return document_seq;
@@ -79,5 +90,11 @@ public class DocumentsDTO {
 	}
 	public void setUpload_at(String upload_at) {
 		this.upload_at = upload_at;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }

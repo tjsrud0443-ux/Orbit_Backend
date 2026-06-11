@@ -24,9 +24,11 @@ public class UsersDTO {
 	private String created_at;
 	private String update_at;
 	private String sysname;
-	private String dept_name; // DB 테이블엔 없음
-    private String rank_name; // DB 테이블엔 없음
-    private String auth_group; // DB 테이블엔 없음
+	
+	private String dept_name;
+    private String rank_name;
+    private String auth_group;
+    private Long parent_dept_seq;
 	
 	public UsersDTO() {}
 	public UsersDTO(String id, String pw, Long users_seq, String name, String phone, String email, String oriname,
@@ -209,5 +211,11 @@ public class UsersDTO {
 	}
 	public void setAuth_group(String auth_group) {
 		this.auth_group = auth_group;
+	}
+	public Long getParent_dept_seq() {
+		return parent_dept_seq;
+	}
+	public void setParent_dept_seq(Long parent_dept_seq) {
+		this.parent_dept_seq = parent_dept_seq;
 	}
 }

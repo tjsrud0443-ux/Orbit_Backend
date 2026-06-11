@@ -1,6 +1,5 @@
 package com.study.app.domains.approval;
 
-import com.study.app.domains.admin.AdminController;
 import java.util.List;
 import java.util.Map;
 
@@ -21,25 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.users.UsersDTO;
-import com.study.app.domains.users.UsersService;
 
 @RestController
 @RequestMapping("/approval")
 public class ApprovalController {
 
-	private final AdminController adminController;
-	@Autowired
-	private UsersService usersServ;
 	@Autowired
 	private ApprovalService appServ;
 
-	ApprovalController(AdminController adminController) {
-		this.adminController = adminController;
-	}
-
 	@GetMapping("all")
 	public ResponseEntity<List<UsersDTO>> getAllEmployees(){
-		List<UsersDTO> allEmployees = usersServ.getAllEmployees();
+		List<UsersDTO> allEmployees = appServ.getAllEmployees();
 		return ResponseEntity.ok(allEmployees);
 	}
 

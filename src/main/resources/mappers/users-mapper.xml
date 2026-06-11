@@ -25,7 +25,7 @@
 	<select id="getUsersInfo" resultType="com.study.app.domains.users.UsersDTO">
 		select
 		u.id as id, u.users_seq as users_seq, u.name as name, u.sysname as sysname,
-		d.dept_seq as dept_seq ,d.dept_name as dept_name, d.auth_group as auth_group,
+		d.dept_seq as dept_seq, d.dept_name as dept_name, d.parent_dept_seq as parent_dept_seq, d.auth_group as auth_group,
 		r.rank_name rank_name, u.role as role
 		from users u
 		left join departments d on u.dept_seq = d.dept_seq
@@ -131,7 +131,10 @@
         u.created_at,
         u.update_at,
         u.sysname,
+        d.dept_seq AS dept_seq,
         d.dept_name AS dept_name,
+        d.parent_dept_seq AS parent_dept_seq,
+        d.auth_group AS auth_group,
         r.rank_name AS rank_name
     FROM users u
     LEFT JOIN departments d ON u.dept_seq = d.dept_seq
