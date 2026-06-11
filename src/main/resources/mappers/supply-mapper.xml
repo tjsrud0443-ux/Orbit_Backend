@@ -2,9 +2,73 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Supply">
 <!--비품 관리-->
+	<!--비품 목록 출력-->
 	<select id="getSupplyList" resultType="com.study.app.domains.supplies.SupplyDTO">
 	    SELECT * FROM SUPPLIES ORDER BY SUPPLY_NAME
 	</select>
+<!--비품 신청 관리-->
+	<resultMap id="adminSupplyRequestMap" type="com.study.app.domains.supplies.SupplyRequestDTO">
+        <id property="req_seq" column="REQ_SEQ"/>
+        <result property="users_id" column="USERS_ID"/>
+        <result property="req_date" column="REQ_DATE"/>
+        <result property="reason" column="REASON"/>
+        <result property="status" column="STATUS"/>
+        <result property="user_name" column="NAME"/>
+        
+        <collection property="items" ofType="com.study.app.domains.supplies.SupplyRequestItemsDTO">
+            <id property="item_seq" column="ITEM_SEQ"/>
+            <result property="req_seq" column="REQ_SEQ"/>
+            <result property="supply_seq" column="SUPPLY_SEQ"/>
+            <result property="ea" column="EA"/>
+            <result property="use_type" column="USE_TYPE"/>
+            <result property="supply_name" column="SUPPLY_NAME"/> 
+        </collection>
+    </resultMap>
+    
+	<select id="getAdminRequestList" resultMap="adminSupplyRequestMap">
+	    SELECT * FROM (
+	        SELECT ROWNUM AS rn, a.* FROM (
+	            SELECT
+	                r.REQ_SEQ, r.REQ_DATE, r.USERS_ID, u.NAME,
+	                r.REASON, r.STATUS, s.SUPPLY_NAME,
+	                i.ITEM_SEQ, i.SUPPLY_SEQ, i.EA, i.USE_TYPE
+	            FROM SUPPLY_REQUEST r
+	            JOIN SUPPLY_REQUEST_ITEMS i ON r.REQ_SEQ = i.REQ_SEQ
+	            JOIN SUPPLIES s ON i.SUPPLY_SEQ = s.SUPPLY_SEQ
+	            LEFT JOIN USERS u ON r.USERS_ID = u.ID
+	            <where>
+	                <if test="keyword != null and keyword != ''">
+	                    AND (s.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+	                    OR u.NAME LIKE '%' || #{keyword} || '%')
+	                </if>
+	                <if test="status != null and status != ''">
+	                    AND r.STATUS = #{status}
+	                </if>
+	            </where>
+	            ORDER BY r.REQ_DATE DESC, r.REQ_SEQ DESC
+	        ) a
+	    )
+	    WHERE rn BETWEEN #{start} AND #{end}
+	</select>
+	
+	<!-- 전체 카운트 -->
+	<select id="getAdminRequestCount" resultType="int">
+	    SELECT COUNT(DISTINCT r.REQ_SEQ)
+	    FROM SUPPLY_REQUEST r
+	    JOIN SUPPLY_REQUEST_ITEMS i ON r.REQ_SEQ = i.REQ_SEQ
+	    JOIN SUPPLIES s ON i.SUPPLY_SEQ = s.SUPPLY_SEQ
+	    LEFT JOIN USERS u ON r.USERS_ID = u.ID
+	    <where>
+	        <if test="keyword != null and keyword != ''">
+	            AND (s.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+	            OR u.NAME LIKE '%' || #{keyword} || '%')
+	        </if>
+	        <if test="status != null and status != ''">
+	            AND r.STATUS = #{status}
+	        </if>
+	    </where>
+	</select>
+	
 <!--비품 신청-->
 	<!--신청 정보-->
 	<insert id="supplyRequest">
@@ -17,4 +81,17 @@
 	<insert id="supplyRequestItems">
 		INSERT INTO SUPPLY_REQUEST_ITEMS VALUES (S_ITEM_SEQ.NEXTVAL,#{req_seq},#{supply_seq},#{ea},#{use_type})
 	</insert>
+	<!--비품 신청 상태 변경-->
+	<update id="updateRequestStatus">
+	    UPDATE SUPPLY_REQUEST
+	    SET STATUS = #{status}
+	    WHERE REQ_SEQ = #{req_seq}
+	</update>
+	<!--승인 시 비품테이블 재고 수정-->
+	<update id="decreaseStock">
+	    UPDATE SUPPLIES
+	    SET STOCK_QTY = STOCK_QTY - #{ea}
+	    WHERE SUPPLY_SEQ = #{supply_seq}
+	    AND STOCK_QTY >= #{ea} 
+	</update>
 </mapper>
