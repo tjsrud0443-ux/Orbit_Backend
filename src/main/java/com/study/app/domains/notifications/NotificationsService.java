@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.study.app.domains.projects.ProjectMembersDTO;
-
 @Service
 public class NotificationsService {
 	
@@ -16,10 +14,9 @@ public class NotificationsService {
 	private NotificationsDAO notiDao;
 	
 	public void insertProjectNoti(NotificationsDTO dto) {
-		String message = dto.getContent();
 		notiDao.insertProjectNoti(dto);
 		
-		stomp.convertAndSend("/sub/notification/" + dto.getUsers_id(), message);
-		System.out.println("/sub/notification/" + " " + dto.getUsers_id() + " " + message);
+		stomp.convertAndSend("/sub/notification/" + dto.getUsers_id(), dto);
+		System.out.println("/sub/notification/" + " " + dto.getUsers_id() + " " + dto);
 	}
 }
