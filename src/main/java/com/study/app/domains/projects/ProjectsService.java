@@ -97,7 +97,9 @@ public class ProjectsService {
 		projectsDao.deleteProject(project_seq);
 	}
 
-
+	public List<KanbanTaskDTO> getKanbanTaskList(Long project_seq) {
+		return kanbanDao.getKanbanTaskList(project_seq);
+	}
 
 
 

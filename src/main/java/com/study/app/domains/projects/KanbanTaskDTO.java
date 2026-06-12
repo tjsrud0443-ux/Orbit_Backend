@@ -15,6 +15,8 @@ public class KanbanTaskDTO {
 	private String users_c_id;
 	private String created_at;
 	private String updated_at;
+	private String name;
+	private String sysname;
 	
 	public KanbanTaskDTO() {}
 	
@@ -115,4 +117,17 @@ public class KanbanTaskDTO {
 	public void setUpdated_at(String updated_at) {
 		this.updated_at = updated_at;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getSysname() {
+		return sysname;
+	}
+	public void setSysname(String sysname) {
+		this.sysname = sysname;
+	}
+	
 }

@@ -51,7 +51,10 @@ public class ProjectsController {
 		return ResponseEntity.ok().build();
 	}
 	
-	
+	@GetMapping("/getKanbanTaskList/{project_seq}")
+	public ResponseEntity<List<KanbanTaskDTO>> getKanbanTaskList(@PathVariable Long project_seq) {
+		return ResponseEntity.ok(projectServ.getKanbanTaskList(project_seq));
+	}
 	
 	
 	
