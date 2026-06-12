@@ -20,14 +20,14 @@
 		<id property="project_seq" column="project_seq"/>
 		
 		<collection property="projectMembersDTO" ofType="com.study.app.domains.projects.ProjectMembersDTO">
-			<result property="users_id" column="users_id"/>
+			<result property="users_id" column="member_users_id"/>
 			<result property="name" column="name"/>
 			<result property="sysname" column="sysname"/>
 		</collection>
 	</resultMap>
 	
 	<select id="getAllProject" resultMap="projectMap">
-		select p.*, pm.users_id, u.name, u.sysname
+		select p.*, pm.users_id as member_users_id , u.name, u.sysname
 			from projects p
 				left join project_members pm on pm.project_seq = p.project_seq
 				left join users u on u.id = pm.users_id
