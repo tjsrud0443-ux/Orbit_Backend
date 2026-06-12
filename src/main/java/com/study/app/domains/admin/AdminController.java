@@ -29,6 +29,7 @@ import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
 import com.study.app.domains.supplies.SupplyDTO;
+import com.study.app.domains.supplies.SupplyRentalDTO;
 import com.study.app.domains.supplies.SupplyRequestDTO;
 import com.study.app.domains.supplies.SupplyService;
 import com.study.app.domains.users.UsersDTO;
@@ -298,5 +299,48 @@ public class AdminController {
 	    return ResponseEntity.ok().build();
 	}
 	
+	@GetMapping("/supplyRental")
+	public ResponseEntity<Map<String, Object>> supplyRentalList(
+	        @RequestParam(defaultValue = "1") int page,
+	        @RequestParam(defaultValue = "8") int size,
+	        @RequestParam(defaultValue = "") String keyword,
+	        @RequestParam(defaultValue = "") String status) {
+
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("keyword", keyword);
+	    params.put("status", status);
+	    params.put("start", (page - 1) * size + 1);
+	    params.put("end", page * size);
+
+	    List<SupplyRentalDTO> list = adminServ.supplyRentalList(params);
+	    
+	    // 탭 카운트용
+	    Map<String, Object> countParams = new HashMap<>();
+	    countParams.put("keyword", keyword);
+
+	    countParams.put("status", "");
+	    int totalCount = adminServ.supplyRentalCount(countParams);
+
+	    countParams.put("status", "RENTING");
+	    int rentingCount = adminServ.supplyRentalCount(countParams);
+
+	    countParams.put("status", "RETURNED");
+	    int returnedCount = adminServ.supplyRentalCount(countParams);
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("list", list);
+	    result.put("totalPages", (int) Math.ceil((double) totalCount / size));
+	    result.put("totalCount", totalCount);
+	    result.put("rentingCount", rentingCount);
+	    result.put("returnedCount", returnedCount);
+
+	    return ResponseEntity.ok(result);
+	}
+	
+	@PutMapping("/returnSupply")
+	public ResponseEntity<?> returnSupply(@RequestBody SupplyRentalDTO dto) {
+	    supplyServ.returnSupply(dto);
+	    return ResponseEntity.ok().build();
+	}
 
 }

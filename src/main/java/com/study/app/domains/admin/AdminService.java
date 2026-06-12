@@ -24,6 +24,7 @@ import com.study.app.domains.signup.SignupRequestDTO;
 import com.study.app.domains.signup.SignupService;
 import com.study.app.domains.supplies.SupplyDAO;
 import com.study.app.domains.supplies.SupplyDTO;
+import com.study.app.domains.supplies.SupplyRentalDTO;
 import com.study.app.domains.supplies.SupplyRequestDTO;
 import com.study.app.domains.supplies.SupplyService;
 import com.study.app.domains.users.UsersDAO;
@@ -212,9 +213,23 @@ public class AdminService {
 		return supplyDAO.getAdminRequestCount(params);
 	}
 	
-	//비품 신청 상태 및 비품 재고 수정
+	//비품 신청 상태 및 비품 재고 수정 및 대여이력 insert
 	public void approveRequest(SupplyRequestDTO srDto) {
 	    supplyServ.approveRequest(srDto);
+	}
+	
+	/*supply rental list*/
+	public List<SupplyRentalDTO> supplyRentalList(Map<String, Object> params) {
+	    return supplyDAO.supplyRentalList(params);
+	}
+
+	public int supplyRentalCount(Map<String, Object> params) {
+	    return supplyDAO.supplyRentalCount(params);
+	}
+	
+	//반납 처리 시 재고 복구 & 반납일 update
+	public void returnSupply(SupplyRentalDTO dto) {
+	    supplyServ.returnSupply(dto);  // @Transactional은 SupplyService에 있으니까 OK
 	}
 
 }

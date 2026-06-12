@@ -53,7 +53,7 @@
 	                        AND r.STATUS = #{status}
 	                    </if>
 	                </where>
-	                ORDER BY r.REQ_DATE DESC, r.REQ_SEQ DESC
+	                ORDER BY r.REQ_DATE ASC, r.REQ_SEQ ASC
 	            ) a
 	        )
 	        WHERE rn BETWEEN #{start} AND #{end}
@@ -61,7 +61,7 @@
 	    JOIN USERS u ON r.USERS_ID = u.ID
 	    JOIN SUPPLY_REQUEST_ITEMS i ON r.REQ_SEQ = i.REQ_SEQ
 	    JOIN SUPPLIES s ON i.SUPPLY_SEQ = s.SUPPLY_SEQ
-	    ORDER BY r.REQ_DATE DESC, r.REQ_SEQ DESC, i.ITEM_SEQ
+	    ORDER BY rn ASC, i.ITEM_SEQ ASC
 	</select>
 	
 	<!-- 전체 카운트 -->
@@ -100,6 +100,23 @@
 	    SET STATUS = #{status}
 	    WHERE REQ_SEQ = #{req_seq}
 	</update>
+	<!--대여자 부서정보 가져옴-->
+	<select id="getDeptSeqByUserId" resultType="int">
+	    SELECT DEPT_SEQ FROM USERS WHERE ID = #{users_id}
+	</select>
+	<!--승인 시 대여테이블 데이터 insert-->
+	<insert id="insertSupplyRental">
+	    INSERT INTO SUPPLY_RENTAL (
+	        RENTAL_SEQ, SUPPLY_SEQ, USERS_ID, DEPT_SEQ, EA, RENTAL_DATE
+	    ) VALUES (
+	        RENTAL_SEQ.NEXTVAL,
+	        #{supply_seq},
+	        #{users_id},
+	        #{dept_seq},
+	        #{ea},
+	        #{rental_date}
+	    )
+	</insert>
 	<!--승인 시 비품테이블 재고 수정-->
 	<update id="decreaseStock">
 	    UPDATE SUPPLIES
@@ -107,26 +124,85 @@
 	    WHERE SUPPLY_SEQ = #{supply_seq}
 	    AND STOCK_QTY >= #{ea} 
 	</update>
+	
 	<!--비품 대여 이력-->
+	<!--대여 이력 출력-->
 	<select id="supplyRentalList" resultType="com.study.app.domains.supplies.SupplyRentalDTO">
 		SELECT * FROM (
 	        SELECT ROWNUM AS rn, a.* FROM (
 	            SELECT
 	                r.RENTAL_SEQ,
 	                s.SUPPLY_NAME,
+	                r.SUPPLY_SEQ,
 	                s.CATEGORY,
 	                s.SUPPLY_CODE,
 	                d.DEPT_NAME,
 	                u.NAME,
+	                r.EA,
 	                r.RENTAL_DATE,
 	                r.RETURN_DATE
-	            FROM RENTAL r
+	            FROM SUPPLY_RENTAL r
 	            JOIN SUPPLIES s ON r.SUPPLY_SEQ = s.SUPPLY_SEQ
 	            JOIN USERS u ON r.USERS_ID = u.ID
-	            JOIN DEPT d ON r.DEPT_SEQ = d.DEPT_SEq
+	            JOIN DEPARTMENTS d ON r.DEPT_SEQ = d.DEPT_SEQ
+	            <where>
+	                <if test="keyword != null and keyword != ''">
+	                    AND (s.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+	                    OR u.NAME LIKE '%' || #{keyword} || '%'
+	                    OR d.DEPT_NAME LIKE '%' || #{keyword} || '%'
+	                    OR s.SUPPLY_CODE LIKE '%' || #{keyword} || '%')
+	                </if>
+	                <if test="status != null and status != ''">
+	                    AND (
+	                        CASE WHEN #{status} = 'RENTING' THEN
+	                            CASE WHEN r.RETURN_DATE IS NULL THEN 1 ELSE 0 END
+	                        ELSE
+	                            CASE WHEN r.RETURN_DATE IS NOT NULL THEN 1 ELSE 0 END
+	                        END
+	                    ) = 1
+	                </if>
+	            </where>
 	            ORDER BY r.RENTAL_DATE DESC
 	        ) a
 	    )
 	    WHERE rn BETWEEN #{start} AND #{end}
 	</select>
+	
+	<select id="supplyRentalCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM SUPPLY_RENTAL r
+	    JOIN SUPPLIES s ON r.SUPPLY_SEQ = s.SUPPLY_SEQ
+	    JOIN USERS u ON r.USERS_ID = u.ID
+	    JOIN DEPARTMENTS d ON r.DEPT_SEQ = d.DEPT_SEQ
+	    <where>
+	        <if test="keyword != null and keyword != ''">
+	            AND (s.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+	            OR u.NAME LIKE '%' || #{keyword} || '%'
+	            OR d.DEPT_NAME LIKE '%' || #{keyword} || '%'
+	            OR s.SUPPLY_CODE LIKE '%' || #{keyword} || '%')
+	        </if>
+	        <if test="status != null and status != ''">
+	            AND (
+	                CASE WHEN #{status} = 'RENTING' THEN
+	                    CASE WHEN r.RETURN_DATE IS NULL THEN 1 ELSE 0 END
+	                ELSE
+	                    CASE WHEN r.RETURN_DATE IS NOT NULL THEN 1 ELSE 0 END
+	                END
+	            ) = 1
+	        </if>
+	    </where>
+	</select>
+	<!--반납 처리-->
+	<update id="returnSupply">
+	    UPDATE SUPPLY_RENTAL
+	    SET RETURN_DATE = SYSDATE
+	    WHERE RENTAL_SEQ = #{rental_seq}
+	</update>
+	
+	 <!--반납 시 재고 복구 -->
+	<update id="increaseStock">
+	    UPDATE SUPPLIES
+	    SET STOCK_QTY = STOCK_QTY + #{ea}
+	    WHERE SUPPLY_SEQ = #{supply_seq}
+	</update>
 </mapper>
