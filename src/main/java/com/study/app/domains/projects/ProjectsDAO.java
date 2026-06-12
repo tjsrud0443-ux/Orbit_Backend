@@ -29,6 +29,10 @@ public class ProjectsDAO {
 		return batis.selectList("Projects.getAllProject", loginId);
 	}
 	
+	public List<ProjectsDTO> getMyAllProject(String loginId) {
+		return batis.selectList("Projects.getMyAllProject", loginId);
+	}
+	
 	public void updateProject(ProjectsDTO dto) {
 		batis.update("Projects.updateProject", dto);
 	}

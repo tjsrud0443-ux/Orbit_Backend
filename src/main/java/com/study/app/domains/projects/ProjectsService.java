@@ -55,8 +55,13 @@ public class ProjectsService {
 		schedServ.insertMyProjectSchedule(loginId, dto);
 	}
 	
-	public List<ProjectsDTO> getAllProject(String loginId) {
-		return projectsDao.getAllProject(loginId);
+	public List<ProjectsDTO> getProject(String loginId) {
+		Long rankSeq = usersDao.selectRankSeqByLoginId(loginId);
+		if(rankSeq == 1) {
+			return projectsDao.getAllProject(loginId);
+		}
+		
+		return projectsDao.getMyAllProject(loginId);
 	}
 
 	@Transactional

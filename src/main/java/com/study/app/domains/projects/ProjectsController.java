@@ -34,9 +34,9 @@ public class ProjectsController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@GetMapping("/getAllProject")
-	public ResponseEntity<List<ProjectsDTO>> getAllProject(@RequestAttribute String loginId) {
-		return ResponseEntity.ok(projectServ.getAllProject(loginId));
+	@GetMapping("/getMyAllProject")
+	public ResponseEntity<List<ProjectsDTO>> getProject(@RequestAttribute String loginId) {
+		return ResponseEntity.ok(projectServ.getProject(loginId));
 	}
 	
 	@PutMapping("/projectUpdate")

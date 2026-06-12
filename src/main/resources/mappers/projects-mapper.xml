@@ -31,6 +31,14 @@
 			from projects p
 				left join project_members pm on pm.project_seq = p.project_seq
 				left join users u on u.id = pm.users_id
+			order by p.created_at
+	</select>
+	
+	<select id="getMyAllProject" resultMap="projectMap">
+		select p.*, pm.users_id as member_users_id , u.name, u.sysname
+			from projects p
+				left join project_members pm on pm.project_seq = p.project_seq
+				left join users u on u.id = pm.users_id
 				where p.users_id = #{loginId} or pm.users_id = #{loginId}
 			order by p.created_at
 	</select>
@@ -38,7 +46,7 @@
 	<update id="updateProject">
 		update projects set project_name = #{project_name}, contents = #{contents},
 							start_date = #{start_date}, end_date = #{end_date}, 
-							status = 'PENDING' 
+							status = 'IN_PROGRESS' 
 				where project_seq = #{project_seq}
 	</update>
 	
