@@ -40,8 +40,8 @@
 	<select id="getCount" resultType="int">
 		select count(*) from signup
 		<where>
-			<if test='_parameter != "TOTAL"'>
-				status = #{_parameter}
+			<if test='status != "TOTAL"'>
+				status = #{status}
 			</if>
 		</where>
 	</select>
