@@ -59,6 +59,29 @@ public class ProjectsService {
 		return projectsDao.getAllProject(loginId);
 	}
 
+	@Transactional
+	public void projectUpdate(String loginId, ProjectsDTO dto) {
+		projectsDao.projectUpdate(dto);
+		
+		Long projectSeq = dto.getProject_seq();
+		
+		projectsDao.deleteProjectMembers(projectSeq);
+		schedServ.deleteProjectMemberSchedule(projectSeq); 
+		
+		for(ProjectMembersDTO member : dto.getProjectMembersDTO()) {
+			member.setProject_seq(projectSeq);
+			projectsDao.insertProjectMembers(member);
+			
+			schedServ.insertProjectMemberSchedule(projectSeq, dto, member); 
+			
+			NotificationsDTO noti = new NotificationsDTO();
+			noti.setRef_seq(projectSeq);
+			noti.setUsers_id(member.getUsers_id());
+			noti.setContent("프로젝트 정보가 수정되었습니다.");
+			noriServ.insertProjectNoti(noti);
+		}
+		schedServ.insertMyProjectSchedule(loginId, dto);
+	}
 
 
 

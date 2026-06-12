@@ -64,4 +64,8 @@ public class SchedulesDAO {
 		mybatis.insert("Schedules.insertProjectSchedule", dto);
 	}
 	
+	public void deleteProjectMemberSchedule(Long ref_seq) {
+		mybatis.delete("Schedules.deleteProjectMemberSchedule", ref_seq);
+	}
+	
 }

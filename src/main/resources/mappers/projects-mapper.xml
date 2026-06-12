@@ -34,4 +34,15 @@
 				where p.users_id = #{loginId} or pm.users_id = #{loginId}
 			order by p.created_at
 	</select>
+	
+	<update id="projectUpdate">
+		update projects set project_name = #{project_name}, contents = #{contents},
+							start_date = #{start_date}, end_date = #{end_date}, 
+							status = 'PENDING' 
+				where project_seq = #{project_seq}
+	</update>
+	
+	<delete id="deleteProjectMembers">
+		delete from project_members where project_seq = #{project_seq}
+	</delete>
 </mapper>

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,12 @@ public class ProjectsController {
 	@GetMapping("/getAllProject")
 	public ResponseEntity<List<ProjectsDTO>> getAllProject(@RequestAttribute String loginId) {
 		return ResponseEntity.ok(projectServ.getAllProject(loginId));
+	}
+	
+	@PutMapping("/projectUpdate")
+	public ResponseEntity<Void> projectUpdate(@RequestAttribute String loginId, @RequestBody ProjectsDTO dto) {
+		projectServ.projectUpdate(loginId, dto);
+		return ResponseEntity.ok().build();
 	}
 	
 	

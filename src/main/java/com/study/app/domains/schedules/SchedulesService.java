@@ -88,4 +88,8 @@ public class SchedulesService {
 		schedDto.setRef_seq(project_seq);
 		schedDAO.insertProjectSchedule(schedDto);
 	}
+	
+	public void deleteProjectMemberSchedule(Long project_seq) {
+		schedDAO.deleteProjectMemberSchedule(project_seq);
+	}
 }
