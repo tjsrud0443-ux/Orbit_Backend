@@ -16,4 +16,16 @@
 			left join users u on u.id = p.users_id
 			where p.project_seq = #{project_seq}
 	</select>
+	
+	<select id="getNextPosition" resultType="Long">
+	    select nvl(max(position), -1) + 1
+		    from kanban_task
+		    where project_seq = #{project_seq}
+		    and status = #{status}
+	</select>
+	
+	<insert id="insertTask">
+		insert into kanban_task values(task_seq.nextval, #{project_seq}, #{title}, #{content}, #{status}, 
+		#{priority}, #{users_pic_id}, #{start_date}, #{due_date}, #{position}, #{users_c_id}, sysdate, null)
+	</insert>
 </mapper>

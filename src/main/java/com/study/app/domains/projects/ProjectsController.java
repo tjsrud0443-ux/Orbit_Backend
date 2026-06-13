@@ -67,6 +67,11 @@ public class ProjectsController {
 		return ResponseEntity.ok(projectServ.getProjectMembers(project_seq));
 	}
 	
+	@PostMapping("/insertTask")
+	public ResponseEntity<Void> insertTask(@RequestAttribute String loginId, @RequestBody KanbanTaskDTO dto) {
+		projectServ.insertTask(loginId, dto);
+		return ResponseEntity.ok().build();
+	}
 	
 	
 	

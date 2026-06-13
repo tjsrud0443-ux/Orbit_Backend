@@ -19,4 +19,12 @@ public class KanbanTaskDAO {
 	public List<ProjectMembersDTO> getProjectMembers(Long project_seq) {
 		return batis.selectList("KanbanTask.getProjectMembers", project_seq);
 	}
+	
+	public Long getNextPosition(KanbanTaskDTO dto) {
+		return batis.selectOne("KanbanTask.getNextPosition", dto);
+	}
+	
+	public void insertTask(KanbanTaskDTO dto) {
+		batis.insert("KanbanTask.insertTask", dto);
+	}
 }
