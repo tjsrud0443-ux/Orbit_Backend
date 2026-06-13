@@ -12,16 +12,16 @@ public class WebSorkerEvnetListener {
 	// 연결 시도 감지
 	@EventListener
 	public void handleWebSocketConnect(SessionConnectEvent e) {
-		System.out.println("연결 시도 중");
+//		System.out.println("연결 시도 중");
 	}
 	
 	@EventListener
 	public void handleWebSocketConnected(SessionConnectedEvent e) {
-		System.out.println("연결 완료");
+//		System.out.println("연결 완료");
 	}
 	
 	@EventListener
 	public void handleWebSocketDisconnect(SessionDisconnectEvent e) {
-		System.out.println("연결 종료");
+//		System.out.println("연결 종료");
 	}
 }

@@ -15,4 +15,36 @@ public class KanbanTaskDAO {
 	public List<KanbanTaskDTO> getKanbanTaskList(Long project_seq) {
 		return batis.selectList("KanbanTask.getKanbanTaskList", project_seq);
 	}
+	
+	public List<ProjectMembersDTO> getProjectMembers(Long project_seq) {
+		return batis.selectList("KanbanTask.getProjectMembers", project_seq);
+	}
+	
+	public Long getNextPosition(KanbanTaskDTO dto) {
+		return batis.selectOne("KanbanTask.getNextPosition", dto);
+	}
+	
+	public void insertTask(KanbanTaskDTO dto) {
+		batis.insert("KanbanTask.insertTask", dto);
+	}
+	
+	public ProjectsDTO getProjectBySeq(Long project_seq) {
+		return batis.selectOne("KanbanTask.getProjectBySeq", project_seq);
+	}
+	
+	public void updateTask(KanbanTaskDTO dto) {
+		batis.update("KanbanTask.updateTask", dto);
+	}
+	
+	public void deleteTask(Long task_seq) {
+		batis.delete("KanbanTask.deleteTask", task_seq);
+	}
+	
+	public void updateTaskStatus(KanbanTaskDTO dto) {
+		batis.update("KanbanTask.updateTaskStatus", dto);
+	}
+	
+	public void deleteAllTask(Long project_seq) {
+		batis.delete("KanbanTask.deleteAllTask", project_seq);
+	}
 }
