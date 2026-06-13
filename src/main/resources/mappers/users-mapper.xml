@@ -183,4 +183,8 @@
 	<update id="changePw">
 		update users set pw = #{pw} where email = #{email}
 	</update>
+	
+	<select id="selectRankSeqByLoginId" resultType="Long">
+		select rank_seq from users where id = #{loginId}
+	</select>
 </mapper>

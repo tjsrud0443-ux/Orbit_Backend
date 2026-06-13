@@ -11,5 +11,16 @@ public class NotificationsService {
 	private SimpMessagingTemplate stomp;
 	
 	@Autowired
-	private NotificationsDAO noDao;
+	private NotificationsDAO notiDao;
+	
+	public void insertProjectNoti(NotificationsDTO dto) {
+		notiDao.insertProjectNoti(dto);
+		
+		stomp.convertAndSend("/sub/notification/" + dto.getUsers_id(), dto);
+		System.out.println("/sub/notification/" + " " + dto.getUsers_id() + " " + dto);
+	}
+	
+	public void deleteProjectNotiBySeq(Long project_seq) {
+		notiDao.deleteProjectNotiBySeq(project_seq);
+	}
 }

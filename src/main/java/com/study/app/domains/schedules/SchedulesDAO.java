@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.study.app.domains.meetingRooms.RoomRsvnDTO;
+import com.study.app.domains.projects.ProjectsDTO;
 
 @Repository
 public class SchedulesDAO {
@@ -54,4 +55,21 @@ public class SchedulesDAO {
 	public void cancelMeetRsvn(Long ref_seq) {
 		mybatis.delete("Schedules.cancelMeetRsvn", ref_seq);
 	}
+	
+	public void insertProjectSchedule(SchedulesDTO dto) {
+		mybatis.insert("Schedules.insertProjectSchedule", dto);
+	}
+	
+	public void insertProjectMemberSchedule(SchedulesDTO dto) {
+		mybatis.insert("Schedules.insertProjectSchedule", dto);
+	}
+	
+	public void deleteProjectMemberSchedule(Long ref_seq) {
+		mybatis.delete("Schedules.deleteProjectMemberSchedule", ref_seq);
+	}
+	
+	public void deleteProjectScheduleBySeq(Long ref_seq) {
+		mybatis.delete("Schedules.deleteProjectScheduleBySeq", ref_seq);
+	}
+	
 }

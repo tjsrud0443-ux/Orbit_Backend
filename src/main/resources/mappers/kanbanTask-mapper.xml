@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="KanbanTask">
+	
+	<select id="getKanbanTaskList" resultType="com.study.app.domains.projects.KanbanTaskDTO">
+		select k.*, u.name, u.sysname
+			from kanban_task k
+			left join users u on u.id = k.users_c_id
+			where k.project_seq = #{project_seq}
+			order by k.status, k.position
+	</select>
+</mapper>

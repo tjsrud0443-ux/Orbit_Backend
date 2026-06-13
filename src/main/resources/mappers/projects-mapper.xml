@@ -1,4 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Projects">
+
+	<insert id="insertProject">
+		<selectKey keyProperty="dto.project_seq" resultType="Long" order="BEFORE">
+			select project_seq.nextval from dual
+		</selectKey>
+		
+			insert into projects values(
+				#{dto.project_seq}, #{dto.project_name}, #{dto.contents},
+				 #{dto.start_date}, #{dto.end_date}, #{dto.status}, #{loginId}, sysdate)
+	</insert>
+	
+	<insert id="insertProjectMembers">
+		insert into project_members values(member_seq.nextval, #{project_seq}, #{users_id}, sysdate)
+	</insert>
+	
+	<resultMap id="projectMap" type="com.study.app.domains.projects.ProjectsDTO" autoMapping="true">
+		<id property="project_seq" column="project_seq"/>
+		
+		<collection property="projectMembersDTO" ofType="com.study.app.domains.projects.ProjectMembersDTO">
+			<result property="users_id" column="member_users_id"/>
+			<result property="name" column="name"/>
+			<result property="sysname" column="sysname"/>
+		</collection>
+	</resultMap>
+	
+	<select id="getAllProject" resultMap="projectMap">
+		select p.*, pm.users_id as member_users_id , u.name, u.sysname
+			from projects p
+				left join project_members pm on pm.project_seq = p.project_seq
+				left join users u on u.id = pm.users_id
+			order by p.start_date
+	</select>
+	
+	<select id="getMyAllProject" resultMap="projectMap">
+		select p.*, pm.users_id as member_users_id , u.name, u.sysname
+			from projects p
+				left join project_members pm on pm.project_seq = p.project_seq
+				left join users u on u.id = pm.users_id
+				where p.users_id = #{loginId} or pm.users_id = #{loginId}
+			order by p.start_date
+	</select>
+	
+	<update id="updateProject">
+		update projects set project_name = #{project_name}, contents = #{contents},
+							start_date = #{start_date}, end_date = #{end_date}, 
+							status = 'IN_PROGRESS' 
+				where project_seq = #{project_seq}
+	</update>
+	
+	<update id="completeProject">
+		update projects set status = 'DONE' where project_seq = #{project_seq}
+	</update>
+	
+	<delete id="deleteProjectMembers">
+		delete from project_members where project_seq = #{project_seq}
+	</delete>
+	
+	<delete id="deleteProject">
+		delete from projects where project_seq = #{project_seq}
+	</delete>
 </mapper>

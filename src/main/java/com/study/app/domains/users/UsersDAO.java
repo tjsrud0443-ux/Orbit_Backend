@@ -93,4 +93,8 @@ public class UsersDAO {
 		params.put("pw", pw);
 		batis.update("Users.changePw", params);
 	}
+	
+	public Long selectRankSeqByLoginId(String loginId) {
+		return batis.selectOne("Users.selectRankSeqByLoginId", loginId);
+	}
 }
