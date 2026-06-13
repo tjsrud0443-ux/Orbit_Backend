@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.study.app.domains.checkoutRequest.CheckoutRequestDTO;
+import com.study.app.domains.overtimeRequest.OvertimeRequestDTO;
 
 @Repository
 public class AttendanceDAO {
@@ -34,5 +35,9 @@ public class AttendanceDAO {
 	
 	public void changeCheckout(CheckoutRequestDTO dto) {
 		mybatis.update("Attendance.changeCheckout", dto);
+	}
+	
+	public void updateOvertime(OvertimeRequestDTO dto) {
+		mybatis.update("Attendance.updateOvertime", dto);
 	}
 }

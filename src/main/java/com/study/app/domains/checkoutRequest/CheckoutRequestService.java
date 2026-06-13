@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.study.app.domains.attendance.AttendanceService;
 
@@ -44,10 +45,11 @@ public class CheckoutRequestService {
 	    return result;
     }
 	
+	@Transactional
 	public void approveCheckout(Long checkout_seq, String loginId) {
-		dao.approveCheckout(checkout_seq, loginId);
 		CheckoutRequestDTO req = dao.getCheckoutInfo(checkout_seq);
 		attServ.changeCheckout(req);
+		dao.approveCheckout(checkout_seq, loginId);
 	}
 	
 	public void rejectCheckout(Long checkout_seq, String loginId) {

@@ -48,7 +48,7 @@
 	</update>
 	
 	<select id="getCheckoutInfo" resultType="com.study.app.domains.checkoutRequest.CheckoutRequestDTO">
-		select attendance_seq, req_check_out from checkout_request
+		select attendance_seq, req_check_out from checkout_request where checkout_seq = #{checkout_seq}
 	</select>
 	
 	<update id="rejectCheckout">

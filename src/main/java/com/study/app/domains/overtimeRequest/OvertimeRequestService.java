@@ -6,14 +6,17 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.study.app.domains.checkoutRequest.CheckoutRequestDTO;
+import com.study.app.domains.attendance.AttendanceService;
 
 @Service
 public class OvertimeRequestService {
 	
 	@Autowired
 	private OvertimeRequestDAO dao;
+	@Autowired
+	private AttendanceService attServ;
 	
 	public Map<String, Object> getAllOvertimeRQ(Long cPage, String status) {
 		int recordCountPerPage = 10;
@@ -41,4 +44,15 @@ public class OvertimeRequestService {
 
 	    return result;
     }
+	
+	@Transactional
+	public void approveOvertime(Long overtime_seq, String loginId) {
+		OvertimeRequestDTO info = dao.getOvertimeInfo(overtime_seq);
+		attServ.updateOvertime(info);
+		dao.approveOvertime(overtime_seq, loginId);
+	}
+	
+	public void rejectOvertime(Long overtime_seq, String loginId) {
+		dao.rejectOvertime(overtime_seq, loginId);
+	}
 }

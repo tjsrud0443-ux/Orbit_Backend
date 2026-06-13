@@ -1,13 +1,12 @@
 package com.study.app.domains.overtimeRequest;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import com.study.app.domains.checkoutRequest.CheckoutRequestDTO;
 
 @Repository
 public class OvertimeRequestDAO {
@@ -25,5 +24,23 @@ public class OvertimeRequestDAO {
 
     public Map<String, Integer> getTabCount(){
         return mybatis.selectOne("OvertimeRequest.getTabCount");
+    }
+    
+    public OvertimeRequestDTO getOvertimeInfo(Long overtime_seq) {
+    	return mybatis.selectOne("OvertimeRequest.getOvertimeInfo", overtime_seq);
+    }
+    
+    public void approveOvertime(Long overtime_seq, String loginId) {
+    	Map<String, Object> params = new HashMap<>();
+    	params.put("overtime_seq", overtime_seq);
+    	params.put("approver_id", loginId);
+    	mybatis.update("OvertimeRequest.approveOvertime", params);
+    }
+    
+    public void rejectOvertime(Long overtime_seq, String loginId) {
+    	Map<String, Object> params = new HashMap<>();
+    	params.put("overtime_seq", overtime_seq);
+    	params.put("approver_id", loginId);
+    	mybatis.update("OvertimeRequest.rejectOvertime", params);
     }
 }

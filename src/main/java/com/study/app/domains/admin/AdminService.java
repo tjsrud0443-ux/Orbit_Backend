@@ -520,4 +520,12 @@ public class AdminService {
 	public void rejectCheckout(Long checkout_seq, String loginId) {
 		checkoutServ.rejectCheckout(checkout_seq, loginId);
 	}
+	
+	public void approveOvertime(Long overtime_seq, String loginId) {
+		overtimeServ.approveOvertime(overtime_seq, loginId);
+	}
+	
+	public void rejectOvertime(Long overtime_seq, String loginId) {
+		overtimeServ.rejectOvertime(overtime_seq, loginId);
+	}
 }

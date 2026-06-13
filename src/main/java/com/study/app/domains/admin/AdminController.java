@@ -598,7 +598,7 @@ public class AdminController {
 
 
 
-	@GetMapping("/hr/getAllCheckoutRQ")
+	@GetMapping("hr/getAllCheckoutRQ")
 	public ResponseEntity<Map<String, Object>> getAllCheckoutRQ(@RequestParam Long cPage,
 															 @RequestParam String status) {
 		
@@ -606,7 +606,7 @@ public class AdminController {
 		return ResponseEntity.ok(result);
 	}
 	
-	@GetMapping("/hr/getAllOvertimeRQ")
+	@GetMapping("hr/getAllOvertimeRQ")
 	public ResponseEntity<Map<String, Object>> getAllOvertimeRQ(@RequestParam Long cPage,
 															 @RequestParam String status) {
 		
@@ -614,7 +614,7 @@ public class AdminController {
 		return ResponseEntity.ok(result);
 	}
 	
-	@PutMapping("/hr/approveCheckout/{checkout_seq}")
+	@PutMapping("hr/approveCheckout/{checkout_seq}")
 	public ResponseEntity<Void> approveCheckout(@PathVariable Long checkout_seq,
 												@RequestAttribute String loginId) {
 		
@@ -622,11 +622,27 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@PutMapping("/hr/rejectCheckout/{checkout_seq}")
+	@PutMapping("hr/rejectCheckout/{checkout_seq}")
 	public ResponseEntity<Void> rejectCheckout(@PathVariable Long checkout_seq,
 												@RequestAttribute String loginId) {
 		
 		adminServ.rejectCheckout(checkout_seq, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("hr/approveOvertime/{overtime_seq}")
+	public ResponseEntity<Void> approveOvertime(@PathVariable Long overtime_seq,
+												@RequestAttribute String loginId) {
+		
+		adminServ.approveOvertime(overtime_seq, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("hr/rejectOvertime/{overtime_seq}")
+	public ResponseEntity<Void> rejectOvertime(@PathVariable Long overtime_seq,
+												@RequestAttribute String loginId) {
+		
+		adminServ.rejectOvertime(overtime_seq, loginId);
 		return ResponseEntity.ok().build();
 	}
 }
