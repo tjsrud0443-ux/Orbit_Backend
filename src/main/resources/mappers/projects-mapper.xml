@@ -18,6 +18,7 @@
 	
 	<resultMap id="projectMap" type="com.study.app.domains.projects.ProjectsDTO" autoMapping="true">
 		<id property="project_seq" column="project_seq"/>
+		<result property="created_name" column="created_name"/>
 		
 		<collection property="projectMembersDTO" ofType="com.study.app.domains.projects.ProjectMembersDTO">
 			<result property="users_id" column="member_users_id"/>
@@ -27,18 +28,20 @@
 	</resultMap>
 	
 	<select id="getAllProject" resultMap="projectMap">
-		select p.*, pm.users_id as member_users_id , u.name, u.sysname
+		select p.*, pm.users_id as member_users_id , u.name, u.sysname, cu.name as created_name
 			from projects p
 				left join project_members pm on pm.project_seq = p.project_seq
 				left join users u on u.id = pm.users_id
+				left join users cu on cu.id = p.users_id
 			order by p.start_date
 	</select>
 	
 	<select id="getMyAllProject" resultMap="projectMap">
-		select p.*, pm.users_id as member_users_id , u.name, u.sysname
+		select p.*, pm.users_id as member_users_id , u.name, u.sysname, cu.name as created_name
 			from projects p
 				left join project_members pm on pm.project_seq = p.project_seq
 				left join users u on u.id = pm.users_id
+				left join users cu on cu.id = p.users_id
 				where p.users_id = #{loginId} or pm.users_id = #{loginId}
 			order by p.start_date
 	</select>
