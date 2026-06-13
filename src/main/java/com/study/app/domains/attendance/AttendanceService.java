@@ -3,6 +3,9 @@ package com.study.app.domains.attendance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.study.app.domains.checkoutRequest.CheckoutRequestDTO;
+import com.study.app.domains.overtimeRequest.OvertimeRequestDTO;
+
 @Service
 public class AttendanceService {
 	@Autowired
@@ -33,5 +36,12 @@ public class AttendanceService {
 		return attendDAO.getCntWeek(loginId);
 	}
 	
+	public void changeCheckout(CheckoutRequestDTO dto) {
+		attendDAO.changeCheckout(dto);
+	}
+	
+	public void updateOvertime(OvertimeRequestDTO dto) {
+		attendDAO.updateOvertime(dto);
+	}
 }
 

@@ -9,7 +9,8 @@ public class AttendanceDTO {
     private LocalDate work_date;     
     private LocalDateTime check_in;     
     private LocalDateTime check_out;    
-    private Integer total_work_in;      
+    private Integer total_work_min;
+    private Long request_min;
  // DB 컬럼에 없음
     private int work_days;
     private double total_hours;
@@ -18,111 +19,93 @@ public class AttendanceDTO {
     private double vac_cnt;
     
     public AttendanceDTO() {}
-
 	public AttendanceDTO(Long attendance_seq, String users_id, LocalDate work_date, LocalDateTime check_in,
-			LocalDateTime check_out, Integer total_work_in, int work_days, double total_hours, int late_cnt,
-			double overtime_hours, double vac_cnt) {
+			LocalDateTime check_out, Integer total_work_min, Long request_min, int work_days, double total_hours,
+			int late_cnt, double overtime_hours, double vac_cnt) {
 		super();
 		this.attendance_seq = attendance_seq;
 		this.users_id = users_id;
 		this.work_date = work_date;
 		this.check_in = check_in;
 		this.check_out = check_out;
-		this.total_work_in = total_work_in;
+		this.total_work_min = total_work_min;
+		this.request_min = request_min;
 		this.work_days = work_days;
 		this.total_hours = total_hours;
 		this.late_cnt = late_cnt;
 		this.overtime_hours = overtime_hours;
 		this.vac_cnt = vac_cnt;
 	}
-
 	public Long getAttendance_seq() {
 		return attendance_seq;
 	}
-
 	public void setAttendance_seq(Long attendance_seq) {
 		this.attendance_seq = attendance_seq;
 	}
-
 	public String getUsers_id() {
 		return users_id;
 	}
-
 	public void setUsers_id(String users_id) {
 		this.users_id = users_id;
 	}
-
 	public LocalDate getWork_date() {
 		return work_date;
 	}
-
 	public void setWork_date(LocalDate work_date) {
 		this.work_date = work_date;
 	}
-
 	public LocalDateTime getCheck_in() {
 		return check_in;
 	}
-
 	public void setCheck_in(LocalDateTime check_in) {
 		this.check_in = check_in;
 	}
-
 	public LocalDateTime getCheck_out() {
 		return check_out;
 	}
-
 	public void setCheck_out(LocalDateTime check_out) {
 		this.check_out = check_out;
 	}
-
-	public Integer getTotal_work_in() {
-		return total_work_in;
+	public Integer getTotal_work_min() {
+		return total_work_min;
 	}
-
-	public void setTotal_work_in(Integer total_work_in) {
-		this.total_work_in = total_work_in;
+	public void setTotal_work_min(Integer total_work_min) {
+		this.total_work_min = total_work_min;
 	}
-
+	public Long getRequest_min() {
+		return request_min;
+	}
+	public void setRequest_min(Long request_min) {
+		this.request_min = request_min;
+	}
 	public int getWork_days() {
 		return work_days;
 	}
-
 	public void setWork_days(int work_days) {
 		this.work_days = work_days;
 	}
-
 	public double getTotal_hours() {
 		return total_hours;
 	}
-
 	public void setTotal_hours(double total_hours) {
 		this.total_hours = total_hours;
 	}
-
 	public int getLate_cnt() {
 		return late_cnt;
 	}
-
 	public void setLate_cnt(int late_cnt) {
 		this.late_cnt = late_cnt;
 	}
-
 	public double getOvertime_hours() {
 		return overtime_hours;
 	}
-
 	public void setOvertime_hours(double overtime_hours) {
 		this.overtime_hours = overtime_hours;
 	}
-
 	public double getVac_cnt() {
 		return vac_cnt;
 	}
-
 	public void setVac_cnt(double vac_cnt) {
 		this.vac_cnt = vac_cnt;
 	}
-
-	
 }
