@@ -202,10 +202,24 @@ public class AdminService {
 		adminDao.deleteAnswer(question_seq);
 	}
 	
+	
 /*비품 관련*/
 	public List<SupplyDTO> getSupplyList(){
 		return supplyServ.getSupplyList();
 	}
+	
+	public void insertSupply(SupplyDTO dto) {
+		supplyServ.insertSupply(dto);
+	}
+	
+	public void deleteSupplies(List<Long> ids) {
+	    supplyDAO.deleteSupplies(ids);
+	}
+	
+	public void updateSupplies(SupplyDTO dto) {
+		supplyDAO.updateSupplies(dto);
+	}
+	
 	//비품 신청 관리 목록
 	public List<SupplyRequestDTO> getAdminRequestList(Map<String, Object> params){
 		return supplyServ.getAdminRequestList(params);

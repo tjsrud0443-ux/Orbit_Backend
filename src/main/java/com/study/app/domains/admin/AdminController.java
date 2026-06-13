@@ -242,11 +242,33 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
-	/*비품 관련*/
+/*비품 관련*/
 	@GetMapping("/supply")
 	public ResponseEntity<List<SupplyDTO>> getSupplyList(){
 		List<SupplyDTO> supplies = adminServ.getSupplyList();
 		return ResponseEntity.ok(supplies);
+	}
+	
+	@PostMapping("/supplyInsert")
+	public ResponseEntity<?> insertSupply(@RequestBody SupplyDTO dto){
+		try {
+	        adminServ.insertSupply(dto);
+	        return ResponseEntity.ok().build();
+		    } catch (RuntimeException e) {
+		        return ResponseEntity.badRequest().body(e.getMessage());  // 400 응답
+		    }
+	}
+	
+	@PutMapping("/supplyUpdate")
+	public ResponseEntity<Void> updateSupplies(@RequestBody SupplyDTO dto) {
+		adminServ.updateSupplies(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/supplyDelete")
+	public ResponseEntity<Void> deleteSupplies(@RequestBody Map<String, List<Long>> body) {
+	    adminServ.deleteSupplies(body.get("ids"));
+	    return ResponseEntity.ok().build();
 	}
 	
 	@GetMapping("/supplyReq")

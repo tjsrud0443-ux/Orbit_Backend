@@ -16,6 +16,16 @@ public class SupplyService {
 	public List<SupplyDTO> getSupplyList(){
 		return supplyDAO.getSupplyList();
 	}
+	
+	//admin supply - delete
+	public void insertSupply(SupplyDTO dto) {
+	    int count = supplyDAO.checkDupCode(dto.getSupply_code());
+	    if (count > 0) {
+	        throw new RuntimeException("이미 존재하는 비품코드입니다.");
+	    }
+	    supplyDAO.insertSupply(dto);
+	}
+	
 	public List<SupplyRequestDTO> getAdminRequestList(Map<String, Object> params){
 		return supplyDAO.getAdminRequestList(params);
 	}

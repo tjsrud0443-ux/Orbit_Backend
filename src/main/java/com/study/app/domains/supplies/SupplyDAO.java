@@ -17,6 +17,22 @@ public class SupplyDAO {
 		return mybatis.selectList("Supply.getSupplyList");
 	}
 	
+	public int insertSupply(SupplyDTO dto) {
+		return mybatis.insert("Supply.insertSupply",dto);
+	}
+	
+	public int deleteSupplies(List<Long> ids) {
+		return mybatis.delete("Supply.deleteSupplies",ids);
+	}
+	
+	public int checkDupCode(String supply_code) {
+		return mybatis.selectOne("Supply.checkDupCode",supply_code);
+	}
+	
+	public int updateSupplies(SupplyDTO dto) {
+		return mybatis.update("Supply.updateSupplies",dto);
+	}
+	/*비품신청 리스트*/
 	public List<SupplyRequestDTO> getAdminRequestList(Map<String, Object> params){
 		return mybatis.selectList("Supply.getAdminRequestList",params);
 	}
