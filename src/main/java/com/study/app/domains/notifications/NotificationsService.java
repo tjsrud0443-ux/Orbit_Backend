@@ -37,4 +37,8 @@ public class NotificationsService {
 	public void deleteMeetingNotiBySeq(Long rsvn_seq) {
 		notiDao.deleteMeetingNotiBySeq(rsvn_seq);
 	}
+	
+	public void deleteApprovalNotiBySeq(Long doc_seq) {
+		notiDao.deleteApprovalNotiBySeq(doc_seq);
+	}
 }

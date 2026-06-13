@@ -37,4 +37,8 @@ public class NotificationsDAO {
 	public void deleteMeetingNotiBySeq(Long ref_seq) {
 		batis.delete("Notifications.deleteMeetingNotiBySeq", ref_seq);
 	}
+	
+	public void deleteApprovalNotiBySeq(Long ref_seq) {
+		batis.delete("Notifications.deleteApprovalNotiBySeq", ref_seq);
+	}
 }

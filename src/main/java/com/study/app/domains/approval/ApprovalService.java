@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.study.app.domains.annualLeave.AnnualLeaveDAO;
 import com.study.app.domains.file.FileService;
+import com.study.app.domains.notifications.NotificationsDTO;
+import com.study.app.domains.notifications.NotificationsService;
 import com.study.app.domains.users.UsersDTO;
 import com.study.app.domains.users.UsersService;
 
@@ -26,6 +29,8 @@ public class ApprovalService {
 	private FileService fileServ;
 	@Autowired
 	private UsersService usersServ;
+	@Autowired
+	private NotificationsService notiServ;
 	
 	public List<UsersDTO> getAllEmployees() {
 		return usersServ.getAllEmployees();
@@ -47,6 +52,15 @@ public class ApprovalService {
 				app.setDoc_seq(docSeq);
 				if (app.getStep_order() == 1) {
 					app.setStatus("IN_PROGRESS"); 
+					if (dto.getIs_temp() == 0) {
+	                    NotificationsDTO noti = new NotificationsDTO();
+	                    noti.setRef_seq(docSeq);
+	                    noti.setUsers_id(app.getUsers_id());
+	                    noti.setNoti_type("APPROVAL");
+	                    noti.setContent("기안 결재 요청이 도착했습니다.");
+	                    noti.setRef_type("APPROVAL");
+	                    notiServ.insertNoti(noti);
+	                }
 				} else {
 					app.setStatus("WAITING");
 				}
@@ -237,9 +251,29 @@ public class ApprovalService {
 	        String nextUsersId = String.valueOf(nextLine.get("users_id"));
 	        dao.updateNextApprovalLineStatus(doc_seq, nextUsersId, "IN_PROGRESS");
 	        dao.updateDocumentStatus(doc_seq, "IN_PROGRESS");
+	        
+	        NotificationsDTO noti = new NotificationsDTO();
+	        noti.setRef_seq(doc_seq);
+	        noti.setUsers_id(nextUsersId);
+	        noti.setNoti_type("APPROVAL");
+	        noti.setContent("기안 결재 요청이 도착했습니다.");
+	        noti.setRef_type("APPROVAL");
+	        notiServ.insertNoti(noti);
 	    } else {
 	        // 마지막 결재자 -> 문서 APPROVED
 	        dao.updateDocumentStatus(doc_seq, "APPROVED");
+	        
+	        Map<String, Object> common = dao.selectCommonDetail(doc_seq);
+	        String drafterId = String.valueOf(common.get("users_id"));
+
+	        NotificationsDTO noti = new NotificationsDTO();
+	        noti.setRef_seq(doc_seq);
+	        noti.setUsers_id(drafterId);
+	        noti.setNoti_type("APPROVED");
+	        noti.setContent("기안이 승인되었습니다.");
+	        noti.setRef_type("APPROVAL");
+	        notiServ.insertNoti(noti);
+	        
 	        if(doc_type.equals("VACATION")) {
 	        	// 연차 테이블 반영
 	        	Map<String, Object> vac_info = dao.selectVacationDays(doc_seq);
@@ -269,6 +303,17 @@ public class ApprovalService {
 	    
 	    // 문서 status -> REJECTED, reject_reason
 	    dao.updateDocument(doc_seq, "REJECTED", reject_reason);
+	    
+	    Map<String, Object> common = dao.selectCommonDetail(doc_seq);
+	    String drafterId = String.valueOf(common.get("users_id"));
+
+	    NotificationsDTO noti = new NotificationsDTO();
+	    noti.setRef_seq(doc_seq);
+	    noti.setUsers_id(drafterId);
+	    noti.setNoti_type("REJECTED");
+	    noti.setContent("기안이 반려되었습니다.");
+	    noti.setRef_type("APPROVAL");
+	    notiServ.insertNoti(noti);
 	}
 
 	private void updateCommonApprovalData(DraftDocumentsDTO dto) {
@@ -291,6 +336,16 @@ public class ApprovalService {
 				app.setStep_order((Long.valueOf(i + 1)));
 				app.setStatus(i == 0 ? "IN_PROGRESS" : "WAITING");
 				dao.insertApprovalLines(app);
+				
+				if (i == 0 && dto.getIs_temp() == 0) {
+	                NotificationsDTO noti = new NotificationsDTO();
+	                noti.setRef_seq(dto.getDoc_seq());
+	                noti.setUsers_id(app.getUsers_id());
+	                noti.setNoti_type("APPROVAL");
+	                noti.setContent("기안 결재 요청이 도착했습니다.");
+	                noti.setRef_type("APPROVAL");
+	                notiServ.insertNoti(noti);
+	            }
 			}
 		}
 
@@ -569,6 +624,8 @@ public class ApprovalService {
 	
 	@Transactional
 	public void deleteDoc(Long doc_seq , String doc_type) {
+		notiServ.deleteApprovalNotiBySeq(doc_seq);
+		
 		switch(doc_type) {
 			case "VACATION" :
 				deleteVacationDoc(doc_seq);

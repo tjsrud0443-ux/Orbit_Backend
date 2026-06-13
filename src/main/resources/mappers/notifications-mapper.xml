@@ -25,4 +25,8 @@
 	<delete id="deleteMeetingNotiBySeq">
 		delete from notifications where ref_type = 'MEETING' and ref_seq = #{ref_seq}
 	</delete>
+	
+	<delete id="deleteApprovalNotiBySeq">
+		delete from notifications where ref_type = 'APPROVAL' and ref_seq = #{ref_seq}
+	</delete>
 </mapper>
