@@ -33,6 +33,10 @@ public class SchedulesDAO {
 		return mybatis.update("Schedules.updateSchedules", dto);
 	}
 	
+	public void deleteRoomRsvn(List<Long> rsvnList) {
+		mybatis.delete("Schedules.deleteRoomRsvn", rsvnList);
+	}
+	
 	public void addMeetingSchedules(SchedulesDTO dto) {
 		mybatis.insert("Schedules.addMeetingSchedules", dto);
 	}

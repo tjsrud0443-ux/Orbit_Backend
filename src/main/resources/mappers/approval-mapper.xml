@@ -258,30 +258,19 @@
 	<select id="countPendingApprovals" resultType="int">
 		select count(*) 
 	    from approval_lines al
-	    JOIN draft_documents d ON al.doc_seq = d.doc_seq where al.users_id = #{users_id} 
-	    	and al.status = 'IN_PROGRESS'
-	    	and TO_CHAR(d.created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	    JOIN draft_documents d ON al.doc_seq = d.doc_seq where al.users_id = #{users_id} and al.status = 'IN_PROGRESS'
 	</select>
 	
 	<select id="countInProgress" resultType="int">
-		select count(*) from draft_documents 
-		where users_id = #{users_id} 
-			and status = 'IN_PROGRESS'
-			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+		select count(*) from draft_documents where users_id = #{users_id} and status = 'IN_PROGRESS'
 	</select>
 	
 	<select id="countApproved" resultType="int">
-		select count(*) from draft_documents 
-		where users_id = #{users_id} 
-			and status = 'APPROVED'
-			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+		select count(*) from draft_documents where users_id = #{users_id} and status = 'APPROVED'
 	</select>
 	
 	<select id="countRejected" resultType="int">
-		select count(*) from draft_documents 
-		where users_id = #{users_id} 
-			and status = 'REJECTED'
-			and TO_CHAR(created_at, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+		select count(*) from draft_documents where users_id = #{users_id} and status = 'REJECTED'
 	</select>
 	
 	<select id="selectRecentDocs" resultType="map">
