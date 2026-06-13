@@ -142,6 +142,9 @@ public class ProjectsService {
 		kanbanDao.deleteTask(task_seq);
 	}
 
+	public void updateTaskStatus(KanbanTaskDTO dto) {
+		kanbanDao.updateTaskStatus(dto);
+	}
 
 
 

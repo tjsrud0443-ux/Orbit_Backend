@@ -90,6 +90,12 @@ public class ProjectsController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@PutMapping("/updateTaskStatus")
+	public ResponseEntity<Void> updateTaskStatus(@RequestBody KanbanTaskDTO dto) {
+		projectServ.updateTaskStatus(dto);
+		return ResponseEntity.ok().build();
+	}
+	
 	
 	
 	
