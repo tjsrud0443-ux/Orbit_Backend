@@ -71,6 +71,7 @@ public class MeetingRoomsService {
 		List<Long> rsvnList = rsvnDao.selectRsvnSeqByRoomSeq(room_seq);
 		if (rsvnList != null && !rsvnList.isEmpty()) {
 	        rsvnDao.deleteRsvnMember(rsvnList);
+	        scheServ.deleteRoomRsvn(rsvnList);
 	        notiServ.deleteNotiByRsvnList(rsvnList);
 	    }
 		rsvnDao.deleteRsvn(room_seq);
@@ -122,7 +123,7 @@ public class MeetingRoomsService {
 		
 		if (dto.getRemovedAttendees() != null && !dto.getRemovedAttendees().isEmpty()) {
 			for (RoomRsvnMemberDTO member : dto.getRemovedAttendees()) {
-				scheServ.deleteSchedule(dto.getRsvn_seq(), member.getUsers_id());
+				scheServ.deleteMeetingSchedule(dto.getRsvn_seq(), member.getUsers_id());
 				rsvnDao.removeRsvnMember(dto.getRsvn_seq(), member.getUsers_id());
 				
 				notiServ.deleteNotiBySeqAndId(dto.getRsvn_seq(), member.getUsers_id());

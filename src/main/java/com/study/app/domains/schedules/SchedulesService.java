@@ -31,6 +31,10 @@ public class SchedulesService {
 		return schedDAO.updateSchedules(dto);
 	}
 	
+	public void deleteRoomRsvn(List<Long> rsvnList) {
+		schedDAO.deleteRoomRsvn(rsvnList);
+	}
+	
 	public void addMeetingSchedules(RoomRsvnDTO rsvn, String users_id) {
 		SchedulesDTO dto = new SchedulesDTO();
 		dto.setTitle(rsvn.getTitle());
@@ -43,7 +47,7 @@ public class SchedulesService {
 		schedDAO.addMeetingSchedules(dto);
 	}
 	
-	public void deleteSchedule(Long rsvn_seq, String users_id) {
+	public void deleteMeetingSchedule(Long rsvn_seq, String users_id) {
 		schedDAO.deleteMeetingSchedule(rsvn_seq, users_id);
 	}
 	

@@ -27,6 +27,14 @@
 		start_dt=#{start_dt},end_dt=#{end_dt},sked_reason=#{sked_reason} where Schedule_seq=#{schedule_seq}
 	</update>
 	
+	<delete id="deleteRoomRsvn">
+		delete from schedules
+		where ref_type = 'MEETING' and ref_seq in
+		<foreach collection="list" item="ref_seq" open="(" separator="," close=")">
+			#{ref_seq}
+		</foreach>
+	</delete>
+	
 	<insert id="addMeetingSchedules">
 		insert into schedules values (schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, #{start_dt}, #{end_dt}, 
 			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate)
