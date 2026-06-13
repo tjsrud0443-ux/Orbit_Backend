@@ -82,4 +82,8 @@ public class RoomRsvnDAO {
 	public void deleteMeetRsvn(Long rsvn_seq) {
 		mybatis.delete("RoomRsvn.deleteMeetRsvn", rsvn_seq);
 	}
+	
+	public List<RoomRsvnMemberDTO> getRsvnMembers(Long rsvn_seq) {
+		return mybatis.selectList("RoomRsvn.getRsvnMembers", rsvn_seq);
+	}
 }

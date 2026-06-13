@@ -102,4 +102,8 @@
 	<delete id="deleteMeetRsvn">
 		delete from room_rsvn where rsvn_seq = #{rsvn_seq}
 	</delete>
+	
+	<select id="getRsvnMembers" resultType="com.study.app.domains.meetingRooms.RoomRsvnMemberDTO">
+		select users_id from room_rsvn_member where rsvn_seq = #{rsvn_seq}
+	</select>
 </mapper>

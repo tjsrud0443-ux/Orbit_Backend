@@ -1,5 +1,6 @@
 package com.study.app.domains.meetingRooms;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -127,22 +128,31 @@ public class MeetingRoomsService {
 				notiServ.deleteNotiBySeqAndId(dto.getRsvn_seq(), member.getUsers_id());
 			}
 		}
-		
+		List<String> addedIds = new ArrayList<>();
 		if (dto.getAddedAttendees() != null && !dto.getAddedAttendees().isEmpty()) {
 			for (RoomRsvnMemberDTO member : dto.getAddedAttendees()) {
 				rsvnDao.insertAddMember(dto.getRsvn_seq(), member.getUsers_id());
 				scheServ.insertMeetAddMember(dto, member.getUsers_id());
-				
-				NotificationsDTO noti = new NotificationsDTO();
-				noti.setRef_seq(dto.getRsvn_seq());
-				noti.setUsers_id(member.getUsers_id());
-				noti.setNoti_type("MEETING");
-				noti.setContent("회의 정보가 수정되었습니다.");
-				noti.setRef_type("MEETING");
-				notiServ.insertNoti(noti);
+				addedIds.add(member.getUsers_id());
 			}
 		}
 		scheServ.updateMeetSchedule(dto);
+		
+		List<RoomRsvnMemberDTO> currentMembers = rsvnDao.getRsvnMembers(dto.getRsvn_seq());
+		for (RoomRsvnMemberDTO member : currentMembers) {
+			NotificationsDTO noti = new NotificationsDTO();
+		    noti.setRef_seq(dto.getRsvn_seq());
+		    noti.setUsers_id(member.getUsers_id());
+		    noti.setNoti_type("MEETING");
+		    noti.setRef_type("MEETING");
+
+		    if (addedIds.contains(member.getUsers_id())) {
+		        noti.setContent("회의 일정이 추가되었습니다.");
+		    } else {
+		        noti.setContent("회의 정보가 수정되었습니다.");
+		    }
+		    notiServ.insertNoti(noti);
+		}
 	}
 	
 	@Transactional
