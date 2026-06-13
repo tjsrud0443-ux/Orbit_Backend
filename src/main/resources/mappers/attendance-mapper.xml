@@ -69,4 +69,18 @@
 	    ]]>
 </select>
 
+<update id="changeCheckout">
+	update attendance set 
+		check_out = TO_DATE(#{req_check_out}, 'YYYY-MM-DD HH24:MI:SS'), 
+		total_work_min = ROUND((TO_DATE(#{req_check_out}, 'YYYY-MM-DD HH24:MI:SS') - CAST(check_in AS DATE)) * 24 * 60)
+	where attendance_seq = #{attendance_seq}
+</update>
+
+<update id="updateOvertime">
+	update attendance set
+		check_out = TO_DATE(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+		total_work_min = ROUND((TO_DATE(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS') - CAST(check_in AS DATE)) * 24 * 60),
+		request_min = #{request_min}
+	where attendance_seq = #{attendance_seq}
+</update>
 </mapper>

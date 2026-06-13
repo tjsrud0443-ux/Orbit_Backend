@@ -40,4 +40,20 @@
 			count(case when status = 'REJECTED' then 1 end) as REJECTED
 		from checkout_request
 	</select>
+	
+	<update id="approveCheckout">
+		update checkout_request set 
+			status = 'APPROVED', approver_id = #{approver_id}, approved_at = sysdate 
+		where checkout_seq = #{checkout_seq}
+	</update>
+	
+	<select id="getCheckoutInfo" resultType="com.study.app.domains.checkoutRequest.CheckoutRequestDTO">
+		select attendance_seq, req_check_out from checkout_request where checkout_seq = #{checkout_seq}
+	</select>
+	
+	<update id="rejectCheckout">
+		update checkout_request set 
+			status = 'REJECTED', approver_id = #{approver_id}, approved_at = sysdate 
+		where checkout_seq = #{checkout_seq}
+	</update>
 </mapper>

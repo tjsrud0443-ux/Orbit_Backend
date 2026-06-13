@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
 import com.study.app.domains.supplies.SupplyDTO;
+import com.study.app.domains.supplies.SupplyRentalDTO;
 import com.study.app.domains.supplies.SupplyRequestDTO;
 import com.study.app.domains.supplies.SupplyService;
 import com.study.app.domains.users.UsersDTO;
@@ -241,11 +243,33 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
-	/*비품 관련*/
+/*비품 관련*/
 	@GetMapping("/supply")
 	public ResponseEntity<List<SupplyDTO>> getSupplyList(){
 		List<SupplyDTO> supplies = adminServ.getSupplyList();
 		return ResponseEntity.ok(supplies);
+	}
+	
+	@PostMapping("/supplyInsert")
+	public ResponseEntity<?> insertSupply(@RequestBody SupplyDTO dto){
+		try {
+	        adminServ.insertSupply(dto);
+	        return ResponseEntity.ok().build();
+		    } catch (RuntimeException e) {
+		        return ResponseEntity.badRequest().body(e.getMessage());  // 400 응답
+		    }
+	}
+	
+	@PutMapping("/supplyUpdate")
+	public ResponseEntity<Void> updateSupplies(@RequestBody SupplyDTO dto) {
+		adminServ.updateSupplies(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/supplyDelete")
+	public ResponseEntity<Void> deleteSupplies(@RequestBody Map<String, List<Long>> body) {
+	    adminServ.deleteSupplies(body.get("ids"));
+	    return ResponseEntity.ok().build();
 	}
 	
 	@GetMapping("/supplyReq")
@@ -298,13 +322,49 @@ public class AdminController {
 	    return ResponseEntity.ok().build();
 	}
 	
+	@GetMapping("/supplyRental")
+	public ResponseEntity<Map<String, Object>> supplyRentalList(
+	        @RequestParam(defaultValue = "1") int page,
+	        @RequestParam(defaultValue = "8") int size,
+	        @RequestParam(defaultValue = "") String keyword,
+	        @RequestParam(defaultValue = "") String status) {
 
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("keyword", keyword);
+	    params.put("status", status);
+	    params.put("start", (page - 1) * size + 1);
+	    params.put("end", page * size);
 
+	    List<SupplyRentalDTO> list = adminServ.supplyRentalList(params);
+	    
+	    // 탭 카운트용
+	    Map<String, Object> countParams = new HashMap<>();
+	    countParams.put("keyword", keyword);
 
+	    countParams.put("status", "");
+	    int totalCount = adminServ.supplyRentalCount(countParams);
 
+	    countParams.put("status", "RENTING");
+	    int rentingCount = adminServ.supplyRentalCount(countParams);
 
+	    countParams.put("status", "RETURNED");
+	    int returnedCount = adminServ.supplyRentalCount(countParams);
 
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("list", list);
+	    result.put("totalPages", (int) Math.ceil((double) totalCount / size));
+	    result.put("totalCount", totalCount);
+	    result.put("rentingCount", rentingCount);
+	    result.put("returnedCount", returnedCount);
 
+	    return ResponseEntity.ok(result);
+	}
+	
+	@PutMapping("/returnSupply")
+	public ResponseEntity<?> returnSupply(@RequestBody SupplyRentalDTO dto) {
+	    supplyServ.returnSupply(dto);
+	    return ResponseEntity.ok().build();
+	}
 
 
 
@@ -597,7 +657,14 @@ public class AdminController {
 
 
 
-	@GetMapping("/hr/getAllCheckoutRQ")
+
+
+
+
+
+
+
+	@GetMapping("hr/getAllCheckoutRQ")
 	public ResponseEntity<Map<String, Object>> getAllCheckoutRQ(@RequestParam Long cPage,
 															 @RequestParam String status) {
 		
@@ -605,7 +672,7 @@ public class AdminController {
 		return ResponseEntity.ok(result);
 	}
 	
-	@GetMapping("/hr/getAllOvertimeRQ")
+	@GetMapping("hr/getAllOvertimeRQ")
 	public ResponseEntity<Map<String, Object>> getAllOvertimeRQ(@RequestParam Long cPage,
 															 @RequestParam String status) {
 		
@@ -613,4 +680,35 @@ public class AdminController {
 		return ResponseEntity.ok(result);
 	}
 	
+	@PutMapping("hr/approveCheckout/{checkout_seq}")
+	public ResponseEntity<Void> approveCheckout(@PathVariable Long checkout_seq,
+												@RequestAttribute String loginId) {
+		
+		adminServ.approveCheckout(checkout_seq, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("hr/rejectCheckout/{checkout_seq}")
+	public ResponseEntity<Void> rejectCheckout(@PathVariable Long checkout_seq,
+												@RequestAttribute String loginId) {
+		
+		adminServ.rejectCheckout(checkout_seq, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("hr/approveOvertime/{overtime_seq}")
+	public ResponseEntity<Void> approveOvertime(@PathVariable Long overtime_seq,
+												@RequestAttribute String loginId) {
+		
+		adminServ.approveOvertime(overtime_seq, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("hr/rejectOvertime/{overtime_seq}")
+	public ResponseEntity<Void> rejectOvertime(@PathVariable Long overtime_seq,
+												@RequestAttribute String loginId) {
+		
+		adminServ.rejectOvertime(overtime_seq, loginId);
+		return ResponseEntity.ok().build();
+	}
 }

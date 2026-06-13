@@ -26,6 +26,7 @@ import com.study.app.domains.signup.SignupRequestDTO;
 import com.study.app.domains.signup.SignupService;
 import com.study.app.domains.supplies.SupplyDAO;
 import com.study.app.domains.supplies.SupplyDTO;
+import com.study.app.domains.supplies.SupplyRentalDTO;
 import com.study.app.domains.supplies.SupplyRequestDTO;
 import com.study.app.domains.supplies.SupplyService;
 import com.study.app.domains.users.UsersDAO;
@@ -201,10 +202,24 @@ public class AdminService {
 		adminDao.deleteAnswer(question_seq);
 	}
 	
+	
 /*비품 관련*/
 	public List<SupplyDTO> getSupplyList(){
 		return supplyServ.getSupplyList();
 	}
+	
+	public void insertSupply(SupplyDTO dto) {
+		supplyServ.insertSupply(dto);
+	}
+	
+	public void deleteSupplies(List<Long> ids) {
+	    supplyDAO.deleteSupplies(ids);
+	}
+	
+	public void updateSupplies(SupplyDTO dto) {
+		supplyDAO.updateSupplies(dto);
+	}
+	
 	//비품 신청 관리 목록
 	public List<SupplyRequestDTO> getAdminRequestList(Map<String, Object> params){
 		return supplyServ.getAdminRequestList(params);
@@ -214,9 +229,23 @@ public class AdminService {
 		return supplyDAO.getAdminRequestCount(params);
 	}
 	
-	//비품 신청 상태 및 비품 재고 수정
+	//비품 신청 상태 및 비품 재고 수정 및 대여이력 insert
 	public void approveRequest(SupplyRequestDTO srDto) {
 	    supplyServ.approveRequest(srDto);
+	}
+	
+	/*supply rental list*/
+	public List<SupplyRentalDTO> supplyRentalList(Map<String, Object> params) {
+	    return supplyDAO.supplyRentalList(params);
+	}
+
+	public int supplyRentalCount(Map<String, Object> params) {
+	    return supplyDAO.supplyRentalCount(params);
+	}
+	
+	//반납 처리 시 재고 복구 & 반납일 update
+	public void returnSupply(SupplyRentalDTO dto) {
+	    supplyServ.returnSupply(dto);  // @Transactional은 SupplyService에 있으니까 OK
 	}
 
 
@@ -511,5 +540,21 @@ public class AdminService {
 	
 	public Map<String, Object> getAllOvertimeRQ(Long cPage, String status) {
 		return overtimeServ.getAllOvertimeRQ(cPage, status);
+	}
+	
+	public void approveCheckout(Long checkout_seq, String loginId) {
+		checkoutServ.approveCheckout(checkout_seq, loginId);
+	}
+	
+	public void rejectCheckout(Long checkout_seq, String loginId) {
+		checkoutServ.rejectCheckout(checkout_seq, loginId);
+	}
+	
+	public void approveOvertime(Long overtime_seq, String loginId) {
+		overtimeServ.approveOvertime(overtime_seq, loginId);
+	}
+	
+	public void rejectOvertime(Long overtime_seq, String loginId) {
+		overtimeServ.rejectOvertime(overtime_seq, loginId);
 	}
 }

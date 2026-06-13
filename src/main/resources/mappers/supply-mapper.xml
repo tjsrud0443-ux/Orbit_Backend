@@ -4,8 +4,53 @@
 <!--비품 관리-->
 	<!--비품 목록 출력-->
 	<select id="getSupplyList" resultType="com.study.app.domains.supplies.SupplyDTO">
-	    SELECT * FROM SUPPLIES ORDER BY SUPPLY_NAME
+	    SELECT * FROM SUPPLIES
+	    ORDER BY 
+	    CASE STATUS 
+	        WHEN 'EMPTY'  THEN 1 
+	        WHEN 'LOW'    THEN 2 
+	        ELSE               3 
+	    END,
+	    SUPPLY_CODE ASC
 	</select>
+	<insert id="insertSupply">
+		INSERT INTO SUPPLIES (
+	        SUPPLY_SEQ, SUPPLY_NAME, CATEGORY, SUPPLY_CODE,
+	        TOTAL_QTY, STOCK_QTY, MIN_STOCK_QTY, STATUS, CREATED_AT
+	    ) VALUES (
+	        supply_seq.NEXTVAL,
+	        #{supply_name}, #{category}, #{supply_code},
+	        #{total_qty}, #{stock_qty}, #{min_stock_qty},
+	        CASE
+	            WHEN #{stock_qty} = 0 THEN 'EMPTY'
+	            WHEN #{stock_qty} &lt;= #{min_stock_qty} THEN 'LOW'
+	            ELSE 'ENOUGH'
+	        END,
+	        SYSDATE
+	    )
+	</insert>
+	<select id="checkDupCode" resultType="int">
+	    SELECT COUNT(*) FROM SUPPLIES WHERE SUPPLY_CODE = #{supply_code}
+	</select>
+	<delete id="deleteSupplies">
+		 DELETE FROM SUPPLIES WHERE SUPPLY_SEQ IN
+			<foreach collection="list" item="seq" open="(" separator="," close=")">
+			    #{seq}
+			</foreach>
+	</delete>
+	<update id="updateSupplies">
+		UPDATE SUPPLIES SET 
+			SUPPLY_NAME=#{supply_name}, 
+			CATEGORY=#{category},
+			TOTAL_QTY=#{total_qty}, 
+			MIN_STOCK_QTY=#{min_stock_qty},
+			STATUS = CASE
+	            WHEN STOCK_QTY = 0 THEN 'EMPTY'
+	            WHEN STOCK_QTY &lt;= #{min_stock_qty} THEN 'LOW'
+	            ELSE 'ENOUGH'
+	        END
+	    WHERE SUPPLY_SEQ = #{supply_seq}
+	</update>
 <!--비품 신청 관리-->
 	<resultMap id="adminSupplyRequestMap" type="com.study.app.domains.supplies.SupplyRequestDTO">
         <id property="req_seq" column="REQ_SEQ"/>
@@ -21,34 +66,49 @@
             <result property="supply_seq" column="SUPPLY_SEQ"/>
             <result property="ea" column="EA"/>
             <result property="use_type" column="USE_TYPE"/>
-            <result property="supply_name" column="SUPPLY_NAME"/> 
+            <result property="supply_name" column="SUPPLY_NAME"/>
+            <result property="stock_qty" column="STOCK_QTY"/> 
+    		<result property="min_stock_qty" column="MIN_STOCK_QTY"/> 
         </collection>
     </resultMap>
     
 	<select id="getAdminRequestList" resultMap="adminSupplyRequestMap">
-	    SELECT * FROM (
-	        SELECT ROWNUM AS rn, a.* FROM (
-	            SELECT
-	                r.REQ_SEQ, r.REQ_DATE, r.USERS_ID, u.NAME,
-	                r.REASON, r.STATUS, s.SUPPLY_NAME,
-	                i.ITEM_SEQ, i.SUPPLY_SEQ, i.EA, i.USE_TYPE
-	            FROM SUPPLY_REQUEST r
-	            JOIN SUPPLY_REQUEST_ITEMS i ON r.REQ_SEQ = i.REQ_SEQ
-	            JOIN SUPPLIES s ON i.SUPPLY_SEQ = s.SUPPLY_SEQ
-	            LEFT JOIN USERS u ON r.USERS_ID = u.ID
-	            <where>
-	                <if test="keyword != null and keyword != ''">
-	                    AND (s.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
-	                    OR u.NAME LIKE '%' || #{keyword} || '%')
-	                </if>
-	                <if test="status != null and status != ''">
-	                    AND r.STATUS = #{status}
-	                </if>
-	            </where>
-	            ORDER BY r.REQ_DATE DESC, r.REQ_SEQ DESC
-	        ) a
-	    )
-	    WHERE rn BETWEEN #{start} AND #{end}
+		 SELECT
+	        r.REQ_SEQ, r.REQ_DATE, r.USERS_ID, u.NAME,
+	        r.REASON, r.STATUS,
+	        i.ITEM_SEQ, i.SUPPLY_SEQ, i.EA, i.USE_TYPE,
+	        s.SUPPLY_NAME, s.STOCK_QTY, s.MIN_STOCK_QTY
+	    FROM (
+	        SELECT * FROM (
+	            SELECT ROWNUM AS rn, a.* FROM (
+	                SELECT r.REQ_SEQ, r.REQ_DATE, r.USERS_ID, r.REASON, r.STATUS
+	                FROM SUPPLY_REQUEST r
+	                LEFT JOIN USERS u ON r.USERS_ID = u.ID
+	                <where>
+	                    <if test="keyword != null and keyword != ''">
+	                        AND (
+	                            u.NAME LIKE '%' || #{keyword} || '%'
+	                            OR r.REQ_SEQ IN (
+	                                SELECT i2.REQ_SEQ
+	                                FROM SUPPLY_REQUEST_ITEMS i2
+	                                JOIN SUPPLIES s2 ON i2.SUPPLY_SEQ = s2.SUPPLY_SEQ
+	                                WHERE s2.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+	                            )
+	                        )
+	                    </if>
+	                    <if test="status != null and status != ''">
+	                        AND r.STATUS = #{status}
+	                    </if>
+	                </where>
+	                ORDER BY r.REQ_DATE ASC, r.REQ_SEQ ASC
+	            ) a
+	        )
+	        WHERE rn BETWEEN #{start} AND #{end}
+	    ) r
+	    JOIN USERS u ON r.USERS_ID = u.ID
+	    JOIN SUPPLY_REQUEST_ITEMS i ON r.REQ_SEQ = i.REQ_SEQ
+	    JOIN SUPPLIES s ON i.SUPPLY_SEQ = s.SUPPLY_SEQ
+	    ORDER BY rn ASC, i.ITEM_SEQ ASC
 	</select>
 	
 	<!-- 전체 카운트 -->
@@ -87,11 +147,121 @@
 	    SET STATUS = #{status}
 	    WHERE REQ_SEQ = #{req_seq}
 	</update>
+	<!--대여자 부서정보 가져옴-->
+	<select id="getDeptSeqByUserId" resultType="int">
+	    SELECT DEPT_SEQ FROM USERS WHERE ID = #{users_id}
+	</select>
+	<!--승인 시 대여테이블 데이터 insert-->
+	<insert id="insertSupplyRental">
+	    INSERT INTO SUPPLY_RENTAL (
+	        RENTAL_SEQ, SUPPLY_SEQ, USERS_ID, DEPT_SEQ, EA, RENTAL_DATE
+	    ) VALUES (
+	        RENTAL_SEQ.NEXTVAL,
+	        #{supply_seq},
+	        #{users_id},
+	        #{dept_seq},
+	        #{ea},
+	        #{rental_date}
+	    )
+	</insert>
 	<!--승인 시 비품테이블 재고 수정-->
 	<update id="decreaseStock">
 	    UPDATE SUPPLIES
-	    SET STOCK_QTY = STOCK_QTY - #{ea}
+	    SET 
+	        STOCK_QTY = STOCK_QTY - #{ea},
+	        STATUS = CASE
+	            WHEN STOCK_QTY - #{ea} = 0 THEN 'EMPTY'
+	            WHEN STOCK_QTY - #{ea} &lt; MIN_STOCK_QTY THEN 'LOW'
+	            ELSE 'ENOUGH'
+	        END
 	    WHERE SUPPLY_SEQ = #{supply_seq}
-	    AND STOCK_QTY >= #{ea} 
+	    AND STOCK_QTY >= #{ea}
+	</update>
+	
+	<!--비품 대여 이력-->
+	<!--대여 이력 출력-->
+	<select id="supplyRentalList" resultType="com.study.app.domains.supplies.SupplyRentalDTO">
+		SELECT * FROM (
+	        SELECT ROWNUM AS rn, a.* FROM (
+	            SELECT
+	                r.RENTAL_SEQ,
+	                s.SUPPLY_NAME,
+	                r.SUPPLY_SEQ,
+	                s.CATEGORY,
+	                s.SUPPLY_CODE,
+	                d.DEPT_NAME,
+	                u.NAME,
+	                r.EA,
+	                r.RENTAL_DATE,
+	                r.RETURN_DATE
+	            FROM SUPPLY_RENTAL r
+	            JOIN SUPPLIES s ON r.SUPPLY_SEQ = s.SUPPLY_SEQ
+	            JOIN USERS u ON r.USERS_ID = u.ID
+	            JOIN DEPARTMENTS d ON r.DEPT_SEQ = d.DEPT_SEQ
+	            <where>
+	                <if test="keyword != null and keyword != ''">
+	                    AND (s.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+	                    OR u.NAME LIKE '%' || #{keyword} || '%'
+	                    OR d.DEPT_NAME LIKE '%' || #{keyword} || '%'
+	                    OR s.SUPPLY_CODE LIKE '%' || #{keyword} || '%')
+	                </if>
+	                <if test="status != null and status != ''">
+	                    AND (
+	                        CASE WHEN #{status} = 'RENTING' THEN
+	                            CASE WHEN r.RETURN_DATE IS NULL THEN 1 ELSE 0 END
+	                        ELSE
+	                            CASE WHEN r.RETURN_DATE IS NOT NULL THEN 1 ELSE 0 END
+	                        END
+	                    ) = 1
+	                </if>
+	            </where>
+	            ORDER BY r.RENTAL_DATE DESC
+	        ) a
+	    )
+	    WHERE rn BETWEEN #{start} AND #{end}
+	</select>
+	
+	<select id="supplyRentalCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM SUPPLY_RENTAL r
+	    JOIN SUPPLIES s ON r.SUPPLY_SEQ = s.SUPPLY_SEQ
+	    JOIN USERS u ON r.USERS_ID = u.ID
+	    JOIN DEPARTMENTS d ON r.DEPT_SEQ = d.DEPT_SEQ
+	    <where>
+	        <if test="keyword != null and keyword != ''">
+	            AND (s.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+	            OR u.NAME LIKE '%' || #{keyword} || '%'
+	            OR d.DEPT_NAME LIKE '%' || #{keyword} || '%'
+	            OR s.SUPPLY_CODE LIKE '%' || #{keyword} || '%')
+	        </if>
+	        <if test="status != null and status != ''">
+	            AND (
+	                CASE WHEN #{status} = 'RENTING' THEN
+	                    CASE WHEN r.RETURN_DATE IS NULL THEN 1 ELSE 0 END
+	                ELSE
+	                    CASE WHEN r.RETURN_DATE IS NOT NULL THEN 1 ELSE 0 END
+	                END
+	            ) = 1
+	        </if>
+	    </where>
+	</select>
+	<!--반납 처리-->
+	<update id="returnSupply">
+	    UPDATE SUPPLY_RENTAL
+	    SET RETURN_DATE = SYSDATE
+	    WHERE RENTAL_SEQ = #{rental_seq}
+	</update>
+	
+	 <!--반납 시 재고 복구 -->
+	<update id="increaseStock">
+	    UPDATE SUPPLIES
+	    SET 
+	        STOCK_QTY = STOCK_QTY + #{ea},
+	        STATUS = CASE
+	            WHEN STOCK_QTY + #{ea} = 0 THEN 'EMPTY'
+	            WHEN STOCK_QTY + #{ea} &lt; MIN_STOCK_QTY THEN 'LOW'
+	            ELSE 'ENOUGH'
+	        END
+	    WHERE SUPPLY_SEQ = #{supply_seq}
 	</update>
 </mapper>

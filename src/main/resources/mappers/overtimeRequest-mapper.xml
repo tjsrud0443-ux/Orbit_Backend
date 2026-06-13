@@ -40,4 +40,20 @@
 			count(case when status = 'REJECTED' then 1 end) as REJECTED
 		from overtime_request
 	</select>
+	
+	<select id="getOvertimeInfo" resultType="com.study.app.domains.overtimeRequest.OvertimeRequestDTO">
+		select attendance_seq, end_dt, request_min from overtime_request where overtime_seq = #{overtime_seq}
+	</select>
+	
+	<update id="approveOvertime">
+		update overtime_request set 
+			status = 'APPROVED', approver_id = #{approver_id}, approved_at = sysdate 
+		where overtime_seq = #{overtime_seq}
+	</update>
+	
+	<update id="rejectOvertime">
+		update overtime_request set 
+			status = 'REJECTED', approver_id = #{approver_id}, approved_at = sysdate 
+		where overtime_seq = #{overtime_seq}
+	</update>
 </mapper>
