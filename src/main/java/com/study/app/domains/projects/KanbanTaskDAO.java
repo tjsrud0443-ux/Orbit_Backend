@@ -15,4 +15,8 @@ public class KanbanTaskDAO {
 	public List<KanbanTaskDTO> getKanbanTaskList(Long project_seq) {
 		return batis.selectList("KanbanTask.getKanbanTaskList", project_seq);
 	}
+	
+	public List<ProjectMembersDTO> getProjectMembers(Long project_seq) {
+		return batis.selectList("KanbanTask.getProjectMembers", project_seq);
+	}
 }

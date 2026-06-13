@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.study.app.domains.users.UsersDTO;
@@ -54,7 +53,6 @@ public class ProjectsController {
 	
 	@DeleteMapping("/projectDelete/{project_seq}")
 	public ResponseEntity<Void> deleteProject(@PathVariable Long project_seq) {
-		System.out.println(project_seq);
 		projectServ.deleteProject(project_seq);
 		return ResponseEntity.ok().build();
 	}
@@ -64,6 +62,10 @@ public class ProjectsController {
 		return ResponseEntity.ok(projectServ.getKanbanTaskList(project_seq));
 	}
 	
+	@GetMapping("/getProjectMembers/{project_seq}")
+	public ResponseEntity<List<ProjectMembersDTO>> getProjectMembers(@PathVariable Long project_seq) {
+		return ResponseEntity.ok(projectServ.getProjectMembers(project_seq));
+	}
 	
 	
 	

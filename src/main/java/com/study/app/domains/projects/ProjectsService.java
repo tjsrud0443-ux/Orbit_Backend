@@ -53,6 +53,11 @@ public class ProjectsService {
 			noti.setContent("프로젝트 일정이 추가되었습니다.");
 			notiServ.insertProjectNoti(noti);
 		}
+		ProjectMembersDTO createUser = new ProjectMembersDTO();
+		createUser.setProject_seq(projectSeq);
+		createUser.setUsers_id(loginId);
+		projectsDao.insertProjectMembers(createUser);
+		
 		schedServ.insertMyProjectSchedule(loginId, dto);
 	}
 	
@@ -87,6 +92,11 @@ public class ProjectsService {
 			noti.setContent("프로젝트 정보가 수정되었습니다.");
 			notiServ.insertProjectNoti(noti);
 		}
+		ProjectMembersDTO createUser = new ProjectMembersDTO();
+		createUser.setProject_seq(projectSeq);
+		createUser.setUsers_id(loginId);
+		projectsDao.insertProjectMembers(createUser);
+		
 		schedServ.insertMyProjectSchedule(loginId, dto);
 	}
 	
@@ -106,7 +116,9 @@ public class ProjectsService {
 		return kanbanDao.getKanbanTaskList(project_seq);
 	}
 
-
+	public List<ProjectMembersDTO> getProjectMembers(Long project_seq) {
+		return kanbanDao.getProjectMembers(project_seq);
+	}
 
 
 

@@ -9,4 +9,11 @@
 			where k.project_seq = #{project_seq}
 			order by k.status, k.position
 	</select>
+	
+	<select id="getProjectMembers" resultType="com.study.app.domains.projects.ProjectMembersDTO">
+		select p.users_id, u.name, u.sysname
+			from project_members p
+			left join users u on u.id = p.users_id
+			where p.project_seq = #{project_seq}
+	</select>
 </mapper>
