@@ -7,11 +7,14 @@ public class SupplyRequestItemsDTO {
     private String supply_name;
     private int ea;
     private String use_type;
+    //db에 없음
+    private Long stock_qty;      
+    private Long min_stock_qty;  
     
     public SupplyRequestItemsDTO() {}
 
 	public SupplyRequestItemsDTO(Long item_seq, Long req_seq, Long supply_seq, String supply_name, int ea,
-			String use_type) {
+			String use_type, Long stock_qty, Long min_stock_qty) {
 		super();
 		this.item_seq = item_seq;
 		this.req_seq = req_seq;
@@ -19,6 +22,8 @@ public class SupplyRequestItemsDTO {
 		this.supply_name = supply_name;
 		this.ea = ea;
 		this.use_type = use_type;
+		this.stock_qty = stock_qty;
+		this.min_stock_qty = min_stock_qty;
 	}
 
 	public Long getItem_seq() {
@@ -68,5 +73,22 @@ public class SupplyRequestItemsDTO {
 	public void setUse_type(String use_type) {
 		this.use_type = use_type;
 	}
+
+	public Long getStock_qty() {
+		return stock_qty;
+	}
+
+	public void setStock_qty(Long stock_qty) {
+		this.stock_qty = stock_qty;
+	}
+
+	public Long getMin_stock_qty() {
+		return min_stock_qty;
+	}
+
+	public void setMin_stock_qty(Long min_stock_qty) {
+		this.min_stock_qty = min_stock_qty;
+	}
+
 	
 }
