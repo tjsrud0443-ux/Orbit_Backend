@@ -51,8 +51,14 @@ public class ProjectsService {
 			noti.setUsers_id(member.getUsers_id());
 			noti.setNoti_type("PROJECT");
 			noti.setContent("프로젝트 일정이 추가되었습니다.");
-			notiServ.insertProjectNoti(noti);
+			noti.setRef_type("PROJECT");
+			notiServ.insertNoti(noti);
 		}
+		ProjectMembersDTO createUser = new ProjectMembersDTO();
+		createUser.setProject_seq(projectSeq);
+		createUser.setUsers_id(loginId);
+		projectsDao.insertProjectMembers(createUser);
+		
 		schedServ.insertMyProjectSchedule(loginId, dto);
 	}
 	
@@ -85,8 +91,14 @@ public class ProjectsService {
 			noti.setUsers_id(member.getUsers_id());
 			noti.setNoti_type("PROJECT");
 			noti.setContent("프로젝트 정보가 수정되었습니다.");
-			notiServ.insertProjectNoti(noti);
+			noti.setRef_type("PROJECT");
+			notiServ.insertNoti(noti);
 		}
+		ProjectMembersDTO createUser = new ProjectMembersDTO();
+		createUser.setProject_seq(projectSeq);
+		createUser.setUsers_id(loginId);
+		projectsDao.insertProjectMembers(createUser);
+		
 		schedServ.insertMyProjectSchedule(loginId, dto);
 	}
 	
@@ -98,6 +110,7 @@ public class ProjectsService {
 	public void deleteProject(Long project_seq) {
 		notiServ.deleteProjectNotiBySeq(project_seq);
 		schedServ.deleteProjectScheduleBySeq(project_seq);
+		kanbanDao.deleteAllTask(project_seq);
 		projectsDao.deleteProjectMembers(project_seq);
 		projectsDao.deleteProject(project_seq);
 	}
@@ -106,13 +119,31 @@ public class ProjectsService {
 		return kanbanDao.getKanbanTaskList(project_seq);
 	}
 
+	public List<ProjectMembersDTO> getProjectMembers(Long project_seq) {
+		return kanbanDao.getProjectMembers(project_seq);
+	}
 
+	public void insertTask(String loginId, KanbanTaskDTO dto) {
+		Long position = kanbanDao.getNextPosition(dto);
+		
+		dto.setPosition(position);
+		dto.setUsers_c_id(loginId);
+		kanbanDao.insertTask(dto);
+	}
 
+	public ProjectsDTO getProjectBySeq(Long project_seq) {
+		return kanbanDao.getProjectBySeq(project_seq);
+	}
+	
+	public void updateTask(KanbanTaskDTO dto) {
+		kanbanDao.updateTask(dto);
+	}
+	
+	public void deleteTask(Long task_seq) {
+		kanbanDao.deleteTask(task_seq);
+	}
 
-
-
-
-
-
-
+	public void updateTaskStatus(KanbanTaskDTO dto) {
+		kanbanDao.updateTaskStatus(dto);
+	}
 }

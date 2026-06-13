@@ -5,8 +5,50 @@
 	<select id="getKanbanTaskList" resultType="com.study.app.domains.projects.KanbanTaskDTO">
 		select k.*, u.name, u.sysname
 			from kanban_task k
-			left join users u on u.id = k.users_c_id
+			left join users u on u.id = k.users_pic_id
 			where k.project_seq = #{project_seq}
 			order by k.status, k.position
 	</select>
+	
+	<select id="getProjectMembers" resultType="com.study.app.domains.projects.ProjectMembersDTO">
+		select p.users_id, u.name, u.sysname
+			from project_members p
+			left join users u on u.id = p.users_id
+			where p.project_seq = #{project_seq}
+	</select>
+	
+	<select id="getNextPosition" resultType="Long">
+	    select nvl(max(position), -1) + 1
+		    from kanban_task
+		    where project_seq = #{project_seq}
+		    and status = #{status}
+	</select>
+	
+	<insert id="insertTask">
+		insert into kanban_task values(task_seq.nextval, #{project_seq}, #{title}, #{content}, #{status}, 
+		#{priority}, #{users_pic_id}, #{start_date}, #{due_date}, #{position}, #{users_c_id}, sysdate, null)
+	</insert>
+	
+	<select id="getProjectBySeq" resultType="com.study.app.domains.projects.ProjectsDTO">
+		select * from projects where project_seq = #{project_seq}
+	</select>
+	
+	<update id="updateTask">
+		update kanban_task set title = #{title}, content = #{content}, status = #{status},
+    						priority = #{priority}, users_pic_id = #{users_pic_id}, start_date = #{start_date},
+    						due_date = #{due_date}, updated_at = sysdate
+						where task_seq = #{task_seq}
+	</update>
+	
+	<delete id="deleteTask">
+		delete from kanban_task where task_seq = #{task_seq}
+	</delete>
+	
+	<update id="updateTaskStatus">
+		update kanban_task set status = #{status} where task_seq = #{task_seq}
+	</update>
+	
+	<delete id="deleteAllTask">
+		delete from kanban_task where project_seq = #{project_seq}
+	</delete>
 </mapper>

@@ -13,6 +13,7 @@ public class ProjectsDTO {
 	private String users_id;
 	private String created_at;
 	private List<ProjectMembersDTO> projectMembersDTO;
+	private String created_name;
 	
 	public ProjectsDTO() {}
 	
@@ -82,5 +83,11 @@ public class ProjectsDTO {
 	}
 	public void setProjectMembersDTO(List<ProjectMembersDTO> projectMembersDTO) {
 		this.projectMembersDTO = projectMembersDTO;
+	}
+	public String getCreated_name() {
+		return created_name;
+	}
+	public void setCreated_name(String created_name) {
+		this.created_name = created_name;
 	}
 }
