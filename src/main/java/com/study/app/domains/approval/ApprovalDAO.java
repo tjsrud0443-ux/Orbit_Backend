@@ -332,4 +332,8 @@ public class ApprovalDAO {
 		mybatis.delete("Approval.deletePurDoc", doc_seq);
 	}
 	
+	public String getNotiDocType(Long doc_seq) {
+		return mybatis.selectOne("Approval.getNotiDocType", doc_seq);
+	}
+	
 }

@@ -51,4 +51,8 @@ public class KanbanTaskDAO {
 	public String selectUsersPicIdBySeq(Long task_seq) {
 		return batis.selectOne("KanbanTask.selectUsersPicIdBySeq", task_seq);
 	}
+	
+	public Long getNotiProjectSeq(Long task_seq) {
+		return batis.selectOne("KanbanTask.getNotiProjectSeq", task_seq);
+	}
 }

@@ -58,4 +58,8 @@
 	<select id="selectUsersPicIdBySeq" resultType="String">
 		select users_pic_id from kanban_task where task_seq = #{task_seq}
 	</select>
+	
+	<select id="getNotiProjectSeq" resultType="Long">
+		select project_seq from kanban_task where task_seq = #{task_seq}
+	</select>
 </mapper>

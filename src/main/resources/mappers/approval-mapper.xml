@@ -504,4 +504,7 @@
 		delete from purchase where doc_seq = #{doc_seq}
 	</delete>
 
+	<select id="getNotiDocType" resultType="String">
+		select doc_type from draft_documents where doc_seq = #{doc_seq}
+	</select>
 </mapper>

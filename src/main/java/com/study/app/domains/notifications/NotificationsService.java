@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.study.app.domains.approval.ApprovalDAO;
+import com.study.app.domains.projects.KanbanTaskDAO;
+
 @Service
 public class NotificationsService {
 	
@@ -14,6 +17,12 @@ public class NotificationsService {
 	
 	@Autowired
 	private NotificationsDAO notiDao;
+	
+	@Autowired
+	private KanbanTaskDAO kanbanDao;
+	
+	@Autowired
+	private ApprovalDAO appDao;
 	
 	public void insertNoti(NotificationsDTO dto) {
 		notiDao.insertNoti(dto);
@@ -44,5 +53,13 @@ public class NotificationsService {
 	
 	public List<NotificationsDTO> getMyNotiListByLoginId(String loginId) {
 		return notiDao.getMyNotiListByLoginId(loginId);
+	}
+	
+	public Long getNotiProjectSeq(Long ref_seq) {
+		return kanbanDao.getNotiProjectSeq(ref_seq);
+	}
+	
+	public String getNotiDocType(Long ref_seq) {
+		return appDao.getNotiDocType(ref_seq);
 	}
 }
