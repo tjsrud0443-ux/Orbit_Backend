@@ -34,10 +34,7 @@ public class UsersController {
 	public ResponseEntity<Boolean> checkDupEmail(
 	    @RequestAttribute String loginId,
 	    @RequestParam String email) {
-		 System.out.println("loginId: " + loginId);
-		    System.out.println("email: " + email);
-		    boolean result = usersServ.checkDupEmail(email, loginId);
-		    System.out.println("result: " + result);
+
 	    return ResponseEntity.ok(usersServ.checkDupEmail(email, loginId));
 	}
 	

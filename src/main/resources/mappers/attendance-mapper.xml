@@ -39,34 +39,36 @@
 </select>
 <select id="getCntWeek" resultType="com.study.app.domains.attendance.AttendanceDTO">
 	<![CDATA[
-	    SELECT 
-	        -- 안쪽에서 이미 집계된 1행짜리 데이터이므로 그냥 꺼내오면 됩니다!
+	    SELECT
 	        NVL(A.work_days, 0) AS "work_days",
 	        NVL(A.late_cnt, 0) AS "late_cnt",
-	        NVL(A.overtime_hours, 0) AS "overtime_hours",
-	        
-	        -- 이제 독립적인 서브쿼리가 같이 있어도 에러가 나지 않습니다.
-	(SELECT NVL(SUM(v.DAYS), 0)
-	    FROM VACATION v
-	    JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
-	    WHERE dd.USERS_ID = #{loginId}
-	      AND dd.STATUS = 'APPROVED'
-	      AND v.START_DATE >= TRUNC(SYSDATE, 'IW')
-	      AND v.START_DATE < TRUNC(SYSDATE, 'IW') + 7
-	) AS "vac_cnt"
+	
+	        (SELECT NVL(ROUND(SUM(REQUEST_MIN), 1), 0)
+	            FROM OVERTIME_REQUEST
+	            WHERE USERS_ID = #{loginId}
+	            AND STATUS = 'APPROVED'
+	            AND WORK_DATE >= TRUNC(SYSDATE, 'IW')
+	            AND WORK_DATE < TRUNC(SYSDATE, 'IW') + 7
+	        ) AS "overtime_hours",
+	
+	        (SELECT NVL(SUM(v.DAYS), 0)
+	            FROM VACATION v
+	            JOIN DRAFT_DOCUMENTS dd ON v.DOC_SEQ = dd.DOC_SEQ
+	            WHERE dd.USERS_ID = #{loginId}
+	              AND dd.STATUS = 'APPROVED'
+	              AND v.START_DATE >= TRUNC(SYSDATE, 'IW')
+	              AND v.START_DATE < TRUNC(SYSDATE, 'IW') + 7
+	        ) AS "vac_cnt"
 	    FROM (
-	        -- [출퇴근 데이터 집계부] 
-	        -- 여기서 무조건 1행의 결과만 반환하므로, 바깥에서 MAX()를 감쌀 필요가 없었던 것입니다.
-	        SELECT 
+	        SELECT
 	            COUNT(*) AS work_days,
-	            SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt,
-	            ROUND(SUM(CASE WHEN TOTAL_WORK_MIN > 480 THEN TOTAL_WORK_MIN - 480 ELSE 0 END) / 60, 1) AS overtime_hours
+	            SUM(CASE WHEN TO_CHAR(CHECK_IN, 'HH24:MI') > '09:00' THEN 1 ELSE 0 END) AS late_cnt
 	        FROM ATTENDANCE
 	        WHERE USERS_ID = #{loginId}
 	          AND WORK_DATE >= TRUNC(SYSDATE, 'IW')
 	          AND WORK_DATE < TRUNC(SYSDATE, 'IW') + 7
 	    ) A
-	    ]]>
+	]]>
 </select>
 
 <update id="changeCheckout">
