@@ -1,5 +1,7 @@
 package com.study.app.domains.projects;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,9 @@ public class ProjectsService {
 			noti.setNoti_type("PROJECT");
 			noti.setContent("프로젝트 일정이 추가되었습니다.");
 			noti.setRef_type("PROJECT");
+			noti.setRead_yn("N");
+			noti.setCreated_at(LocalDateTime.now()
+			        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			notiServ.insertNoti(noti);
 		}
 		ProjectMembersDTO createUser = new ProjectMembersDTO();
@@ -92,6 +97,9 @@ public class ProjectsService {
 			noti.setUsers_id(member.getUsers_id());
 			noti.setNoti_type("PROJECT");
 			noti.setRef_type("PROJECT");
+			noti.setRead_yn("N");
+			noti.setCreated_at(LocalDateTime.now()
+			        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			
 			if(beforeMembers.contains(member.getUsers_id())) {
 		        noti.setContent("프로젝트 정보가 수정되었습니다.");
@@ -147,7 +155,10 @@ public class ProjectsService {
 			noti.setNoti_type("TASK");
 			noti.setContent("새로운 업무가 배정되었습니다.");
 			noti.setRef_type("TASK");
-
+			noti.setRead_yn("N");
+			noti.setCreated_at(LocalDateTime.now()
+			        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			
 			notiServ.insertNoti(noti);
 		}
 	}
@@ -171,7 +182,10 @@ public class ProjectsService {
 			noti.setNoti_type("TASK");
 			noti.setContent("새로운 업무가 배정되었습니다.");
 			noti.setRef_type("TASK");
-
+			noti.setRead_yn("N");
+			noti.setCreated_at(LocalDateTime.now()
+			        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			
 			notiServ.insertNoti(noti);
 		}
 	}
