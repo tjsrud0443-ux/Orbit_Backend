@@ -42,7 +42,11 @@
 				left join project_members pm on pm.project_seq = p.project_seq
 				left join users u on u.id = pm.users_id
 				left join users cu on cu.id = p.users_id
-				where p.users_id = #{loginId} or pm.users_id = #{loginId}
+				where p.users_id = #{loginId} 
+				or exists ( select 1
+            		from project_members pm2
+		            where pm2.project_seq = p.project_seq and pm2.users_id = #{loginId}
+       			)
 			order by p.start_date
 	</select>
 	

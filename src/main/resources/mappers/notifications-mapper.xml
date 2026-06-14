@@ -3,7 +3,10 @@
 <mapper namespace="Notifications">
 
 	<insert id="insertNoti">
-		insert into Notifications values(noti_seq.nextval, #{users_id}, #{noti_type}, #{content}, #{ref_type}, #{ref_seq}, 
+		<selectKey keyProperty="noti_seq" resultType="Long" order="BEFORE">
+			select noti_seq.nextval from dual
+		</selectKey>
+		insert into Notifications values(#{noti_seq}, #{users_id}, #{noti_type}, #{content}, #{ref_type}, #{ref_seq}, 
 		TO_TIMESTAMP(#{created_at},'YYYY-MM-DD HH24:MI:SS'), #{read_yn})
 	</insert>
 	
