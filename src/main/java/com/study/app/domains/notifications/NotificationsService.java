@@ -26,9 +26,7 @@ public class NotificationsService {
 	
 	public void insertNoti(NotificationsDTO dto) {
 		notiDao.insertNoti(dto);
-		
 		stomp.convertAndSend("/sub/notification/" + dto.getUsers_id(), dto);
-		System.out.println("/sub/notification/" + " " + dto.getUsers_id() + " " + dto);
 	}
 	
 	public void deleteNotiByRsvnList(List<Long> rsvnList) {
