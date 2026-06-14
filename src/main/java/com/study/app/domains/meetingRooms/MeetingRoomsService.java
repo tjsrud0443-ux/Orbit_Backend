@@ -1,5 +1,7 @@
 package com.study.app.domains.meetingRooms;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +102,8 @@ public class MeetingRoomsService {
 				noti.setNoti_type("MEETING");
 				noti.setContent("회의 일정이 추가되었습니다.");
 				noti.setRef_type("MEETING");
+				noti.setRead_yn("N");
+				noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 				notiServ.insertNoti(noti);
 			}
 		}
@@ -146,6 +150,8 @@ public class MeetingRoomsService {
 		    noti.setUsers_id(member.getUsers_id());
 		    noti.setNoti_type("MEETING");
 		    noti.setRef_type("MEETING");
+		    noti.setRead_yn("N");
+		    noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
 		    if (addedIds.contains(member.getUsers_id())) {
 		        noti.setContent("회의 일정이 추가되었습니다.");

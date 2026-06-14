@@ -1,6 +1,8 @@
 package com.study.app.domains.approval;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +61,8 @@ public class ApprovalService {
 	                    noti.setNoti_type("APPROVAL");
 	                    noti.setContent("기안 결재 요청이 도착했습니다.");
 	                    noti.setRef_type("APPROVAL");
+	                    noti.setRead_yn("N");
+	                    noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 	                    notiServ.insertNoti(noti);
 	                }
 				} else {
@@ -258,6 +262,8 @@ public class ApprovalService {
 	        noti.setNoti_type("APPROVAL");
 	        noti.setContent("기안 결재 요청이 도착했습니다.");
 	        noti.setRef_type("APPROVAL");
+	        noti.setRead_yn("N");
+	        noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 	        notiServ.insertNoti(noti);
 	    } else {
 	        // 마지막 결재자 -> 문서 APPROVED
@@ -272,6 +278,8 @@ public class ApprovalService {
 	        noti.setNoti_type("APPROVED");
 	        noti.setContent("기안이 승인되었습니다.");
 	        noti.setRef_type("APPROVAL");
+	        noti.setRead_yn("N");
+	        noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 	        notiServ.insertNoti(noti);
 	        
 	        if(doc_type.equals("VACATION")) {
@@ -313,6 +321,8 @@ public class ApprovalService {
 	    noti.setNoti_type("REJECTED");
 	    noti.setContent("기안이 반려되었습니다.");
 	    noti.setRef_type("APPROVAL");
+	    noti.setRead_yn("N");
+	    noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 	    notiServ.insertNoti(noti);
 	}
 
@@ -344,6 +354,8 @@ public class ApprovalService {
 	                noti.setNoti_type("APPROVAL");
 	                noti.setContent("기안 결재 요청이 도착했습니다.");
 	                noti.setRef_type("APPROVAL");
+	                noti.setRead_yn("N");
+	                noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 	                notiServ.insertNoti(noti);
 	            }
 			}
