@@ -84,26 +84,7 @@ public class AdminService {
 	}
 
 	public Map<String, Object> getAllUsers(String keyword, String status, Long start, Long end) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("keyword", keyword);
-		params.put("status", status);
-		params.put("start", start);
-		params.put("end", end);
-
-		List<UsersDTO> users = usersDao.getAllUsers(params);
-		int totalCount = usersDao.getTotalCount(params);
-		int activeCount = usersDao.getCountByStatus("ACTIVE", params);
-		int inactiveCount = usersDao.getCountByStatus("INACTIVE", params);
-		int rejectedCount = usersDao.getCountByStatus("REJECTED", params);
-
-		Map<String, Object> result = new HashMap<>();
-		result.put("users", users);
-		result.put("totalCount", totalCount);
-		result.put("activeCount", activeCount);
-		result.put("inactiveCount", inactiveCount);
-		result.put("rejectedCount", rejectedCount);
-
-		return result;
+	    return usersServ.getAllUsers(keyword, status, start, end);
 	}
 
 	public void rejectSignup(Long signup_seq) {
