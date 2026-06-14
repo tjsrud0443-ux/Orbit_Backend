@@ -17,8 +17,11 @@ public class SupplyService {
 		return supplyDAO.getSupplyList();
 	}
 	
-	//admin supply - delete
 	public void insertSupply(SupplyDTO dto) {
+		 // 음수 입력 방지
+	    if (dto.getTotal_qty() < 0 || dto.getMin_stock_qty() < 0) {
+	        throw new IllegalArgumentException("수량은 0 이상이어야 합니다.");
+	    }
 	    int count = supplyDAO.checkDupCode(dto.getSupply_code());
 	    if (count > 0) {
 	        throw new RuntimeException("이미 존재하는 비품코드입니다.");
@@ -26,6 +29,27 @@ public class SupplyService {
 	    supplyDAO.insertSupply(dto);
 	}
 	
+	public void updateSupplies(SupplyDTO dto) {
+		 // 음수 입력 방지
+	    if (dto.getTotal_qty() < 0 || dto.getMin_stock_qty() < 0) {
+	        throw new IllegalArgumentException("수량은 0 이상이어야 합니다.");
+	    }
+		//수정 전 데이터를 current 변수에 담아둠
+	    SupplyDTO current = supplyDAO.selectSupplyBySeq(dto.getSupply_seq());
+	    //			수정 후 총 재고수량 - 원래 재고수량
+	    long diff = dto.getTotal_qty() - current.getTotal_qty();
+	    //현재 재고수량 + 수량 
+	    long newStockQty = current.getStock_qty() + diff;
+	    //자동 반영된 현재 재고수량이 0 이하면 경고
+	    if (newStockQty < 0) {
+	        throw new IllegalArgumentException("현재 재고가 0 미만이 될 수 없습니다.");
+	    }
+
+	    dto.setStock_qty(newStockQty);
+	    supplyDAO.updateSupplies(dto);
+	}
+	
+	//admin
 	public List<SupplyRequestDTO> getAdminRequestList(Map<String, Object> params){
 		return supplyDAO.getAdminRequestList(params);
 	}
@@ -66,5 +90,12 @@ public class SupplyService {
 	        item.setReq_seq(dto.getReq_seq());
 	        supplyDAO.supplyRequestItems(item);
 	    }
+	}
+	
+	/*mypage myRequestList*/
+	@Transactional
+	public void deleteMySupplyRequest(Long req_seq) {
+	    supplyDAO.deleteMySupplyReqItems(req_seq); // 자식 먼저
+	    supplyDAO.deleteMySupplyRequest(req_seq);       // 부모 나중에
 	}
 }

@@ -3,6 +3,7 @@ package com.study.app.domains.mypage;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import com.study.app.domains.annualLeave.AnnualLeaveDTO;
 import com.study.app.domains.meetingRooms.MeetingRoomsDTO;
 import com.study.app.domains.meetingRooms.OccupiedTimeDTO;
 import com.study.app.domains.meetingRooms.RoomRsvnDTO;
+import com.study.app.domains.supplies.SupplyRequestDTO;
 
 @RestController
 @RequestMapping("/mypage")
@@ -81,5 +83,25 @@ public class MypageController {
 	public ResponseEntity<Void> cancelMeetRsvn(@PathVariable Long rsvn_seq) {
 		mypageServ.cancelMeetRsvn(rsvn_seq);
 		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/getMySupplyRequest")
+	public ResponseEntity<?> mySupplyRequest(@RequestAttribute String loginId) {
+		try {
+	        List<SupplyRequestDTO> list = mypageServ.mySupplyRequest(loginId);
+	        return ResponseEntity.ok(list);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("조회 실패");
+	    }
+	}
+	
+	@DeleteMapping("/deleteMySupplyRequest/{req_seq}")
+	public ResponseEntity<?> deleteMySupplyRequest(@PathVariable Long req_seq) {
+	    try {
+	        mypageServ.deleteMySupplyRequest(req_seq);
+	        return ResponseEntity.ok().build();
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패");
+	    }
 	}
 }

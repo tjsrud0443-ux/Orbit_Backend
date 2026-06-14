@@ -13,6 +13,9 @@ import com.study.app.domains.meetingRooms.MeetingRoomsDTO;
 import com.study.app.domains.meetingRooms.MeetingRoomsService;
 import com.study.app.domains.meetingRooms.OccupiedTimeDTO;
 import com.study.app.domains.meetingRooms.RoomRsvnDTO;
+import com.study.app.domains.supplies.SupplyDAO;
+import com.study.app.domains.supplies.SupplyRequestDTO;
+import com.study.app.domains.supplies.SupplyService;
 
 @Service
 public class MypageService {
@@ -22,7 +25,11 @@ public class MypageService {
 	@Autowired
 	private AiChatDAO aiChatDao;
 	@Autowired
-	private MeetingRoomsService roomServ;
+	private MeetingRoomsService roomServ;	
+	@Autowired
+	private SupplyDAO supplyDAO;
+	@Autowired
+	private SupplyService supplyServ;
 	
 	public AnnualLeaveDTO getAnnualLeaveSummary(String loginId) {
 		return annualDAO.getAnnualLeaveSummary(loginId);
@@ -59,4 +66,13 @@ public class MypageService {
 	public void cancelMeetRsvn(Long rsvn_seq) {
 		roomServ.cancelMeetRsvn(rsvn_seq);
 	}
+	
+	// 비품 신청 내역
+	public List<SupplyRequestDTO> mySupplyRequest(String loginId) {
+	    return supplyDAO.mySupplyRequest(loginId);
+	}
+	
+	public void deleteMySupplyRequest(Long req_seq) {
+        supplyServ.deleteMySupplyRequest(req_seq); 
+    }
 }

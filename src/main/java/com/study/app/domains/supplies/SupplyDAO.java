@@ -29,6 +29,10 @@ public class SupplyDAO {
 		return mybatis.selectOne("Supply.checkDupCode",supply_code);
 	}
 	
+	public SupplyDTO selectSupplyBySeq(Long supply_seq) {
+	    return mybatis.selectOne("Supply.selectSupplyBySeq", supply_seq);
+	}
+	
 	public int updateSupplies(SupplyDTO dto) {
 		return mybatis.update("Supply.updateSupplies",dto);
 	}
@@ -90,5 +94,18 @@ public class SupplyDAO {
 	
 	public int supplyRequestItems(SupplyRequestItemsDTO dto) {
 		return mybatis.insert("Supply.supplyRequestItems",dto);
+	}
+	
+	// mypage 비품 신청 내역
+	public List<SupplyRequestDTO> mySupplyRequest(String loginId) {
+	    return mybatis.selectList("Supply.mySupplyRequest", loginId);
+	}
+	
+	public int deleteMySupplyReqItems(Long req_seq) {
+	    return mybatis.delete("Supply.deleteMySupplyReqItems", req_seq);
+	}
+	
+	public int deleteMySupplyRequest(Long req_seq) {
+	    return mybatis.delete("Supply.deleteMySupplyRequest", req_seq);
 	}
 }

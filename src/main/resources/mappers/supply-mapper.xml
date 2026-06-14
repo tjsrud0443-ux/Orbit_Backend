@@ -38,15 +38,20 @@
 			    #{seq}
 			</foreach>
 	</delete>
+	<!--현재재고 자동 업데이트-->
+	<select id="selectSupplyBySeq" parameterType="long" resultType="com.study.app.domains.supplies.SupplyDTO">
+	    SELECT * FROM SUPPLIES WHERE SUPPLY_SEQ = #{supply_seq}
+	</select>
 	<update id="updateSupplies">
 		UPDATE SUPPLIES SET 
 			SUPPLY_NAME=#{supply_name}, 
 			CATEGORY=#{category},
 			TOTAL_QTY=#{total_qty}, 
 			MIN_STOCK_QTY=#{min_stock_qty},
+			STOCK_QTY=#{stock_qty},
 			STATUS = CASE
-	            WHEN STOCK_QTY = 0 THEN 'EMPTY'
-	            WHEN STOCK_QTY &lt;= #{min_stock_qty} THEN 'LOW'
+	            WHEN #{stock_qty} = 0 THEN 'EMPTY'
+    			WHEN #{stock_qty} &lt;= #{min_stock_qty} THEN 'LOW'
 	            ELSE 'ENOUGH'
 	        END
 	    WHERE SUPPLY_SEQ = #{supply_seq}
@@ -141,7 +146,7 @@
 	<insert id="supplyRequestItems">
 		INSERT INTO SUPPLY_REQUEST_ITEMS VALUES (S_ITEM_SEQ.NEXTVAL,#{req_seq},#{supply_seq},#{ea},#{use_type})
 	</insert>
-	<!--비품 신청 상태 변경-->
+	<!--비품 신청 상태 변경(승인/반려)-->
 	<update id="updateRequestStatus">
 	    UPDATE SUPPLY_REQUEST
 	    SET STATUS = #{status}
@@ -171,14 +176,14 @@
 	        STOCK_QTY = STOCK_QTY - #{ea},
 	        STATUS = CASE
 	            WHEN STOCK_QTY - #{ea} = 0 THEN 'EMPTY'
-	            WHEN STOCK_QTY - #{ea} &lt; MIN_STOCK_QTY THEN 'LOW'
+	            WHEN STOCK_QTY - #{ea} &lt;= MIN_STOCK_QTY THEN 'LOW'
 	            ELSE 'ENOUGH'
 	        END
 	    WHERE SUPPLY_SEQ = #{supply_seq}
 	    AND STOCK_QTY >= #{ea}
 	</update>
 	
-	<!--비품 대여 이력-->
+<!--비품 대여 이력-->
 	<!--대여 이력 출력-->
 	<select id="supplyRentalList" resultType="com.study.app.domains.supplies.SupplyRentalDTO">
 		SELECT * FROM (
@@ -259,9 +264,44 @@
 	        STOCK_QTY = STOCK_QTY + #{ea},
 	        STATUS = CASE
 	            WHEN STOCK_QTY + #{ea} = 0 THEN 'EMPTY'
-	            WHEN STOCK_QTY + #{ea} &lt; MIN_STOCK_QTY THEN 'LOW'
+	            WHEN STOCK_QTY + #{ea} &lt;= MIN_STOCK_QTY THEN 'LOW'
 	            ELSE 'ENOUGH'
 	        END
 	    WHERE SUPPLY_SEQ = #{supply_seq}
 	</update>
+	
+	<!--내 신청 내역-->
+	<resultMap id="supplyRequestMap" type="com.study.app.domains.supplies.SupplyRequestDTO">
+    <id property="req_seq" column="req_seq"/>
+    <result property="req_date" column="req_date"/>
+    <result property="status" column="status"/>
+    <result property="reason" column="reason"/>
+    <collection property="items" ofType="com.study.app.domains.supplies.SupplyRequestItemsDTO">
+        <result property="item_seq" column="item_seq"/>
+        <result property="supply_name" column="supply_name"/>
+        <result property="ea" column="ea"/>
+        <result property="use_type" column="use_type"/>
+    </collection>
+</resultMap>
+
+	<select id="mySupplyRequest" resultMap="supplyRequestMap">
+	    SELECT
+	        SR.REQ_SEQ, SR.REQ_DATE, SR.STATUS, SR.REASON,
+	        SRI.ITEM_SEQ, SRI.EA, SRI.USE_TYPE,
+	        S.SUPPLY_NAME
+	    FROM SUPPLY_REQUEST SR
+	    LEFT JOIN SUPPLY_REQUEST_ITEMS SRI ON SR.REQ_SEQ = SRI.REQ_SEQ
+	    LEFT JOIN SUPPLIES S ON SRI.SUPPLY_SEQ = S.SUPPLY_SEQ
+	    WHERE SR.USERS_ID = #{loginId}
+	    ORDER BY SR.REQ_DATE DESC
+	</select>
+	<delete id="deleteMySupplyReqItems">
+	    DELETE FROM SUPPLY_REQUEST_ITEMS
+	    WHERE REQ_SEQ = #{req_seq}
+	</delete>
+	<delete id="deleteMySupplyRequest">
+	    DELETE FROM SUPPLY_REQUEST
+	    WHERE REQ_SEQ = #{req_seq}
+	    AND STATUS IN ('PENDING', 'REJECTED')
+	</delete>
 </mapper>

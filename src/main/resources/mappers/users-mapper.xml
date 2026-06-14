@@ -168,6 +168,10 @@
 		where id = #{id}
 	</update>
 	
+	<select id="checkDupEmail" resultType="int" parameterType="map">
+	    SELECT COUNT(*) FROM USERS WHERE EMAIL = #{email} AND ID != #{id}
+	</select>
+	
 	<select id="isExistForId" resultType="int">
 		select count(*) from users where name = #{name} and email = #{email}
 	</select>

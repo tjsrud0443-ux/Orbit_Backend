@@ -64,6 +64,13 @@ public class UsersDAO {
 		return batis.selectOne("Users.getMyPageInfo", loginId);
 	}
 	
+	public int checkDupEmail(String email, String id) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("email", email);
+	    params.put("id", id);
+	    return batis.selectOne("Users.checkDupEmail", params);
+	}
+	
 	public int updateMyPageInfo(UsersDTO dto) {
 		return batis.update("Users.updateMyPageInfo",dto);
 	}
