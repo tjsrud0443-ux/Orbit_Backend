@@ -62,4 +62,8 @@ public class NotificationsService {
 	public String getNotiDocType(Long ref_seq) {
 		return appDao.getNotiDocType(ref_seq);
 	}
+	
+	public void updateReadNoti(Long noti_seq) {
+		notiDao.updateReadNoti(noti_seq);
+	}
 }

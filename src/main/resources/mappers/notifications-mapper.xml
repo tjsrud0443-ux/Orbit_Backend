@@ -34,4 +34,8 @@
 	<select id="getMyNotiListByLoginId" resultType="com.study.app.domains.notifications.NotificationsDTO">
 		select * from notifications where users_id = #{loginId} order by noti_seq desc
 	</select>
+	
+	<update id="updateReadNoti">
+		update notifications set read_yn = 'Y' where noti_seq = #{noti_seq}
+	</update>
 </mapper>

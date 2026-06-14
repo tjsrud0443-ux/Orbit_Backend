@@ -45,4 +45,8 @@ public class NotificationsDAO {
 	public List<NotificationsDTO> getMyNotiListByLoginId(String loginId) {
 		return batis.selectList("Notifications.getMyNotiListByLoginId", loginId);
 	}
+	
+	public void updateReadNoti(Long noti_seq) {
+		batis.update("Notifications.updateReadNoti", noti_seq);
+	}
 }
