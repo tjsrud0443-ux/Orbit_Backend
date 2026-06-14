@@ -3,7 +3,7 @@
 <mapper namespace="Notifications">
 
 	<insert id="insertNoti">
-		insert into Notifications values(noti_seq.nextval, #{users_id}, #{noti_type}, #{content}, #{ref_type}, #{ref_seq}, sysdate)
+		insert into Notifications values(noti_seq.nextval, #{users_id}, #{noti_type}, #{content}, #{ref_type}, #{ref_seq}, sysdate, 'N')
 	</insert>
 	
 	<delete id="deleteProjectNotiBySeq">
@@ -29,4 +29,8 @@
 	<delete id="deleteApprovalNotiBySeq">
 		delete from notifications where ref_type = 'APPROVAL' and ref_seq = #{ref_seq}
 	</delete>
+	
+	<select id="getMyNotiListByLoginId" resultType="com.study.app.domains.notifications.NotificationsDTO">
+		select * from notifications where users_id = #{loginId} order by noti_seq desc
+	</select>
 </mapper>

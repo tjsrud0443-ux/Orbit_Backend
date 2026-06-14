@@ -41,4 +41,8 @@ public class NotificationsService {
 	public void deleteApprovalNotiBySeq(Long doc_seq) {
 		notiDao.deleteApprovalNotiBySeq(doc_seq);
 	}
+	
+	public List<NotificationsDTO> getMyNotiListByLoginId(String loginId) {
+		return notiDao.getMyNotiListByLoginId(loginId);
+	}
 }

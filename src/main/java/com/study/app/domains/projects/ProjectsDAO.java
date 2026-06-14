@@ -48,4 +48,8 @@ public class ProjectsDAO {
 	public void deleteProject(Long project_seq) {
 		batis.delete("Projects.deleteProject", project_seq);
 	}
+	
+	public List<String> selectProjectMemberIds(Long project_seq) {
+		return batis.selectList("Projects.selectProjectMemberIds", project_seq);
+	}
 }

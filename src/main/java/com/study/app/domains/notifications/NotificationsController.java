@@ -1,8 +1,11 @@
 package com.study.app.domains.notifications;
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationsController {
 
 	@Autowired
-	private NotificationsService noServ;
+	private NotificationsService notiServ;
+	
+	@GetMapping("/getMyNotiList")
+	public ResponseEntity<List<NotificationsDTO>> getMyNotiListByLoginId(@RequestAttribute String loginId) {
+		return ResponseEntity.ok(notiServ.getMyNotiListByLoginId(loginId));
+	}
 	
 }

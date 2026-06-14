@@ -64,4 +64,8 @@
 	<delete id="deleteProject">
 		delete from projects where project_seq = #{project_seq}
 	</delete>
+	
+	<select id="selectProjectMemberIds" resultType="String">
+		select users_id from project_members where project_seq = #{project_seq}
+	</select>
 </mapper>

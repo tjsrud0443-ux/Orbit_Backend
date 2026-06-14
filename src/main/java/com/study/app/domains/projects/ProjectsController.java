@@ -79,8 +79,8 @@ public class ProjectsController {
 	}
 	
 	@PutMapping("/updateTask")
-	public ResponseEntity<Void> updateTask(@RequestBody KanbanTaskDTO dto) {
-		projectServ.updateTask(dto);
+	public ResponseEntity<Void> updateTask(@RequestAttribute String loginId, @RequestBody KanbanTaskDTO dto) {
+		projectServ.updateTask(loginId, dto);
 		return ResponseEntity.ok().build();
 	}
 	

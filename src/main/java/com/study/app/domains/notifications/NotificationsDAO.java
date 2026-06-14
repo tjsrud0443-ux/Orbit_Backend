@@ -41,4 +41,8 @@ public class NotificationsDAO {
 	public void deleteApprovalNotiBySeq(Long ref_seq) {
 		batis.delete("Notifications.deleteApprovalNotiBySeq", ref_seq);
 	}
+	
+	public List<NotificationsDTO> getMyNotiListByLoginId(String loginId) {
+		return batis.selectList("Notifications.getMyNotiListByLoginId", loginId);
+	}
 }

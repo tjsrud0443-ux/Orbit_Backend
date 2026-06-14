@@ -47,4 +47,8 @@ public class KanbanTaskDAO {
 	public void deleteAllTask(Long project_seq) {
 		batis.delete("KanbanTask.deleteAllTask", project_seq);
 	}
+	
+	public String selectUsersPicIdBySeq(Long task_seq) {
+		return batis.selectOne("KanbanTask.selectUsersPicIdBySeq", task_seq);
+	}
 }

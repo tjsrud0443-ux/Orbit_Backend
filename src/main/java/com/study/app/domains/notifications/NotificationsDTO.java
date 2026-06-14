@@ -9,11 +9,12 @@ public class NotificationsDTO {
 	private String ref_type;
 	private Long ref_seq;
 	private String created_at;
+	private String read_yn;
 	
 	public NotificationsDTO() {}
 	
 	public NotificationsDTO(Long noti_seq, String users_id, String noti_type, String content, String ref_type,
-			Long ref_seq, String created_at) {
+			Long ref_seq, String created_at, String read_yn) {
 		super();
 		this.noti_seq = noti_seq;
 		this.users_id = users_id;
@@ -22,6 +23,7 @@ public class NotificationsDTO {
 		this.ref_type = ref_type;
 		this.ref_seq = ref_seq;
 		this.created_at = created_at;
+		this.read_yn = read_yn;
 	}
 	
 	public Long getNoti_seq() {
@@ -65,5 +67,11 @@ public class NotificationsDTO {
 	}
 	public void setCreated_at(String created_at) {
 		this.created_at = created_at;
+	}
+	public String getRead_yn() {
+		return read_yn;
+	}
+	public void setRead_yn(String read_yn) {
+		this.read_yn = read_yn;
 	}
 }
