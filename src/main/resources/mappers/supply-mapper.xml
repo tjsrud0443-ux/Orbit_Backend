@@ -38,15 +38,20 @@
 			    #{seq}
 			</foreach>
 	</delete>
+	<!--현재재고 자동 업데이트-->
+	<select id="selectSupplyBySeq" parameterType="long" resultType="com.study.app.domains.supplies.SupplyDTO">
+	    SELECT * FROM SUPPLIES WHERE SUPPLY_SEQ = #{supply_seq}
+	</select>
 	<update id="updateSupplies">
 		UPDATE SUPPLIES SET 
 			SUPPLY_NAME=#{supply_name}, 
 			CATEGORY=#{category},
 			TOTAL_QTY=#{total_qty}, 
 			MIN_STOCK_QTY=#{min_stock_qty},
+			STOCK_QTY=#{stock_qty},
 			STATUS = CASE
-	            WHEN STOCK_QTY = 0 THEN 'EMPTY'
-	            WHEN STOCK_QTY &lt;= #{min_stock_qty} THEN 'LOW'
+	            WHEN #{stock_qty} = 0 THEN 'EMPTY'
+    			WHEN #{stock_qty} &lt;= #{min_stock_qty} THEN 'LOW'
 	            ELSE 'ENOUGH'
 	        END
 	    WHERE SUPPLY_SEQ = #{supply_seq}
@@ -141,7 +146,7 @@
 	<insert id="supplyRequestItems">
 		INSERT INTO SUPPLY_REQUEST_ITEMS VALUES (S_ITEM_SEQ.NEXTVAL,#{req_seq},#{supply_seq},#{ea},#{use_type})
 	</insert>
-	<!--비품 신청 상태 변경-->
+	<!--비품 신청 상태 변경(승인/반려)-->
 	<update id="updateRequestStatus">
 	    UPDATE SUPPLY_REQUEST
 	    SET STATUS = #{status}
@@ -171,14 +176,14 @@
 	        STOCK_QTY = STOCK_QTY - #{ea},
 	        STATUS = CASE
 	            WHEN STOCK_QTY - #{ea} = 0 THEN 'EMPTY'
-	            WHEN STOCK_QTY - #{ea} &lt; MIN_STOCK_QTY THEN 'LOW'
+	            WHEN STOCK_QTY - #{ea} &lt;= MIN_STOCK_QTY THEN 'LOW'
 	            ELSE 'ENOUGH'
 	        END
 	    WHERE SUPPLY_SEQ = #{supply_seq}
 	    AND STOCK_QTY >= #{ea}
 	</update>
 	
-	<!--비품 대여 이력-->
+<!--비품 대여 이력-->
 	<!--대여 이력 출력-->
 	<select id="supplyRentalList" resultType="com.study.app.domains.supplies.SupplyRentalDTO">
 		SELECT * FROM (
@@ -259,7 +264,7 @@
 	        STOCK_QTY = STOCK_QTY + #{ea},
 	        STATUS = CASE
 	            WHEN STOCK_QTY + #{ea} = 0 THEN 'EMPTY'
-	            WHEN STOCK_QTY + #{ea} &lt; MIN_STOCK_QTY THEN 'LOW'
+	            WHEN STOCK_QTY + #{ea} &lt;= MIN_STOCK_QTY THEN 'LOW'
 	            ELSE 'ENOUGH'
 	        END
 	    WHERE SUPPLY_SEQ = #{supply_seq}

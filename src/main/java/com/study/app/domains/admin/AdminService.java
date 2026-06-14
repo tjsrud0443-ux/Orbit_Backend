@@ -217,7 +217,7 @@ public class AdminService {
 	}
 	
 	public void updateSupplies(SupplyDTO dto) {
-		supplyDAO.updateSupplies(dto);
+		supplyServ.updateSupplies(dto);
 	}
 	
 	//비품 신청 관리 목록

@@ -29,6 +29,10 @@ public class SupplyDAO {
 		return mybatis.selectOne("Supply.checkDupCode",supply_code);
 	}
 	
+	public SupplyDTO selectSupplyBySeq(Long supply_seq) {
+	    return mybatis.selectOne("Supply.selectSupplyBySeq", supply_seq);
+	}
+	
 	public int updateSupplies(SupplyDTO dto) {
 		return mybatis.update("Supply.updateSupplies",dto);
 	}
