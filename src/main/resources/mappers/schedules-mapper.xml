@@ -2,30 +2,60 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Schedules">
 	<insert id="insertSchedules">
-		 insert into schedules values(
-	        schedule_seq.nextval,
-	        #{title},
-	        #{schedule_type},
-	        #{users_id},
-	        #{start_dt, jdbcType=TIMESTAMP},
-	        #{end_dt, jdbcType=TIMESTAMP},
-	        #{sked_reason, jdbcType=VARCHAR},
-	        #{is_public, jdbcType=INTEGER},
-	        #{ref_seq, jdbcType=NUMERIC},
-	        #{ref_type, jdbcType=VARCHAR},
-	        sysdate
-	    )
+		<selectKey keyProperty="schedule_seq" resultType="Long" order="BEFORE">
+			SELECT schedule_seq.nextval FROM dual
+		</selectKey>
+		insert into schedules values(
+			#{schedule_seq},
+			#{title},
+			#{schedule_type},
+			#{users_id},
+			TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+			TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+			#{sked_reason, jdbcType=VARCHAR},
+			#{is_public, jdbcType=INTEGER},
+			#{ref_seq, jdbcType=NUMERIC},
+			#{ref_type, jdbcType=VARCHAR},
+			sysdate
+		)
 	</insert>
 	<select id="getSchedules" resultType="com.study.app.domains.schedules.SchedulesDTO">
-		select * from schedules where users_id = #{users_id}
+		SELECT * FROM SCHEDULES 
+		WHERE users_id = #{users_id}
+		OR is_public = 1
+		ORDER BY start_dt
 	</select>
 	<delete id="deleteSchedules">
 		delete from schedules where Schedule_seq=#{schedule_seq}
 	</delete>
 	<update id="updateSchedules">
-		update schedules set title=#{title},schedule_type=#{schedule_type},
-		start_dt=#{start_dt},end_dt=#{end_dt},sked_reason=#{sked_reason} where Schedule_seq=#{schedule_seq}
+		update schedules set 
+			title=#{title},
+			schedule_type=#{schedule_type},
+			start_dt = TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+        	end_dt   = TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+			sked_reason=#{sked_reason} 
+		where Schedule_seq=#{schedule_seq}
 	</update>
+	
+	<select id="getApprovedVacations" resultType="com.study.app.domains.schedules.SchedulesDTO">
+	    SELECT 
+	        v.vac_seq as schedule_seq,
+	        d.title,
+	        'ANNUAL' as schedule_type,
+	        d.users_id,
+	        CAST(v.start_date AS TIMESTAMP) as start_dt,
+	        CAST(v.end_date AS TIMESTAMP) as end_dt,
+	        v.reason as sked_reason,
+	        0 as is_public,
+	        null as ref_seq,
+	        null as ref_type,
+	        d.created_at
+	    FROM vacation v
+	    JOIN draft_documents d ON v.doc_seq = d.doc_seq
+	    WHERE d.status = 'APPROVED'
+	    AND d.users_id = #{users_id}
+	</select>
 	
 	<delete id="deleteRoomRsvn">
 		delete from schedules

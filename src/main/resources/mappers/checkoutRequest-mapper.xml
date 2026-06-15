@@ -56,4 +56,19 @@
 			status = 'REJECTED', approver_id = #{approver_id}, approved_at = sysdate 
 		where checkout_seq = #{checkout_seq}
 	</update>
+	
+	<insert id="insertCheckoutReq">
+	    INSERT INTO CHECKOUT_REQUEST (
+	        CHECKOUT_SEQ, ATTENDANCE_SEQ, USERS_ID, CHECKOUT_DATE,
+	        REQ_CHECK_OUT, REASON, STATUS
+	    ) VALUES (
+	        SEQ_CHECKOUT_REQUEST.NEXTVAL,
+	        #{attendance_seq},
+	        #{users_id},
+	        TO_DATE(#{checkout_date}, 'YYYY-MM-DD'),
+	        TO_DATE(#{req_check_out}, 'YYYY-MM-DD HH24:MI:SS'),
+	        #{reason},
+	        'PENDING'
+	    )
+	</insert>
 </mapper>

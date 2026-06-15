@@ -55,4 +55,8 @@ public class CheckoutRequestService {
 	public void rejectCheckout(Long checkout_seq, String loginId) {
 		dao.rejectCheckout(checkout_seq, loginId);
 	}
+	
+	public void insertCheckoutReq(CheckoutRequestDTO dto) {
+	    dao.insertCheckoutReq(dto);
+	}
 }

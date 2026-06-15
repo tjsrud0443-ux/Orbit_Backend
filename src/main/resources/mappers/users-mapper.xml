@@ -169,7 +169,11 @@
 	</update>
 	
 	<select id="checkDupEmail" resultType="int" parameterType="map">
-	    SELECT COUNT(*) FROM USERS WHERE EMAIL = #{email} AND ID != #{id}
+	    SELECT COUNT(*) FROM (
+	        SELECT EMAIL FROM USERS WHERE ID != #{id}
+	        UNION
+	        SELECT EMAIL FROM SIGNUP WHERE STATUS IN ('PENDING', 'APPROVED')
+	    ) WHERE EMAIL = #{email}
 	</select>
 	
 	<select id="isExistForId" resultType="int">

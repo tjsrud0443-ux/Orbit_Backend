@@ -56,4 +56,21 @@
 			status = 'REJECTED', approver_id = #{approver_id}, approved_at = sysdate 
 		where overtime_seq = #{overtime_seq}
 	</update>
+	
+	<!--<insert id="insertOvertime">
+	    INSERT INTO OVERTIME_REQUEST (
+	        OVERTIME_SEQ, ATTENDANCE_SEQ, USERS_ID, WORK_DATE,
+	        START_DT, END_DT, REQUEST_MIN, REASON, STATUS
+	    ) VALUES (
+	        SEQ_OVERTIME_REQUEST.NEXTVAL,
+	        #{attendance_seq},
+	        #{users_id},
+	        TO_DATE(#{work_date}, 'YYYY-MM-DD'),
+	        TO_DATE(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+	        TO_DATE(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+	        #{request_min},
+	        #{reason},
+	        'PENDING'
+	    )
+	</insert>-->
 </mapper>

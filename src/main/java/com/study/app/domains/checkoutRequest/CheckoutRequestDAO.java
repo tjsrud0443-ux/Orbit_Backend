@@ -43,4 +43,9 @@ public class CheckoutRequestDAO {
     	params.put("approver_id", loginId);
     	mybatis.update("CheckoutRequest.rejectCheckout", params);
     }
+    
+	public void insertCheckoutReq(CheckoutRequestDTO dto) {
+		mybatis.insert("CheckoutRequest.insertCheckoutReq",dto);
+	}
+	
 }

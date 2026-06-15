@@ -1,6 +1,8 @@
 package com.study.app.domains.schedules;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,14 +10,25 @@ import org.springframework.stereotype.Service;
 import com.study.app.domains.meetingRooms.RoomRsvnDTO;
 import com.study.app.domains.projects.ProjectMembersDTO;
 import com.study.app.domains.projects.ProjectsDTO;
+import com.study.app.domains.users.UsersDAO;
+import com.study.app.domains.users.UsersDTO;
 
 @Service
 public class SchedulesService {
 	
 	@Autowired
 	private SchedulesDAO schedDAO;
+	@Autowired
+	private UsersDAO usersDAO;
 	
-	public int insertSchedules(SchedulesDTO dto) {
+	public int insertSchedules(SchedulesDTO dto, String usersId) {
+		Set<String> companyCategories = Set.of("COMPANY", "TEAM", "ANNIVERSARY", "holiday");
+		if (companyCategories.contains(dto.getSchedule_type())) {
+	        UsersDTO user = usersDAO.getUsersInfo(usersId); // 기존 유저 조회용 DAO/Mapper 활용
+	        if (user == null || !"ROLE_HR_ADMIN".equals(user.getAuth_group())) {
+	        	throw new IllegalStateException("회사 공용 일정은 HR 관리자만 등록할 수 있습니다.");
+	        }
+	    }
 		return schedDAO.insertSchedules(dto);
 	}
 	
@@ -29,6 +42,10 @@ public class SchedulesService {
 	
 	public int updateSchedules(SchedulesDTO dto) {
 		return schedDAO.updateSchedules(dto);
+	}
+	
+	public List<SchedulesDTO> getApprovedVacations(String usersId) {
+	    return schedDAO.getApprovedVacations(usersId);
 	}
 	
 	public void deleteRoomRsvn(List<Long> rsvnList) {

@@ -33,6 +33,10 @@ public class SchedulesDAO {
 		return mybatis.update("Schedules.updateSchedules", dto);
 	}
 	
+	public List<SchedulesDTO> getApprovedVacations(String usersId) {
+	    return mybatis.selectList("Schedules.getApprovedVacations", usersId);
+	}
+	
 	public void deleteRoomRsvn(List<Long> rsvnList) {
 		mybatis.delete("Schedules.deleteRoomRsvn", rsvnList);
 	}

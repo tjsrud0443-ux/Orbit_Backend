@@ -1,15 +1,20 @@
 package com.study.app.domains.attendance;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.study.app.domains.checkoutRequest.CheckoutRequestDTO;
 import com.study.app.util.JWTUtil;
 
 @RestController
@@ -55,7 +60,8 @@ public class AttendanceController {
 		AttendanceDTO weekCount = attendServ.getCntWeek(loginId);
 		return ResponseEntity.ok(weekCount);
 	}
-//	
+	
+	//근무 정정	
 	@PutMapping("/checkOut")
 	public ResponseEntity<Void> checkOut(@RequestHeader("Authorization") String token){
 		String usersId = jwtUtil.getSubject(token.replace("Bearer ", ""));

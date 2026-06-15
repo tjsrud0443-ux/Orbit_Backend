@@ -1,5 +1,7 @@
 package com.study.app.domains.attendance;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,6 +23,10 @@ public class AttendanceDAO {
 		return mybatis.selectOne("Attendance.getAttendance",users_id);
 	}
 	
+	public List<AttendanceDTO> getMyAttendanceList(String usersId) {
+	    return mybatis.selectList("Attendance.getMyAttendanceList", usersId);
+	}
+	
 	public int checkOut(AttendanceDTO dto) {
 		return mybatis.update("Attendance.checkOut",dto);
 	}
@@ -32,7 +38,7 @@ public class AttendanceDAO {
 	public AttendanceDTO getCntWeek(String loginId) {
 		return mybatis.selectOne("Attendance.getCntWeek",loginId);
 	}
-	
+
 	public void changeCheckout(CheckoutRequestDTO dto) {
 		mybatis.update("Attendance.changeCheckout", dto);
 	}

@@ -1,6 +1,8 @@
 package com.study.app.domains.schedules;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +28,15 @@ public class SchedulesController {
 	private JWTUtil jwtUtil;  // JWT 유틸 주입
 	
 	@PostMapping
-	public ResponseEntity<Void> insertSchedules(@RequestBody SchedulesDTO dto,
+	public ResponseEntity<Map<String, Object>> insertSchedules(@RequestBody SchedulesDTO dto,
 												@RequestHeader("Authorization") String token){
 		String usersId = jwtUtil.getSubject(token.replace("Bearer ", ""));
         dto.setUsers_id(usersId);
-		schedServ.insertSchedules(dto);
-		return ResponseEntity.ok().build();
+        schedServ.insertSchedules(dto, usersId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("schedule_seq", dto.getSchedule_seq());
+		return ResponseEntity.ok(result);
 	}
-	
 	
 	@GetMapping
 	public ResponseEntity<List<SchedulesDTO>> getSchedules(
@@ -55,5 +58,12 @@ public class SchedulesController {
 		dto.setSchedule_seq(schedule_seq);
 		schedServ.updateSchedules(dto);
 		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/vacations")
+	public ResponseEntity<List<SchedulesDTO>> getApprovedVacations(
+	        @RequestHeader("Authorization") String token) {
+	    String usersId = jwtUtil.getSubject(token.replace("Bearer ", ""));
+	    return ResponseEntity.ok(schedServ.getApprovedVacations(usersId));
 	}
 }
