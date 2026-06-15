@@ -78,9 +78,9 @@ public class AiChatService {
 		}else {
 			aiDao.updateAiChatUpdated_at(chat_seq);
 		}
-
+		
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, role, content, null, null, null, null));
-
+		
 		Map<String, Object> aiResult = new HashMap<>();
 		aiResult.put("chat_seq", chat_seq);
 
@@ -407,8 +407,10 @@ public class AiChatService {
 		} else {
 			aiResult.put("resultSources", resultSources);
 		}
-
-		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, dbRefChunkValue, null, null, dbRefRagDocValue));
+		
+		AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, dbRefChunkValue, null, null, dbRefRagDocValue);
+		aiDao.insertMessage(aiMessage);
+		aiResult.put("msg_seq", aiMessage.getMsg_seq());
 		aiResult.put("aiAnswer", aiAnswer);
 		return aiResult;
 	}

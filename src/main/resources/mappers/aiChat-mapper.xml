@@ -15,7 +15,10 @@
 	</update>
 	
 	<insert id="insertMessage">
-		insert into ai_messages values(msg_seq.nextval, #{chat_seq}, #{role}, #{content}, #{ref_chunk_ids, jdbcType=VARCHAR}, sysdate, #{ref_rag_doc_seq, jdbcType=VARCHAR})
+		<selectKey keyProperty="chat_seq" resultType="Long" order="BEFORE">
+			select msg_seq.nextval from dual
+		</selectKey>
+		insert into ai_messages values(#{msg_seq}, #{chat_seq}, #{role}, #{content}, #{ref_chunk_ids, jdbcType=VARCHAR}, sysdate, #{ref_rag_doc_seq, jdbcType=VARCHAR})
 	</insert>
 	
 	<select id="sideChatTitleList" resultType="com.study.app.domains.aiChat.AiChatDTO">
@@ -24,17 +27,17 @@
 	</select>
 	
 	<select id="detailChat" resultType="com.study.app.domains.aiChat.AiMessagesDTO">
-		select a.role, a.content, a.ref_rag_doc_seq, q.status
+		select a.msg_seq, a.role, a.content, a.ref_rag_doc_seq, q.status
 		from ai_messages a
-		left join ai_unanswered_questions q on a.chat_seq = q.chat_seq
+		left join ai_unanswered_questions q on a.msg_seq = q.msg_seq
 		where a.chat_seq = #{chat_seq}
 			order by a.msg_seq
 	</select>
 	
 	<insert id="insertQuestion">
 		insert into ai_unanswered_questions 
-		(question_seq, users_id, category, question, dept_seq, status, created_at, chat_seq)
-		values (question_seq.nextval, #{users_id}, #{dto.category}, #{dto.question}, #{dto.dept_seq}, 'PENDING', sysdate, #{dto.chat_seq})
+		(question_seq, users_id, category, question, dept_seq, status, created_at, chat_seq, msg_seq)
+		values (question_seq.nextval, #{users_id}, #{dto.category}, #{dto.question}, #{dto.dept_seq}, 'PENDING', sysdate, #{dto.chat_seq}, #{dto.msg_seq})
 	</insert>
 	
 	<delete id="deleteQuestions">
