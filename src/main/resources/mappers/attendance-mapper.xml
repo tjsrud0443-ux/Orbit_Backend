@@ -26,7 +26,17 @@
     SELECT ATTENDANCE_SEQ, WORK_DATE, CHECK_IN, CHECK_OUT
     FROM ATTENDANCE
     WHERE USERS_ID = #{users_id}
+    	AND TRUNC(WORK_DATE, 'MM') = TRUNC(SYSDATE, 'MM')
     ORDER BY WORK_DATE DESC
+</select>
+<!--연장근무 신청 전 출근 확인용-->
+<select id="getCheckInByMonth" resultType="map">
+    SELECT ATTENDANCE_SEQ, TO_CHAR(WORK_DATE, 'YYYY-MM-DD') AS WORK_DATE, CHECK_IN, CHECK_OUT
+    FROM ATTENDANCE
+    WHERE USERS_ID = #{users_id}
+      AND TRUNC(WORK_DATE, 'MM') = TRUNC(TO_DATE(#{year_month} || '-01', 'YYYY-MM-DD'), 'MM')
+      AND CHECK_IN IS NOT NULL
+    ORDER BY WORK_DATE
 </select>
 <select id="getCntMonth" resultType="com.study.app.domains.attendance.AttendanceDTO">
 	SELECT 

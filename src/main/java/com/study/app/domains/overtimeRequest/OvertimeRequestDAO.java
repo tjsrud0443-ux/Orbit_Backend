@@ -43,4 +43,8 @@ public class OvertimeRequestDAO {
     	params.put("approver_id", loginId);
     	mybatis.update("OvertimeRequest.rejectOvertime", params);
     }
+    
+    public void insertOvertimeReq(OvertimeRequestDTO dto) {
+    	mybatis.insert("OvertimeRequest.insertOvertimeReq",dto);
+    }
 }

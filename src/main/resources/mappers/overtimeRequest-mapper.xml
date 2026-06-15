@@ -57,12 +57,12 @@
 		where overtime_seq = #{overtime_seq}
 	</update>
 	
-	<!--<insert id="insertOvertime">
+	<insert id="insertOvertimeReq">
 	    INSERT INTO OVERTIME_REQUEST (
 	        OVERTIME_SEQ, ATTENDANCE_SEQ, USERS_ID, WORK_DATE,
 	        START_DT, END_DT, REQUEST_MIN, REASON, STATUS
 	    ) VALUES (
-	        SEQ_OVERTIME_REQUEST.NEXTVAL,
+	        OVERTIME_SEQ.NEXTVAL,
 	        #{attendance_seq},
 	        #{users_id},
 	        TO_DATE(#{work_date}, 'YYYY-MM-DD'),
@@ -72,5 +72,5 @@
 	        #{reason},
 	        'PENDING'
 	    )
-	</insert>-->
+	</insert>
 </mapper>

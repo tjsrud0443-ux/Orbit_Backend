@@ -1,6 +1,6 @@
 package com.study.app.domains.attendance;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.study.app.domains.checkoutRequest.CheckoutRequestDTO;
 import com.study.app.util.JWTUtil;
 
 @RestController
@@ -47,6 +46,19 @@ public class AttendanceController {
 	        return ResponseEntity.ok(new AttendanceDTO()); // ✅ 빈 DTO 반환
 	    }
 	    return ResponseEntity.ok(attendance);
+	}
+	
+	@GetMapping("/myCheckoutList")
+	public  ResponseEntity<List<AttendanceDTO>> getMyAttendanceList(@RequestAttribute String loginId) {
+		List<AttendanceDTO> checkOutList = attendServ.getMyAttendanceList(loginId);
+	    return ResponseEntity.ok(checkOutList);
+	}
+	
+	@GetMapping("/myCheckinList")
+	public List<Map<String, Object>> getCheckInByMonth(
+			@RequestAttribute String loginId,
+	        @RequestParam("year_month") String yearMonth) {
+	    return attendServ.getCheckInByMonth(loginId, yearMonth);
 	}
 	
 	@GetMapping("/monthCount")

@@ -1,5 +1,8 @@
 package com.study.app.domains.overtimeRequest;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,5 +57,19 @@ public class OvertimeRequestService {
 	
 	public void rejectOvertime(Long overtime_seq, String loginId) {
 		dao.rejectOvertime(overtime_seq, loginId);
+	}
+	
+	public void insertOvertimeReq(String loginId, OvertimeRequestDTO dto) {
+	    // request_min 계산
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	    //문자열 → 날짜 객체 변환
+	    LocalDateTime start = LocalDateTime.parse(dto.getStart_dt(), formatter);
+	    LocalDateTime end = LocalDateTime.parse(dto.getEnd_dt(), formatter);
+	    Long requestMin = Duration.between(start, end).toMinutes();
+
+	    dto.setUsers_id(loginId);
+	    dto.setRequest_min(requestMin);
+	    
+	    dao.insertOvertimeReq(dto);
 	}
 }

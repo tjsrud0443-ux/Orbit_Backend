@@ -1,5 +1,8 @@
 package com.study.app.domains.attendance;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,14 @@ public class AttendanceService {
 	
 	public AttendanceDTO getAttendance(String users_id) {
 		return attendDAO.getAttendance(users_id);
+	}
+	
+	public List<AttendanceDTO> getMyAttendanceList(String usersId) {
+	    return attendDAO.getMyAttendanceList(usersId);
+	}
+	
+	public List<Map<String, Object>> getCheckInByMonth(String usersId, String yearMonth) {
+	    return attendDAO.getCheckInByMonth(usersId, yearMonth);
 	}
 	
 	public int checkOut(AttendanceDTO dto) {
