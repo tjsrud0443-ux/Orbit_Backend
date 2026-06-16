@@ -105,6 +105,7 @@ public class BoardService {
 
         // 3. BOARD_FILE 삭제
         boardDAO.deleteFiles(post_seq);
+        boardDAO.deleteComments(post_seq);
 
         // 4. BOARD_POSTS 삭제
         boardDAO.deletePost(post_seq);

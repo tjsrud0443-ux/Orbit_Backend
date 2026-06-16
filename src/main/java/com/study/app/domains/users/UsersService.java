@@ -35,9 +35,9 @@ public class UsersService {
 
 	    List<UsersDTO> users = dao.getAllUsers(params);
 	    int totalCount = dao.getTotalCount(params);
-	    int activeCount = dao.getCountByStatus("ACTIVE", params);
-	    int inactiveCount = dao.getCountByStatus("INACTIVE", params);
-	    int retireCount = dao.getCountByStatus("RETIRE", params);
+	    int activeCount = dao.getCountByStatus("ACTIVE");
+	    int inactiveCount = dao.getCountByStatus("INACTIVE");
+	    int retireCount = dao.getCountByStatus("RETIRE");
 
 	    Map<String, Object> result = new HashMap<>();
 	    result.put("users", users);

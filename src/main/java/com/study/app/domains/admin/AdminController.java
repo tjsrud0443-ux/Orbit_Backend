@@ -339,7 +339,7 @@ public class AdminController {
 	    
 	    // 탭 카운트용
 	    Map<String, Object> countParams = new HashMap<>();
-	    countParams.put("keyword", keyword);
+//	    countParams.put("keyword", keyword);
 
 	    countParams.put("status", "");
 	    int totalCount = adminServ.supplyRentalCount(countParams);
@@ -350,9 +350,18 @@ public class AdminController {
 	    countParams.put("status", "RETURNED");
 	    int returnedCount = adminServ.supplyRentalCount(countParams);
 
+	    int currentCount;
+	    if (status.isEmpty()) {
+	        currentCount = totalCount;
+	    } else if (status.equals("RENTING")) {
+	        currentCount = rentingCount;
+	    } else {
+	        currentCount = returnedCount;
+	    }
+	    
 	    Map<String, Object> result = new HashMap<>();
 	    result.put("list", list);
-	    result.put("totalPages", (int) Math.ceil((double) totalCount / size));
+	    result.put("totalPages", (int) Math.ceil((double) currentCount / size));
 	    result.put("totalCount", totalCount);
 	    result.put("rentingCount", rentingCount);
 	    result.put("returnedCount", returnedCount);

@@ -42,8 +42,8 @@ public class UsersDAO {
 	    return batis.selectOne("Users.getTotalCount", params);
 	}
 
-	public int getCountByStatus(String status, Map<String, Object> params) {
-	    Map<String, Object> countParams = new HashMap<>(params);
+	public int getCountByStatus(String status) {
+	    Map<String, Object> countParams = new HashMap<>();
 	    countParams.put("status", status);
 	    return batis.selectOne("Users.getCountByStatus", countParams);
 	}

@@ -130,6 +130,10 @@
 	<delete id="deletePost">
 	    DELETE FROM BOARD_POSTS WHERE POST_SEQ = #{post_seq}
 	</delete>
+	<!--글 삭 시 댓글도 삭제-->
+	<delete id="deleteComments">
+	    DELETE FROM BOARD_COMMENTS WHERE POST_SEQ = #{post_seq}
+	</delete>
 	<!--댓글 삭제-->
 	<delete id="deleteComment">
 	    DELETE FROM BOARD_COMMENTS WHERE COMMENT_SEQ = #{comment_seq}
