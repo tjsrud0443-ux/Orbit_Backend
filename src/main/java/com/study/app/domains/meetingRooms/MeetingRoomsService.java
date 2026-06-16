@@ -164,9 +164,22 @@ public class MeetingRoomsService {
 	
 	@Transactional
 	public void cancelMeetRsvn(Long rsvn_seq) {
+		List<RoomRsvnMemberDTO> rsvnMembers = rsvnDao.getRsvnMembers(rsvn_seq);
 		scheServ.cancelMeetRsvn(rsvn_seq);
 		rsvnDao.deleteMeetMember(rsvn_seq);
 		rsvnDao.deleteMeetRsvn(rsvn_seq);
 		notiServ.deleteMeetingNotiBySeq(rsvn_seq);
+		
+		for (RoomRsvnMemberDTO member : rsvnMembers) {
+			NotificationsDTO noti = new NotificationsDTO();
+		    noti.setRef_seq(rsvn_seq);
+		    noti.setUsers_id(member.getUsers_id());
+		    noti.setNoti_type("MEETING");
+		    noti.setContent("회의 일정이 취소되었습니다.");
+		    noti.setRef_type("MEETING");
+		    noti.setRead_yn("N");
+		    noti.setCreated_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		    notiServ.insertNoti(noti);
+		}
 	}
 }
