@@ -74,6 +74,10 @@ public class BoardDAO {
     	return mybatis.selectList("Board.getComments",post_seq);
     }
     
+    public void deleteComments(Long post_seq) {
+    	mybatis.delete("Board.deleteComments",post_seq);
+    }
+    
     public void deleteComment(Long comment_seq) {
     	mybatis.delete("Board.deleteComment",comment_seq);
     }

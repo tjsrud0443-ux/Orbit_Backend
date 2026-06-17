@@ -21,6 +21,18 @@ public class SupplyDAO {
 		return mybatis.insert("Supply.insertSupply",dto);
 	}
 	
+	public void deleteSupplyReqItemsByIds(List<Long> ids) {
+		mybatis.delete("Supply.deleteSupplyReqItemsByIds", ids);
+	}
+
+	public void deleteSupplyRentalsByIds(List<Long> ids) {
+		mybatis.delete("Supply.deleteSupplyRentalsByIds", ids);
+	}
+	
+	public void deleteOrphanRequests() {
+		mybatis.delete("Supply.deleteOrphanRequests");
+	}
+	
 	public int deleteSupplies(List<Long> ids) {
 		return mybatis.delete("Supply.deleteSupplies",ids);
 	}
@@ -76,7 +88,7 @@ public class SupplyDAO {
 	public int supplyRentalCount(Map<String, Object> params) {
 	    return mybatis.selectOne("Supply.supplyRentalCount", params);
 	}
-	
+	//
 	
 	 // 대여 이력 반납 날짜 update // 
 	public int returnSupply(SupplyRentalDTO dto) { 

@@ -32,11 +32,33 @@
 	<select id="checkDupCode" resultType="int">
 	    SELECT COUNT(*) FROM SUPPLIES WHERE SUPPLY_CODE = #{supply_code}
 	</select>
+	<delete id="deleteSupplyReqItemsByIds">
+	    DELETE FROM SUPPLY_REQUEST_ITEMS
+	    WHERE SUPPLY_SEQ IN
+	    <foreach collection="list" item="seq" open="(" separator="," close=")">
+	        #{seq}
+	    </foreach>
+	</delete>
+	
+	<delete id="deleteSupplyRentalsByIds">
+	    DELETE FROM SUPPLY_RENTAL
+	    WHERE SUPPLY_SEQ IN
+	    <foreach collection="list" item="seq" open="(" separator="," close=")">
+	        #{seq}
+	    </foreach>
+	</delete>
 	<delete id="deleteSupplies">
 		 DELETE FROM SUPPLIES WHERE SUPPLY_SEQ IN
 			<foreach collection="list" item="seq" open="(" separator="," close=")">
 			    #{seq}
 			</foreach>
+	</delete>
+	<!--비품 삭제시 신청내용도 삭제-->
+	<delete id="deleteOrphanRequests">
+	    DELETE FROM SUPPLY_REQUEST
+	    WHERE REQ_SEQ NOT IN (
+	        SELECT DISTINCT REQ_SEQ FROM SUPPLY_REQUEST_ITEMS
+	    )
 	</delete>
 	<!--현재재고 자동 업데이트-->
 	<select id="selectSupplyBySeq" parameterType="long" resultType="com.study.app.domains.supplies.SupplyDTO">
@@ -83,37 +105,39 @@
 	        r.REASON, r.STATUS,
 	        i.ITEM_SEQ, i.SUPPLY_SEQ, i.EA, i.USE_TYPE,
 	        s.SUPPLY_NAME, s.STOCK_QTY, s.MIN_STOCK_QTY
-	    FROM (
-	        SELECT * FROM (
-	            SELECT ROWNUM AS rn, a.* FROM (
-	                SELECT r.REQ_SEQ, r.REQ_DATE, r.USERS_ID, r.REASON, r.STATUS
-	                FROM SUPPLY_REQUEST r
-	                LEFT JOIN USERS u ON r.USERS_ID = u.ID
-	                <where>
-	                    <if test="keyword != null and keyword != ''">
-	                        AND (
-	                            u.NAME LIKE '%' || #{keyword} || '%'
-	                            OR r.REQ_SEQ IN (
-	                                SELECT i2.REQ_SEQ
-	                                FROM SUPPLY_REQUEST_ITEMS i2
-	                                JOIN SUPPLIES s2 ON i2.SUPPLY_SEQ = s2.SUPPLY_SEQ
-	                                WHERE s2.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
-	                            )
-	                        )
-	                    </if>
-	                    <if test="status != null and status != ''">
-	                        AND r.STATUS = #{status}
-	                    </if>
-	                </where>
-	                ORDER BY r.REQ_DATE ASC, r.REQ_SEQ ASC
-	            ) a
-	        )
-	        WHERE rn BETWEEN #{start} AND #{end}
-	    ) r
-	    JOIN USERS u ON r.USERS_ID = u.ID
-	    JOIN SUPPLY_REQUEST_ITEMS i ON r.REQ_SEQ = i.REQ_SEQ
-	    JOIN SUPPLIES s ON i.SUPPLY_SEQ = s.SUPPLY_SEQ
-	    ORDER BY rn ASC, i.ITEM_SEQ ASC
+		FROM (
+		    SELECT * FROM (
+		        SELECT ROWNUM AS rn, a.* FROM (
+		            SELECT REQ_SEQ, REQ_DATE, USERS_ID, REASON, STATUS
+		            FROM SUPPLY_REQUEST
+		            <where>
+		                <if test="status != null and status != ''">
+		                    AND STATUS = #{status}
+		                </if>
+		                <if test="keyword != null and keyword != ''">
+		                    AND (
+		                        USERS_ID IN (
+		                            SELECT ID FROM USERS
+		                            WHERE NAME LIKE '%' || #{keyword} || '%'
+		                        )
+		                        OR REQ_SEQ IN (
+		                            SELECT i2.REQ_SEQ
+		                            FROM SUPPLY_REQUEST_ITEMS i2
+		                            JOIN SUPPLIES s2 ON i2.SUPPLY_SEQ = s2.SUPPLY_SEQ
+		                            WHERE s2.SUPPLY_NAME LIKE '%' || #{keyword} || '%'
+		                        )
+		                    )
+		                </if>
+		            </where>
+		            ORDER BY REQ_DATE ASC, REQ_SEQ ASC
+		        ) a
+		    )
+		    WHERE rn BETWEEN #{start} AND #{end}
+		) r
+		LEFT JOIN USERS u ON r.USERS_ID = u.ID
+		LEFT JOIN SUPPLY_REQUEST_ITEMS i ON r.REQ_SEQ = i.REQ_SEQ
+		LEFT JOIN SUPPLIES s ON i.SUPPLY_SEQ = s.SUPPLY_SEQ
+		ORDER BY rn ASC, i.ITEM_SEQ ASC
 	</select>
 	
 	<!-- 전체 카운트 -->
