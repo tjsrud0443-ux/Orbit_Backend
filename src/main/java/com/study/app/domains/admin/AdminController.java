@@ -290,7 +290,7 @@ public class AdminController {
 
 	    // 탭 카운트용 - keyword는 유지, status만 바꿔서 각각 카운트
 	    Map<String, Object> countParams = new HashMap<>();
-	    countParams.put("keyword", keyword);
+	    countParams.put("keyword", "");
 
 	    countParams.put("status", "");
 	    int totalCount = adminServ.getAdminRequestCount(countParams);
