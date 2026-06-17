@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +25,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import com.study.app.domains.meetingMinutes.MeetingMinutesDAO;
 import com.study.app.domains.meetingMinutes.MeetingMinutesDTO;
@@ -43,7 +47,7 @@ public class AiChatService {
 		restClient = RestClient.builder()
 				.baseUrl(pythonApiUrl)
 				.build();
-		}
+	}
 
 	@Autowired
 	@Qualifier("googleGenAiChatModel")
@@ -78,29 +82,37 @@ public class AiChatService {
 		}else {
 			aiDao.updateAiChatUpdated_at(chat_seq);
 		}
-		
+
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, role, content, null, null, null, null));
-		
+
 		Map<String, Object> aiResult = new HashMap<>();
 		aiResult.put("chat_seq", chat_seq);
 
-		boolean meetingQuery = content.contains("회의")
+		boolean meetingKeyword = content.contains("회의")
 				|| content.contains("회의록")
 				|| content.contains("회의명")
 				|| content.contains("주요 내용")
 				|| content.contains("결정 사항")
 				|| content.contains("할 일");
 
-		boolean multiMeetingQuery =
-			       content.contains("회의들")
-			    || content.contains("회의록들")
-			    || content.contains("모든 회의")
-			    || content.contains("전체 회의")
-			    || content.contains("목록들");
-		
+		boolean multiMeetingKeyword = content.contains("회의들")
+				|| content.contains("회의록들")
+				|| content.contains("모든 회의")
+				|| content.contains("전체 회의")
+				|| content.contains("목록들");
+
+		boolean dateQuery = content.matches(".*\\d+월\\s*\\d+일.*")
+				|| content.matches(".*\\d+/\\d+.*")
+				|| content.matches(".*\\d{4}-\\d{2}-\\d{2}.*");
+
+		if(dateQuery) {
+			meetingKeyword = true;
+			multiMeetingKeyword = true;
+		}
+
 		Map<String, Object> requestBody = new HashMap<>();
 		requestBody.put("query", content);
-		requestBody.put("limit", meetingQuery ? 30 : 10);
+		requestBody.put("limit", meetingKeyword ? 30 : 10);
 
 		List<SearchResultDTO> similarDocs =
 				restClient.post()
@@ -110,7 +122,7 @@ public class AiChatService {
 				.body(new ParameterizedTypeReference<List<SearchResultDTO>>() {});
 
 		List<SearchResultDTO> filteredDocs = similarDocs.stream()
-				.limit(meetingQuery ? 30 : 10)
+				.limit(meetingKeyword ? 30 : 5)
 				.collect(Collectors.toList());
 
 		if (filteredDocs.isEmpty()) {
@@ -138,8 +150,7 @@ public class AiChatService {
 		Map<Long, RagDocumentsDTO> meetingMinuteAuthMap = meetingMinuteAuth.stream()
 				.collect(Collectors.toMap(
 						RagDocumentsDTO::getRag_doc_seq,
-						rag -> rag
-						));
+						rag -> rag));
 
 		filteredDocs = filteredDocs.stream()
 				.filter(doc -> {
@@ -154,6 +165,25 @@ public class AiChatService {
 							);
 				})
 				.collect(Collectors.toList());
+
+		Pattern datePattern = Pattern.compile("(\\d+)월\\s*(\\d+)일");
+		Matcher dateMatch = datePattern.matcher(content);
+		String tempDate = null;
+
+		if(dateMatch.find()) {
+			int year = LocalDate.now().getYear();
+			int month = Integer.parseInt(dateMatch.group(1));
+			int day = Integer.parseInt(dateMatch.group(2));
+
+			tempDate = String.format("%d-%02d-%02d", year, month, day);
+		}
+		
+		final String targetDate = tempDate;
+
+		if(targetDate != null) {
+			filteredDocs.stream()
+			.filter(doc -> doc.getText().contains("회의 일자: " + targetDate)).toList();
+		}
 
 		List<Long> ragDocSeqs = filteredDocs.stream()
 				.sorted(
@@ -186,7 +216,7 @@ public class AiChatService {
 				.max(Double::compareTo)
 				.orElse(0.0);
 
-		double minScore = meetingQuery ? 0.10 : 0.20;
+		double minScore = meetingKeyword ? 0.10 : 0.20;
 
 		if (maxScore < minScore) {
 			aiResult.put("chat_seq", chat_seq);
@@ -204,13 +234,14 @@ public class AiChatService {
 
 		String context;
 		List<Long> meetingRagDocSeqs;
+		boolean useMeetingPrompt = multiMeetingKeyword || meetingKeyword;
 		
-		if(multiMeetingQuery) {
-			 meetingRagDocSeqs =
-			            filteredDocs.stream()
-			                    .map(SearchResultDTO::getRag_doc_seq)
-			                    .distinct()
-			                    .toList();
+		if(multiMeetingKeyword) {
+			meetingRagDocSeqs =
+					filteredDocs.stream()
+					.map(SearchResultDTO::getRag_doc_seq)
+					.distinct()
+					.toList();
 		}else {
 			meetingRagDocSeqs =
 					filteredDocs.stream()
@@ -225,60 +256,23 @@ public class AiChatService {
 					.toList();
 		}
 		
-		
-		if(meetingQuery){
-
+		if(useMeetingPrompt){
 			List<RagChunksDTO> expandedChunks =
 					new ArrayList<>();
 
 			for(Long ragDocSeq : meetingRagDocSeqs){
 
-				expandedChunks.addAll(
-						ragDao.findChunksByRagDocSeq(
-								ragDocSeq
-								)
-						);
+				expandedChunks.addAll(ragDao.findChunksByRagDocSeq(ragDocSeq));
 			}
 			context = expandedChunks.stream()
 					.map(RagChunksDTO::getChunk_text)
 					.distinct()
 					.collect(Collectors.joining("\n\n"));
-
 		}else{
-
 			context = filteredDocs.stream()
 					.map(SearchResultDTO::getText)
 					.collect(Collectors.joining("\n\n"));
 		}
-
-		System.out.println("===== 질문사항 =====");
-		System.out.println(content);
-		System.out.println("===================");
-		System.out.println("");
-		System.out.println("===== CONTEXT =====");
-		System.out.println(context);
-		System.out.println("===================");
-		System.out.println("");
-		System.out.println("===== 최고유사도 =====");
-		System.out.println(maxScore);
-		System.out.println("===================");
-		System.out.println("");
-		System.out.println("===== 청크수 =====");
-		System.out.println(filteredDocs.size());
-		System.out.println("===================");
-		System.out.println("");
-		filteredDocs.forEach(doc -> {
-			System.out.println("===== score =====");
-			System.out.println(doc.getScore());
-			System.out.println("===================");
-			System.out.println("");
-			System.out.println("===== 반환내용 =====");
-			System.out.println(doc.getText());
-			System.out.println("===================");
-			System.out.println("");
-		});
-
-
 
 		List<RagDocumentsDTO> resultSources = ragDao.sourcesByRagDocSeqs(ragDocSeqs);
 		resultSources = resultSources.stream()
@@ -291,6 +285,7 @@ public class AiChatService {
 
 		String dbRefChunkValue;
 		String dbRefRagDocValue;
+		
 		try {
 			dbRefChunkValue = objectMapper.writeValueAsString(refChunkIds);
 			dbRefRagDocValue = objectMapper.writeValueAsString(ragDocSeqs);
@@ -298,9 +293,13 @@ public class AiChatService {
 			dbRefChunkValue = "[]";
 			dbRefRagDocValue = "[]";
 		}
+
+		LocalDate now = LocalDate.now();
+		String currentDate =
+			    now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		
 		String systemPrompt;
-		if(context.contains("회의명 :")) {
+		if(useMeetingPrompt) {
 			systemPrompt ="당신은 사내 그룹웨어 시스템의 스마트 업무 지원 AI 비서이자, 프로페셔널한 회의록 요약 전문가입니다."
 					+ "제공된 [회의록 데이터]만을 바탕으로, 임직원들이 회의 핵심 내용을 한눈에 파악할 수 있도록 정중하고 객관적으로 답변해야 합니다."
 					+ ""
@@ -381,6 +380,7 @@ public class AiChatService {
 					+ "10. 답변을 생성하기 전에 먼저 [사내 문서 데이터]가 사용자의 질문에 실제로 답할 수 있는 근거를 포함하는지 판단하십시오."
 					+ " 질문과 직접 관련된 규정, 절차, 정책, 기술 정보, 회의 내용이 존재하지 않으면 답변을 생성하지 말고 반드시 '사내 데이터베이스에서 '(질문)' 와(과) 관련된 규정이나 가이드를 찾지 못했습니다. 😢\n정확한 안내를 위해 해당 질문은 관리자에게 문의해 주세요.'라고 답하십시오."
 					+ " 단순히 일부 단어가 유사하거나 같은 부서 문서가 검색되었다는 이유만으로 답변을 생성해서는 안 됩니다."
+					+ "11. 오늘 날짜는 " + currentDate + "입니다."
 					+ ""
 					+ "[사내 문서 데이터]"
 					+ "%s".formatted(context);
@@ -393,8 +393,8 @@ public class AiChatService {
 		ChatResponse response = chatModel.call(prompt);
 		String aiAnswer = response.getResult().getOutput().getText();
 
-		boolean hideSources = context.contains("회의명 :") 
-				|| aiAnswer.contains("찾지 못했습니다. 😢")
+		boolean hideSources = useMeetingPrompt 
+				|| aiAnswer.contains("찾지 못했습니다. 😢") 
 				|| aiAnswer.contains("관리자에게");
 
 		if (hideSources) {
@@ -407,11 +407,13 @@ public class AiChatService {
 		} else {
 			aiResult.put("resultSources", resultSources);
 		}
-		
+
 		AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, dbRefChunkValue, null, null, dbRefRagDocValue);
+		
 		aiDao.insertMessage(aiMessage);
 		aiResult.put("msg_seq", aiMessage.getMsg_seq());
 		aiResult.put("aiAnswer", aiAnswer);
+		
 		return aiResult;
 	}
 
@@ -487,7 +489,7 @@ public class AiChatService {
 			mainChunk.setRag_doc_seq(ragDocSeq);
 			mainChunk.setChunk_index(chunkIndex++);
 			mainChunk.setChunk_text(
-					"회의명 : " + dto.getTitle() + "\n" +
+					"회의명 : " + dto.getTitle() + "\n\n" +
 							"회의 일자: " + dto.getMeeting_dt() + 
 							"\n\n[주요 내용]\n" + dto.getMain_content());
 			mainChunk.setEmbed_status("PENDING");
@@ -502,7 +504,7 @@ public class AiChatService {
 			decisionChunk.setRag_doc_seq(ragDocSeq);
 			decisionChunk.setChunk_index(chunkIndex++);
 			decisionChunk.setChunk_text(
-					"회의명 : " + dto.getTitle() + "\n" +
+					"회의명 : " + dto.getTitle() + "\n\n" +
 							"회의 일자: " + dto.getMeeting_dt() + 
 							"\n\n[결정 사항]\n" + dto.getDecisions());
 			decisionChunk.setEmbed_status("PENDING");
@@ -516,7 +518,7 @@ public class AiChatService {
 			todoChunk.setRag_doc_seq(ragDocSeq);
 			todoChunk.setChunk_index(chunkIndex++);
 			todoChunk.setChunk_text(
-					"회의명 : " + dto.getTitle() + "\n" +
+					"회의명 : " + dto.getTitle() + "\n\n" +
 							"회의 일자: " + dto.getMeeting_dt() + 
 							"\n\n[할 일]\n" + dto.getTodos());
 			todoChunk.setEmbed_status("PENDING");
@@ -599,8 +601,7 @@ public class AiChatService {
 	}
 
 
-	public void insertQuestion(String loginId, 
-			AiUnansweredQuestionsDTO dto) {
+	public void insertQuestion(String loginId, AiUnansweredQuestionsDTO dto) {
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("users_id", loginId);
