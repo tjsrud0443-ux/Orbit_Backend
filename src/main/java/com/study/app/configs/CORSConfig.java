@@ -16,7 +16,7 @@ public class CORSConfig implements WebMvcConfigurer{
 		registry.addMapping("/**")
 		.allowedMethods("*")
 		.allowedHeaders("*")
-		.allowedOrigins(allowedOrigin)
+		.allowedOrigins("https://orbit-3d808.web.app")
 		.allowCredentials(true); // 쿠키나 인증 헤더(Authorization)를 통신에 포함할지 여부 (로그인 연동 시 필요)
 	}
 }
