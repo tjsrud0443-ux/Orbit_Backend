@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,6 +29,14 @@ public class MailService {
 	
 	@Value("${app.mail.from}")
     private String fromEmail;
+	
+	@Value("${spring.mail.password}")
+	private String mailPw;
+	
+	@PostConstruct
+    public void test() {
+        System.out.println("MAIL PW LENGTH = " + mailPw.length());
+    }
 	
 	private final JavaMailSender mailSender;
     // 서버 메모리에 이메일과 인증정보를 저장하는 맵
@@ -54,7 +64,7 @@ public class MailService {
         sendMail(email);
         return true;
     }
-
+    
     // 실제 난수 생성 및 인증번호 메일 발송
     private void sendMail(String email) {
     	System.out.println("fromEmail=[" + fromEmail + "]");
