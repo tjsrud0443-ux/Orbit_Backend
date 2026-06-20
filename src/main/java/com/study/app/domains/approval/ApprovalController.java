@@ -41,9 +41,7 @@ public class ApprovalController {
 			return ResponseEntity.ok("기안 상신이 완료되었습니다.");
 		}catch(IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
-		}catch (Exception e) {
-	        return ResponseEntity.internalServerError().body("서버 오류 발생");
-	    }
+		}
 	}
 	
 	@PostMapping("submit/general")
