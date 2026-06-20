@@ -89,12 +89,16 @@
 	</delete>
 	
 	<insert id="insertProjectSchedule">
-		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, #{start_dt}, #{end_dt}, 
+		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, 
+		TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
+		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
 			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate)
 	</insert>
 	
 	<insert id="insertProjectMemberSchedule">
-		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, #{start_dt}, #{end_dt}, 
+		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, 
+		TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
+		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
 			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate)
 	</insert>
 	

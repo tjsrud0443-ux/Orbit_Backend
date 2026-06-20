@@ -9,7 +9,7 @@
 		
 			insert into projects values(
 				#{dto.project_seq}, #{dto.project_name}, #{dto.contents},
-				 TO_DATE(#{dto.start_date}, 'YYYY-MM-DD'), TO_DATE(#{dto.end_date}, 'YYYY-MM-DD'), 
+				 TO_TIMESTAMP(#{dto.start_date}, 'YYYY-MM-DD'), TO_TIMESTAMP(#{dto.end_date}, 'YYYY-MM-DD'), 
 				 #{dto.status}, #{loginId}, sysdate)
 	</insert>
 	
@@ -53,8 +53,8 @@
 	
 	<update id="updateProject">
 		update projects set project_name = #{project_name}, contents = #{contents},
-							start_date = TO_DATE(#{start_date},'YYYY-MM-DD'), 
-							end_date = TO_DATE(#{end_date}, 'YYYY-MM-DD'), 
+							start_date = TO_TIMESTAMP(#{start_date},'YYYY-MM-DD'), 
+							end_date = TO_TIMESTAMP(#{end_date}, 'YYYY-MM-DD'), 
 							status = 'IN_PROGRESS' 
 				where project_seq = #{project_seq}
 	</update>
