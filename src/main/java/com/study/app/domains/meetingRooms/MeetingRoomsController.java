@@ -39,6 +39,8 @@ public class MeetingRoomsController {
 	            return ResponseEntity.status(HttpStatus.CONFLICT)
 	                                 .body(Map.of("message", "CONFLICT"));
 			}
+			e.printStackTrace();
+		    System.out.println("에러 메세지: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
