@@ -21,8 +21,8 @@
 	</insert>
 	
 	<insert id="insertVacationDetail">
-		insert into vacation values (vac_seq.nextval, #{doc_seq}, #{vac_type}, #{start_date, jdbcType=DATE}, 
-		#{end_date, jdbcType=DATE}, #{days}, #{reason})
+		insert into vacation values (vac_seq.nextval, #{doc_seq}, #{vac_type}, TO_DATE(#{start_date}, 'YYYY-MM-DD'), 
+    	TO_DATE(#{end_date}, 'YYYY-MM-DD'), #{days}, #{reason})
 	</insert>
 	
 	<insert id="insertGeneralDetail">
@@ -33,7 +33,7 @@
 		<selectKey keyProperty="pay_seq" resultType="long" order="BEFORE">
 			select pay_seq.nextval from dual
 		</selectKey>
-		insert into payment values (#{pay_seq}, #{doc_seq}, #{pay_date, jdbcType=DATE},
+		insert into payment values (#{pay_seq}, #{doc_seq}, TO_DATE(#{pay_date}, 'YYYY-MM-DD'),
 		 #{total_amount, jdbcType=NUMERIC}, #{pay_reason, jdbcType=VARCHAR}, #{account_info, jdbcType=VARCHAR})
 	</insert>
 	
@@ -48,7 +48,7 @@
 		</selectKey>
 		
 		insert into purchase values (#{purchase_seq}, #{doc_seq}, #{total_amount, jdbcType=NUMERIC},
-		 #{purpose, jdbcType=VARCHAR}, #{vendor, jdbcType=VARCHAR}, #{purchase_date, jdbcType=DATE})
+		 #{purpose, jdbcType=VARCHAR}, #{vendor, jdbcType=VARCHAR}, TO_DATE(#{purchase_date}, 'YYYY-MM-DD'))
 	</insert>
 	
 	<insert id="insertPurchaseItem">
@@ -207,9 +207,9 @@
 	</delete>
 	
 	<update id="updateVacationDetail">
-		update vacation 
-		set vac_type = #{vac_type}, start_date = #{start_date, jdbcType=DATE}, end_date = #{end_date, jdbcType=DATE}, 
-			days = #{days}, reason = #{reason}
+		update vacation set 
+			vac_type = #{vac_type}, start_date = TO_DATE(#{start_date}, 'YYYY-MM-DD'), 
+			end_date = TO_DATE(#{end_date}, 'YYYY-MM-DD'), days = #{days}, reason = #{reason}
 		where doc_seq = #{doc_seq}
 	</update>
 	
@@ -227,7 +227,7 @@
 	
 	<update id="updatePaymentDetail">
 		update payment 
-		set pay_date = #{pay_date, jdbcType=DATE}, total_amount = #{total_amount, jdbcType=NUMERIC}, 
+		set pay_date = TO_DATE(#{pay_date}, 'YYYY-MM-DD'), total_amount = #{total_amount, jdbcType=NUMERIC}, 
 			pay_reason = #{pay_reason, jdbcType=VARCHAR}, account_info = #{account_info, jdbcType=VARCHAR}
 		where pay_seq = #{pay_seq}
 	</update>
@@ -251,7 +251,7 @@
 	<update id="updatePurchaseDetail">
 		update purchase 
 		set total_amount = #{total_amount, jdbcType=NUMERIC}, purpose = #{purpose, jdbcType=VARCHAR}, 
-		vendor = #{vendor, jdbcType=VARCHAR}, purchase_date = #{purchase_date, jdbcType=DATE}
+		vendor = #{vendor, jdbcType=VARCHAR}, purchase_date = TO_DATE(#{purchase_date}, 'YYYY-MM-DD')
 		where purchase_seq = #{purchase_seq}
 	</update>
 	

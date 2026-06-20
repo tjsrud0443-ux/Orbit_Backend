@@ -66,7 +66,9 @@
 	</delete>
 	
 	<insert id="addMeetingSchedules">
-		insert into schedules values (schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, #{start_dt}, #{end_dt}, 
+		insert into schedules values (schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, 
+			TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
+    		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
 			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate)
 	</insert>
 	
@@ -75,12 +77,17 @@
 	</delete>
 	
 	<insert id="insertMeetAddMember">
-		insert into schedules values (schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, #{start_dt}, #{end_dt}, 
+		insert into schedules values 
+			(schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, 
+			TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
+    		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
 			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate)
 	</insert>
 	
 	<update id="updateMeetSchedule">
-		update schedules set title = #{title}, start_dt = #{start_dt}, end_dt = #{end_dt}, sked_reason = #{title}
+		update schedules set 
+			title = #{title}, start_dt = TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
+    		end_dt = TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), sked_reason = #{title}
 		where ref_seq = #{rsvn_seq} and schedule_type = 'MEETING'
 	</update>
 	

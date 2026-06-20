@@ -37,7 +37,9 @@
 		<selectKey keyProperty="rsvn_seq" resultType="long" order="BEFORE">
 	        select rsvn_seq.nextval from dual
 	    </selectKey>
-	    insert into room_rsvn values (#{rsvn_seq}, #{room_seq}, #{users_id}, #{title}, #{start_dt}, #{end_dt}, sysdate)
+	    insert into room_rsvn values 
+	    	(#{rsvn_seq}, #{room_seq}, #{users_id}, #{title}, TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+	    	 TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), sysdate)
 	</insert>
 	
 	<insert id="addRsvnMembers">
