@@ -18,7 +18,7 @@
 		<selectKey keyProperty="msg_seq" resultType="Long" order="BEFORE">
 			select msg_seq.nextval from dual
 		</selectKey>
-		insert into ai_messages values(#{msg_seq}, #{chat_seq}, #{role}, #{content}, #{ref_chunk_ids, jdbcType=VARCHAR}, sysdate, #{ref_rag_doc_seq, jdbcType=VARCHAR})
+		insert into ai_messages values(#{msg_seq}, #{chat_seq}, #{role}, #{content}, #{ref_chunk_ids, jdbcType=VARCHAR}, sysdate, #{ref_rag_doc_ids, jdbcType=VARCHAR})
 	</insert>
 	
 	<select id="sideChatTitleList" resultType="com.study.app.domains.aiChat.AiChatDTO">
@@ -27,7 +27,7 @@
 	</select>
 	
 	<select id="detailChat" resultType="com.study.app.domains.aiChat.AiMessagesDTO">
-		select a.msg_seq, a.role, a.content, a.ref_rag_doc_seq, q.status
+		select a.msg_seq, a.role, a.content, a.ref_rag_doc_ids, q.status
 		from ai_messages a
 		left join ai_unanswered_questions q on a.msg_seq = q.msg_seq
 		where a.chat_seq = #{chat_seq}

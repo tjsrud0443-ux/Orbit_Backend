@@ -570,7 +570,7 @@ public class AiChatService {
 
 		for(AiMessagesDTO msg : chatResult) {
 
-			String value = msg.getRef_rag_doc_seq();
+			String value = msg.getRef_rag_doc_ids();
 
 			if(value == null || value.isBlank() || "[]".equals(value)) {
 				continue;
