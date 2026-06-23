@@ -53,17 +53,25 @@
 	</select>
 	
 	<select id="getDeptLeave" resultType="com.study.app.domains.departments.DeptLeaveDTO">
-		select d.dept_name as deptName, round(sum(a.used_days)/nullif(sum(a.total_days),0) * 100, 1
-			) as leave
-			from annual_leave a
-			inner join users u on a.users_id = u.id
-			inner join departments d on u.dept_seq = d.dept_seq
-			
-			where d.dept_name like '%본부'
-			and a.year = extract(year from sysdate)
-			
-			group by d.dept_name
-			order by d.dept_name
+		select
+			nvl(parent.dept_name, child.dept_name) as deptName,
+		        nvl(
+		            round(
+		                sum(a.used_days) / nullif(sum(a.total_days), 0) * 100,
+		                1
+		            ),
+          			  0
+			        ) as leave
+			    from annual_leave a
+			    inner join users u on a.users_id = u.id
+			    inner join departments child on u.dept_seq = child.dept_seq
+			    left join departments parent on child.parent_dept_seq = parent.dept_seq
+			    
+			    where nvl(parent.dept_name, child.dept_name) like '%본부'
+			      and a.year = extract(year from sysdate)
+			    
+			    group by nvl(parent.dept_name, child.dept_name)
+			    order by nvl(parent.dept_name, child.dept_name)
 	</select>
 	
 	<select id="joinResignCount" resultType="com.study.app.domains.admin.JoinResignDTO">
