@@ -146,6 +146,7 @@
     LEFT JOIN departments d ON u.dept_seq = d.dept_seq
     LEFT JOIN rank r ON u.rank_seq = r.rank_seq
     WHERE u.status = 'ACTIVE'
+    ORDER BY u.rank_seq
 	</select>
 	
 	<select id="getMyPageInfo" resultType="com.study.app.domains.users.UsersDTO">
