@@ -118,7 +118,6 @@ public class AiChatService {
 		}
 		
 		String route = ragRouteClassifier.classify(content);
-		System.out.println("RAG 분류 결과 : " + route);
 		
 		if("DB".equals(route)) {
 			String aiAnswer = dbRagService.answer(loginId, content);

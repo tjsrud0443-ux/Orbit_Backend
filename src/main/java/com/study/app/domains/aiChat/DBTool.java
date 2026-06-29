@@ -21,8 +21,6 @@ public class DBTool {
 			사용자의 질문에 필요한 데이터를 조회할 때만 사용하세요.
 			""")
 	public String executeDBQuery(String sql) {
-		System.out.println("AI select 쿼리 : " + sql);
-		
 		
 		if(sql == null || sql.isBlank()) {
 			return "SQL이 비어있습니다.";
@@ -63,8 +61,6 @@ public class DBTool {
         	String limitedSql = "SELECT * FROM (" + sql + ") WHERE ROWNUM <= 30";
         	List<Map<String,Object>> result = jdbc.queryForList(limitedSql);
 
-			System.out.println("결과 : " + result);
-			
 			if(result == null || result.isEmpty()) {
 				return "조회된 데이터가 없습니다.";
 			}
