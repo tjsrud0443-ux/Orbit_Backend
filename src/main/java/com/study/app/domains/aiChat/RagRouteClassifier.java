@@ -15,8 +15,8 @@ public class RagRouteClassifier {
 		this.gemini = ChatClient.builder(chatModel).build();
 	}
 	
-	public String classify(String message) {
-		if(message == null || message.isBlank()) {
+	public String classify(String content) {
+		if(content == null || content.isBlank()) {
 			return "UNKNOWN";
 		}
 		
@@ -83,7 +83,7 @@ public class RagRouteClassifier {
 		try {
 			String result = gemini.prompt()
 					.system(systemPrompt)
-					.user(message)
+					.user(content)
 					.call()
 					.content();
 			

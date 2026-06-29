@@ -64,6 +64,13 @@ public class AiChatService {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private RagRouteClassifier ragRouteClassifier;
+	
+	@Autowired
+	private DbRagService dbRagService;
+	
 
 	@Transactional
 	public Map<String, Object> getRagResponse(String loginId, Long chat_seq, String role, String content) {
@@ -87,6 +94,21 @@ public class AiChatService {
 
 		Map<String, Object> aiResult = new HashMap<>();
 		aiResult.put("chat_seq", chat_seq);
+		
+		String route = ragRouteClassifier.classify(content);
+		System.out.println("RAG 분류 결과 : " + route);
+		
+		if("DB".equals(route)) {
+			String aiAnswer = dbRagService.answer(loginId, content);
+			AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, "[]", null, null, "[]");
+			aiDao.insertMessage(aiMessage);
+			
+			aiResult.put("msg_seq", aiMessage.getMsg_seq());
+		    aiResult.put("aiAnswer", aiAnswer);
+		    aiResult.put("resultSources", Collections.emptyList());
+
+		    return aiResult;
+		}
 
 		boolean meetingKeyword = content.contains("회의")
 				|| content.contains("회의록")
