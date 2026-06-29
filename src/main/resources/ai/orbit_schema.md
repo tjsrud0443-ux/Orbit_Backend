@@ -60,7 +60,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `EMP_NAME` | 직원명 |
 | `EMP_EMAIL` | 이메일 |
 | `EMP_PHONE` | 연락처 |
-| `EMP_STATUS` | 재직 상태 `ACTIVE` / `INACTIVE` / `RETIRE` |
+| `EMP_STATUS` | 재직 상태 코드 `ACTIVE`는 재직 / `INACTIVE`는 휴직 / `RETIRE`는 퇴사 |
 | `HIRE_DATE` | 입사일 |
 | `DEPT_SEQ` | 부서 번호 |
 | `DEPT_NAME` | 부서명 |
@@ -206,7 +206,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `CHECKOUT_DATE` | 변경 희망 일시 |
 | `REQ_CHECK_OUT` | 변경 요청한 최종 퇴근 일시 |
 | `REASON` | 정정 신청 사유 |
-| `REQUEST_STATUS` | 처리 상태. `PENDING`, `APPROVED`, `REJECTED` |
+| `REQUEST_STATUS` | 처리 상태 코드 `PENDING`은 대기 , `APPROVED`는 승인 , `REJECTED`는 반려 |
 | `APPROVER_ID` | 처리 관리자 ID |
 | `APPROVER_NAME` | 처리 관리자 이름 |
 | `APPROVED_AT` | 승인 또는 반려 처리 일시 |
@@ -245,7 +245,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `END_DT` | 연장근무 종료 시간 |
 | `REQUEST_MIN` | 신청한 연장근무 시간 |
 | `REASON` | 연장근무 신청 사유 |
-| `REQUEST_STATUS` | 처리 상태. `PENDING`, `APPROVED`, `REJECTED` |
+| `REQUEST_STATUS` | 처리 상태 코드 `PENDING`은 대기 , `APPROVED`는 승인 , `REJECTED`는 반려 |
 | `APPROVER_ID` | 처리 관리자 ID |
 | `APPROVER_NAME` | 처리 관리자 이름 |
 | `APPROVED_AT` | 승인 또는 반려 처리 일시 |
@@ -274,13 +274,13 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `DOC_SEQ` | 기안 문서 고유 번호 |
 | `DOC_TITLE` | 기안 문서 제목 |
-| `DOC_TYPE` | 문서 종류. `VACATION`, `PAYMENT`, `GENERAL`, `PURCHASE` |
+| `DOC_TYPE` | 문서 종류 코드 `VACATION`은 휴가신청서, `PAYMENT`는 지출결의서, `GENERAL`는 일반품의서, `PURCHASE`는 구매신청서 |
 | `DRAFTER_ID` | 기안자 로그인 ID |
 | `DRAFTER_NO` | 기안자 사번 |
 | `DRAFTER_NAME` | 기안자 이름 |
 | `DRAFTER_DEPT_NAME` | 기안자 부서명 |
 | `DRAFTER_RANK_NAME` | 기안자 직급명 |
-| `DOC_STATUS` | 문서 결재 상태. `TEMP`, `DRAFT`, `IN_PROGRESS`, `APPROVED`, `REJECTED` |
+| `DOC_STATUS` | 문서 결재 상태 코드 `TEMP`는 임시저장 , `DRAFT`는 상신 , `IN_PROGRESS`는 진행중 , `APPROVED`는 승인 , `REJECTED`는 반려 |
 | `REJECT_REASON` | 문서 반려 사유 |
 | `IS_TEMP` | 임시 저장 여부. 일반 문서 = IS_TEMP 0, 임시저장 문서 = IS_TEMP 1 |
 | `TEMP_EXPIRES_AT` | 임시 저장 만료 일시 |
@@ -316,7 +316,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `LINE_SEQ` | 결재선 고유 번호 |
 | `DOC_SEQ` | 기안 문서 고유 번호 |
 | `DOC_TITLE` | 기안 문서 제목 |
-| `DOC_TYPE` | 문서 종류. `VACATION`, `PAYMENT`, `GENERAL`, `PURCHASE` |
+| `DOC_TYPE` | 문서 종류 코드 `VACATION`은 휴가신청서, `PAYMENT`는 지출결의서, `GENERAL`는 일반품의서, `PURCHASE`는 구매신청서 |
 | `DOC_STATUS` | 전체 문서 결재 상태 |
 | `DRAFTER_ID` | 기안자 로그인 ID |
 | `DRAFTER_NAME` | 기안자 이름 |
@@ -326,7 +326,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `APPROVER_DEPT_NAME` | 결재자 부서명 |
 | `APPROVER_RANK_NAME` | 결재자 직급명 |
 | `STEP_ORDER` | 결재 순서 |
-| `APPROVAL_STATUS` | 해당 결재자의 결재 상태. `WAITING`, `IN_PROGRESS`, `APPROVED`, `REJECTED` |
+| `APPROVAL_STATUS` | 해당 결재자의 결재 상태 코드 `WAITING`은 대기 , `IN_PROGRESS`는 진행중 , `APPROVED`는 승인 , `REJECTED`는 반려 |
 | `HANDLE_AT` | 승인 또는 반려 처리 일시 |
 | `REJECT_REASON` | 해당 결재자의 반려 사유 |
 | `CREATED_AT` | 문서 생성 일시 |
@@ -356,7 +356,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `SCHEDULE_SEQ` | 일정 고유 번호 |
 | `SCHEDULE_TITLE` | 일정 제목 |
-| `SCHEDULE_TYPE` | 일정 유형. `PERSONAL`, `TODO`, `PROJECT`, `MEETING`, `COMPANY` |
+| `SCHEDULE_TYPE` | 일정 유형 코드 `PERSONAL`은 개인 , `TODO`는 할일 , `PROJECT`는 프로젝트 , `MEETING`은 회의 , `COMPANY`는 사내(또는 전사) |
 | `ACCESS_SCOPE` | 접근 범위. `PRIVATE`, `PUBLIC`, `OWNER` 등 |
 | `EMP_ID` | 개인 일정 소유자 로그인 ID. 공용 일정이면 NULL 가능 |
 | `EMP_NAME` | 개인 일정 소유자 이름 |
@@ -442,7 +442,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `PROJECT_CONTENTS` | 프로젝트 설명 |
 | `START_DATE` | 프로젝트 시작일 |
 | `END_DATE` | 프로젝트 종료일 |
-| `PROJECT_STATUS` | 프로젝트 진행 상태. `IN_PROGRESS`, `DONE` |
+| `PROJECT_STATUS` | 프로젝트 진행 상태 코드 `IN_PROGRESS`는 진행중 , `DONE`는 완료 |
 | `CREATOR_ID` | 프로젝트 생성자 로그인 ID |
 | `CREATOR_NAME` | 프로젝트 생성자 이름 |
 | `CREATOR_DEPT_NAME` | 프로젝트 생성자 부서명 |
@@ -510,8 +510,8 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `PROJECT_NAME` | 프로젝트명 |
 | `TASK_TITLE` | 작업 제목 |
 | `TASK_CONTENT` | 작업 내용 |
-| `TASK_STATUS` | 작업 상태. `TODO`, `DOING`, `DONE` |
-| `PRIORITY` | 작업 우선순위. `LOW`, `MEDIUM`, `HIGH` |
+| `TASK_STATUS` | 작업 상태 코드 `TODO`는 할일 , `DOING`는 진행중 , `DONE`는 완료 |
+| `PRIORITY` | 작업 우선순위 코드 `LOW`는 낮음 , `MEDIUM`은 중간, `HIGH`는 높음 |
 | `PIC_ID` | 담당자 로그인 ID |
 | `PIC_NAME` | 담당자 이름 |
 | `PIC_DEPT_NAME` | 담당자 부서명 |
@@ -555,7 +555,7 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `TOTAL_QTY` | 총 보유 수량 |
 | `STOCK_QTY` | 현재 재고 수량 |
 | `MIN_STOCK_QTY` | 최소 재고 기준 수량 |
-| `SUPPLY_STATUS` | 재고 상태. `ENOUGH`, `LOW`, `EMPTY` |
+| `SUPPLY_STATUS` | 재고 상태 코드 `ENOUGH`는 충분 , `LOW`는 부족, `EMPTY`는 품절 |
 | `CREATED_AT` | 비품 등록 일시 |
 
 ### 자주 들어올 사용자 질문 예시
@@ -588,13 +588,13 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `RANK_NAME` | 신청자 직급명 |
 | `REQ_DATE` | 신청 일자 |
 | `REASON` | 신청 사유 |
-| `REQUEST_STATUS` | 신청 처리 상태. `PENDING`, `APPROVED`, `REJECTED` |
+| `REQUEST_STATUS` | 신청 처리 상태 코드 `PENDING`은 대기 , `APPROVED`는 승인 , `REJECTED`는 반려 |
 | `ITEM_SEQ` | 신청 상세 품목 고유 번호 |
 | `SUPPLY_SEQ` | 비품 고유 번호 |
 | `SUPPLY_NAME` | 비품명 |
 | `SUPPLY_CATEGORY` | 비품 카테고리 |
 | `EA` | 신청 수량 |
-| `USE_TYPE` | 사용 목적. `DEV`, `GENERAL`, `REPLACE` |
+| `USE_TYPE` | 사용 목적 코드 `DEV`는 개발용 , `GENERAL`은 일반용 , `REPLACE`는 교체용 |
 
 ### 자주 들어올 사용자 질문 예시
 
@@ -622,9 +622,9 @@ WHERE ACCESS_EMP_ID = '{loginId}'
 | `EMP_ID` | 알림 수신자 로그인 ID |
 | `EMP_NAME` | 알림 수신자 이름 |
 | `DEPT_NAME` | 알림 수신자 부서명 |
-| `NOTI_TYPE` | 알림 종류. `APPROVAL`, `APPROVED`, `REJECTED`, `MEETING`, `PROJECT`, `TASK` |
+| `NOTI_TYPE` | 알림 종류 코드 `APPROVAL`은 결재요청 , `APPROVED`는 승인 , `REJECTED`는 반려 , `MEETING`은 회의(참석) , `PROJECT`는 프로젝트(참조), `TASK`는 작업 |
 | `CONTENT` | 알림 내용 |
-| `REF_TYPE` | 연결 대상 타입. `APPROVAL`, `ROOM_RSVN`, `PROJECT`, `MEETING`, `TASK` 등 |
+| `REF_TYPE` | 연결 대상 타입 코드 `APPROVAL`은 기안 , `ROOM_RSVN`는 회의실 예약 , `PROJECT`는 프로젝트 , `MEETING`은 회의 , `TASK` 는 작업 등 |
 | `REF_SEQ` | 연결 대상 고유 번호 |
 | `CREATED_AT` | 알림 생성 일시 |
 | `READ_YN` | 읽음 여부. `Y`는 읽음, `N`은 안 읽음 |

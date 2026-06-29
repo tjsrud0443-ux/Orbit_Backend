@@ -70,6 +70,22 @@ public class DbRagService {
         		15. DB 조회 툴 호출은 최대 2회까지만 수행하세요.
         		16. 첫 번째 SQL에서 오류가 발생한 경우에만 한 번 더 수정해서 재시도하세요.
         		17. 같은 질문에 대해 불필요하게 여러 번 조회하지 마세요.
+        		18. 최종 답변에는 DB 코드값을 그대로 노출하지 마세요.
+        		19. `LOW`, `HIGH`, `PENDING`, `APPROVED`, `REJECTED`, `TODO`, `DOING`, `DONE` 같은 영문 상태값은 반드시 자연스러운 한국어로 변환해서 답변하세요.
+        		20. 단, 제품명, 문서명, 프로젝트명처럼 실제 고유명사에 포함된 영어는 그대로 유지하세요.
+        		
+        		상태값 변환 예시:
+				- ENOUGH → 충분
+				- LOW → 부족
+				- EMPTY → 재고 없음
+				- HIGH → 높음
+				- MEDIUM → 보통
+				- PENDING → 대기 중
+				- APPROVED → 승인됨
+				- REJECTED → 반려됨
+				- TODO → 할 일
+				- DOING → 진행 중
+        		- DONE → 완료
         		
         		[DB VIEW 스키마 문서]
         		%s
