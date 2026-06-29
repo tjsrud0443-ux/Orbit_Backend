@@ -22,7 +22,8 @@ public class DBTool {
 			""")
 	public String executeDBQuery(String sql) {
 		System.out.println("AI select 쿼리 : " + sql);
-
+		
+		
 		if(sql == null || sql.isBlank()) {
 			return "SQL이 비어있습니다.";
 		}

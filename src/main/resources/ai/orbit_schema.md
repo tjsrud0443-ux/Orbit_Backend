@@ -7,13 +7,11 @@
 - AI는 반드시 `V_AI_`로 시작하는 VIEW만 조회해야 한다.
 - 원본 테이블 `USERS`, `SIGNUP`, `AI_MESSAGES`, `RAG_CHUNKS`, `RAG_DOCUMENTS` 등은 직접 조회하지 않는다.
 - 비밀번호, 주민번호, 주소, 파일 UUID 같은 민감정보는 조회 대상이 아니다.
-- 사용자가 "나", "내", "본인"이라고 말하면 현재 로그인 사용자 ID와 각 VIEW의 사용자 식별 컬럼을 비교한다.
-- 현재 로그인 사용자 ID는 런타임에서 `'{loginId}'`로 제공된다고 가정한다.
-- 직원 본인 기준 조회는 기본적으로 `EMP_ID = '{loginId}'` 조건을 사용한다.
-- 기안자 기준 조회는 `DRAFTER_ID = '{loginId}'` 조건을 사용한다.
-- 결재자 기준 조회는 `APPROVER_ID = '{loginId}'` 조건을 사용한다.
-- 작업 담당자 기준 조회는 `PIC_ID = '{loginId}'` 조건을 사용한다.
-- 프로젝트 생성자 기준 조회는 `CREATOR_ID = '{loginId}'` 조건을 사용한다.
+- 현재 로그인 사용자 ID는 런타임에서 `'{loginId}'`로 제공된다.
+- 모든 `V_AI_` VIEW 조회 SQL에는 반드시 `ACCESS_EMP_ID = '{loginId}'` 조건을 포함한다.
+- 사용자가 "나", "내", "본인"이라고 말하면 반드시 `ACCESS_EMP_ID = '{loginId}'` 기준으로 조회한다.
+- 사용자가 다른 직원의 연차, 근태, 결재, 알림, 비품 신청 내역 등 개인 데이터를 요청하면 조회하지 않고 "권한이 없어 조회할 수 없습니다"라고 답한다.
+- `EMP_ID`, `DRAFTER_ID`, `APPROVER_ID`, `PIC_ID`, `CREATOR_ID`는 세부 필터링용 컬럼이며, 보안 접근 제어 기준은 항상 `ACCESS_EMP_ID`이다.
 
 ## Oracle 11g 날짜 조회 규칙
 
@@ -28,22 +26,22 @@
 ```sql
 SELECT *
 FROM V_AI_USERS
-WHERE EMP_ID = '{loginId}';
+WHERE ACCESS_EMP_ID = '{loginId}';
 ```
 
 ```sql
 SELECT *
 FROM V_AI_ATTENDANCE
-WHERE EMP_ID = '{loginId}'
+WHERE ACCESS_EMP_ID = '{loginId}'
   AND TRUNC(WORK_DATE) = TRUNC(SYSDATE);
 ```
 
 ```sql
 SELECT *
 FROM V_AI_SCHEDULES
-WHERE START_DT >= TRUNC(SYSDATE, 'MM')
-  AND START_DT < ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1)
-  AND (EMP_ID = '{loginId}' OR IS_PUBLIC = 1);
+WHERE ACCESS_EMP_ID = '{loginId}'
+  AND START_DT >= TRUNC(SYSDATE, 'MM')
+  AND START_DT < ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1);
 ```
 
 ## V_AI_USERS
@@ -56,6 +54,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `EMP_ID` | 직원 로그인 ID |
 | `EMP_NO` | 사번 |
 | `EMP_NAME` | 직원명 |
@@ -73,13 +72,50 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 - 내 기본 정보 알려줘.
 - 내 부서와 직급이 뭐야?
-- 특정 직원의 이메일을 알려줘.
 
 ### 조회 시 주의사항
 
-- 본인 정보 조회는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 본인 정보 조회는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 직원 목록 조회 시 필요한 컬럼만 선택한다.
 - 원본 사용자 테이블은 직접 조회하지 않는다.
+
+
+## V_AI_EMP_DIRECTORY
+
+### 사용 목적
+
+사내 주소록 및 조직도 조회용 VIEW이다. 직원 이름, 부서, 직급, 회사 이메일을 조회할 때 사용한다.
+
+### 컬럼 목록과 설명
+
+| 컬럼명 | 설명 |
+|---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
+| `ACCESS_SCOPE` | 접근 범위. `PUBLIC` |
+| `EMP_ID` | 직원 로그인 ID |
+| `EMP_NO` | 사번 |
+| `EMP_NAME` | 직원명 |
+| `EMP_EMAIL` | 회사 이메일 |
+| `DEPT_SEQ` | 부서 번호 |
+| `DEPT_NAME` | 부서명 |
+| `RANK_SEQ` | 직급 번호 |
+| `RANK_NAME` | 직급명 |
+| `RANK_ORDER` | 직급 정렬 순서 |
+| `EMP_STATUS` | 재직 상태 |
+
+### 자주 들어올 사용자 질문 예시
+
+- 디자인팀 직원 이메일 알려줘.
+- 특정 직원의 회사 이메일 알려줘.
+- 개발팀 직원 목록 보여줘.
+- 조직도에서 경영지원본부 직원 알려줘.
+
+### 조회 시 주의사항
+
+- 사내 주소록 조회도 반드시 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
+- 직원 이메일 조회는 `V_AI_EMP_DIRECTORY`를 사용한다.
+- 연차, 근태, 결재, 알림, 비품 신청 같은 개인 데이터는 이 VIEW로 조회하지 않는다.
+- 주소, 비밀번호, 주민번호, 개인 파일 정보는 조회하지 않는다.
 
 ## V_AI_ANNUAL_LEAVE
 
@@ -91,6 +127,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `LEAVE_SEQ` | 연차 현황 고유 번호 |
 | `EMP_ID` | 직원 로그인 ID |
 | `EMP_NO` | 사번 |
@@ -110,7 +147,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 본인 연차 조회는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 본인 연차 조회는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 올해 연차는 `LEAVE_YEAR = EXTRACT(YEAR FROM SYSDATE)` 조건을 사용한다.
 
 ## V_AI_ATTENDANCE
@@ -123,6 +160,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `ATTENDANCE_SEQ` | 출퇴근 기록 고유 번호 |
 | `EMP_ID` | 직원 로그인 ID |
 | `EMP_NO` | 사번 |
@@ -143,7 +181,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 본인 근태 조회는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 본인 근태 조회는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 오늘 근태는 `TRUNC(WORK_DATE) = TRUNC(SYSDATE)` 조건을 사용한다.
 - 이번 달 근태는 `WORK_DATE >= TRUNC(SYSDATE, 'MM') AND WORK_DATE < ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1)` 조건을 사용한다.
 
@@ -157,6 +195,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `CHECKOUT_SEQ` | 퇴근 정정 신청 고유 번호 |
 | `ATTENDANCE_SEQ` | 연결된 출퇴근 기록 번호 |
 | `EMP_ID` | 신청자 로그인 ID |
@@ -180,11 +219,8 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 본인 신청 조회는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 본인 신청 조회는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 신청 상태별 조회는 `REQUEST_STATUS` 값을 사용한다.
-- `ROOM_FLOOR`는 문자형 값이며 예: `8층`, `10층` 형식으로 저장된다.
-- 사용자가 “8층”, “8층 회의실”처럼 층수를 말하면 `ROOM_FLOOR_NO = '8층'` 조건을 우선 사용한다.
-- `ROOM_FLOOR = 8`처럼 숫자 비교를 하지 않는다.
 
 ## V_AI_OVERTIME_REQUEST
 
@@ -196,6 +232,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `OVERTIME_SEQ` | 연장근무 신청 고유 번호 |
 | `ATTENDANCE_SEQ` | 연결된 출퇴근 기록 번호 |
 | `EMP_ID` | 신청자 로그인 ID |
@@ -221,7 +258,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 본인 신청 조회는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 본인 신청 조회는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 연장근무 날짜 기준 조회는 `WORK_DATE`를 사용한다.
 
 ## V_AI_DRAFT_DOCUMENTS
@@ -234,6 +271,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `DOC_SEQ` | 기안 문서 고유 번호 |
 | `DOC_TITLE` | 기안 문서 제목 |
 | `DOC_TYPE` | 문서 종류. `VACATION`, `PAYMENT`, `GENERAL`, `PURCHASE` |
@@ -258,7 +296,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 본인이 작성한 문서는 `DRAFTER_ID = '{loginId}'` 조건을 사용한다.
+- 본인이 작성한 문서는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 문서 상태는 `DOC_STATUS` 값을 기준으로 필터링한다.
 - 임시 저장 문서만 조회할 때는 `IS_TEMP = 1` 또는 `DOC_STATUS = 'TEMP'` 조건을 사용한다.
 - 임시 저장 만료 여부는 `TEMP_EXPIRES_AT`을 기준으로 판단한다.
@@ -274,6 +312,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `LINE_SEQ` | 결재선 고유 번호 |
 | `DOC_SEQ` | 기안 문서 고유 번호 |
 | `DOC_TITLE` | 기안 문서 제목 |
@@ -300,8 +339,9 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 내가 결재자인 문서는 `APPROVER_ID = '{loginId}'` 조건을 사용한다.
+- 내가 결재자인 문서는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 대기 문서는 `APPROVAL_STATUS`가 `WAITING` 또는 `IN_PROGRESS`인지 확인한다.
+- "내가 결재해야 할 문서"는 추가로 `APPROVER_ID = '{loginId}'` 조건을 사용할 수 있다.
 
 ## V_AI_SCHEDULES
 
@@ -313,9 +353,11 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `SCHEDULE_SEQ` | 일정 고유 번호 |
 | `SCHEDULE_TITLE` | 일정 제목 |
 | `SCHEDULE_TYPE` | 일정 유형. `PERSONAL`, `TODO`, `PROJECT`, `MEETING`, `COMPANY` |
+| `ACCESS_SCOPE` | 접근 범위. `PRIVATE`, `PUBLIC`, `OWNER` 등 |
 | `EMP_ID` | 개인 일정 소유자 로그인 ID. 공용 일정이면 NULL 가능 |
 | `EMP_NAME` | 개인 일정 소유자 이름 |
 | `DEPT_NAME` | 개인 일정 소유자 부서명 |
@@ -335,9 +377,11 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 개인 일정은 `EMP_ID = '{loginId}'` 조건을 사용한다.
-- 공용 일정은 `IS_PUBLIC = 1` 조건을 사용할 수 있다.
+- 일정 조회는 반드시 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
+- `ACCESS_SCOPE = 'PRIVATE'`는 본인 개인 일정이다.
+- `ACCESS_SCOPE = 'PUBLIC'`은 공용 일정이다.
 - 일정 날짜 범위는 `START_DT`, `END_DT`를 기준으로 판단한다.
+
 
 ## V_AI_ROOM_RSVN
 
@@ -349,11 +393,14 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `RSVN_SEQ` | 회의실 예약 고유 번호 |
 | `ROOM_SEQ` | 회의실 고유 번호 |
 | `ROOM_NAME` | 회의실 이름 |
 | `MAX_PEOPLE` | 회의실 최대 수용 인원 |
-| `ROOM_FLOOR` | 회의실 층수 예:`8층`이면 문자열 `8층` |
+| `ROOM_FLOOR` | 회의실 층수 |
+| `ROOM_FLOOR_NO` | 회의실 층수에서 숫자만 추출한 문자 값 예:`8층`이면 문자열 `8` | 
+| `ACCESS_SCOPE` | 접근 범위. `PUBLIC`은 예약 시간만 조회 가능, `OWNER`는 본인 예약 상세 조회 가능 |
 | `EMP_ID` | 예약자 로그인 ID |
 | `EMP_NAME` | 예약자 이름 |
 | `DEPT_NAME` | 예약자 부서명 |
@@ -370,8 +417,14 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 내가 예약한 회의실은 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 내가 예약한 회의실은 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 예약 시간 조회는 `START_DT`, `END_DT`를 기준으로 한다.
+- `ROOM_FLOOR`는 문자형 값이며 예: `8층`, `10층` 형식으로 저장된다.
+- `ROOM_FLOOR_NO`는 층수에서 숫자만 추출한 문자 값이다. 예: `8층`이면 `8`.
+- 사용자가 “8층 회의실”처럼 층수를 말하면 `ROOM_FLOOR_NO = '8'` 조건을 사용한다.
+- `ROOM_FLOOR = 8`처럼 숫자 비교하지 않는다.
+- `ACCESS_SCOPE = 'PUBLIC'`은 예약 시간, 회의실명, 층수 등 공용 정보만 조회한다.
+- `ACCESS_SCOPE = 'OWNER'`는 본인이 예약한 회의실 상세 정보 조회에 사용한다.
 
 ## V_AI_PROJECTS
 
@@ -383,6 +436,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `PROJECT_SEQ` | 프로젝트 고유 번호 |
 | `PROJECT_NAME` | 프로젝트명 |
 | `PROJECT_CONTENTS` | 프로젝트 설명 |
@@ -402,7 +456,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 내가 생성한 프로젝트는 `CREATOR_ID = '{loginId}'` 조건을 사용한다.
+- 내가 생성한 프로젝트는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 참여 중인 프로젝트는 `V_AI_PROJECT_MEMBERS`를 사용한다.
 
 ## V_AI_PROJECT_MEMBERS
@@ -415,6 +469,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `MEMBER_SEQ` | 프로젝트 참여자 고유 번호 |
 | `PROJECT_SEQ` | 프로젝트 고유 번호 |
 | `PROJECT_NAME` | 프로젝트명 |
@@ -436,7 +491,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 내가 참여 중인 프로젝트는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 내가 참여 중인 프로젝트는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 특정 프로젝트 참여자는 `PROJECT_SEQ` 또는 `PROJECT_NAME`으로 필터링한다.
 
 ## V_AI_KANBAN_TASK
@@ -449,6 +504,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `TASK_SEQ` | 칸반 작업 고유 번호 |
 | `PROJECT_SEQ` | 프로젝트 고유 번호 |
 | `PROJECT_NAME` | 프로젝트명 |
@@ -475,6 +531,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
+- 칸반 작업 조회는 반드시 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 내가 담당자인 작업은 `PIC_ID = '{loginId}'` 조건을 사용한다.
 - 내가 만든 작업은 `CREATOR_ID = '{loginId}'` 조건을 사용한다.
 - 마감일 조회는 `DUE_DATE`를 기준으로 한다.
@@ -489,9 +546,11 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `SUPPLY_SEQ` | 비품 고유 번호 |
 | `SUPPLY_NAME` | 비품명 |
 | `CATEGORY` | 비품 카테고리. 전자기기, 사무용품, 가구, 네트워크장비 등 |
+| `ACCESS_SCOPE` | 접근 범위. `PRIVATE`, `PUBLIC`, `OWNER` 등 |
 | `SUPPLY_CODE` | 비품 코드 |
 | `TOTAL_QTY` | 총 보유 수량 |
 | `STOCK_QTY` | 현재 재고 수량 |
@@ -507,7 +566,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 비품 재고 조회는 사용자 ID 조건이 필요하지 않을 수 있다.
+- 비품 재고 조회도 반드시 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 재고 부족 조회는 `SUPPLY_STATUS = 'LOW'` 또는 `SUPPLY_STATUS = 'EMPTY'` 조건을 사용한다.
 
 ## V_AI_SUPPLY_REQUEST
@@ -520,6 +579,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `REQ_SEQ` | 비품 신청 고유 번호 |
 | `EMP_ID` | 신청자 로그인 ID |
 | `EMP_NO` | 신청자 사번 |
@@ -544,7 +604,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 본인 비품 신청 조회는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 본인 비품 신청 조회는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 신청 처리 상태는 `REQUEST_STATUS` 값을 사용한다.
 
 ## V_AI_NOTIFICATIONS
@@ -557,6 +617,7 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 | 컬럼명 | 설명 |
 |---|---|
+| `ACCESS_EMP_ID` | 이 row를 조회할 수 있는 사용자 ID |
 | `NOTI_SEQ` | 알림 고유 번호 |
 | `EMP_ID` | 알림 수신자 로그인 ID |
 | `EMP_NAME` | 알림 수신자 이름 |
@@ -576,6 +637,6 @@ WHERE START_DT >= TRUNC(SYSDATE, 'MM')
 
 ### 조회 시 주의사항
 
-- 본인 알림 조회는 `EMP_ID = '{loginId}'` 조건을 사용한다.
+- 본인 알림 조회는 `ACCESS_EMP_ID = '{loginId}'` 조건을 사용한다.
 - 읽지 않은 알림은 `READ_YN = 'N'` 조건을 사용한다.
 - 알림 생성일 조회는 `CREATED_AT`을 기준으로 한다.
