@@ -22,7 +22,7 @@
 	
 	<insert id="insertVacationDetail">
 		insert into vacation values (vac_seq.nextval, #{doc_seq}, #{vac_type}, TO_DATE(#{start_date}, 'YYYY-MM-DD'), 
-    	TO_DATE(#{end_date}, 'YYYY-MM-DD'), #{days}, #{reason})
+    	TO_DATE(#{end_date}, 'YYYY-MM-DD'), #{days}, #{reason}, #{remaining_days})
 	</insert>
 	
 	<insert id="insertGeneralDetail">
@@ -104,7 +104,7 @@
 	<select id="selectVacationDetail" resultType="map">
 		select 
 			vac_seq as "vac_seq", doc_seq as "doc_seq", vac_type as "vac_type", TO_CHAR(start_date, 'YYYY-MM-DD') as "start_date",
-        	TO_CHAR(end_date, 'YYYY-MM-DD') as "end_date", days as "days", reason as "reason" 
+        	TO_CHAR(end_date, 'YYYY-MM-DD') as "end_date", days as "days", reason as "reason", remaining_days as "remaining_days"
 		from vacation where doc_seq = #{doc_seq}
 	</select>
 	

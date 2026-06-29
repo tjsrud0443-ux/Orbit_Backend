@@ -95,6 +95,7 @@ public class ApprovalService {
 					throw new IllegalArgumentException("잔여 연차가 부족하여 휴가 신청서를 상신할 수 없습니다. \n(잔여: " 
 							+ currentRemaining + "일)");
 				}
+				dto.setRemaining_days(currentRemaining);
 			}
 		}
 		insertCommonApprovalData(dto);

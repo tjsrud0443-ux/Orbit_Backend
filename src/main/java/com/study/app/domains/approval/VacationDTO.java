@@ -10,13 +10,14 @@ public class VacationDTO extends DraftDocumentsDTO {
 	private String end_date;
 	private Double days;
 	private String reason;
+	private Double remaining_days;
 	
 	private List<ApprovalLinesDTO> approvers;
     private List<ApprovalCcDTO> referrers;
 	
 	public VacationDTO() {}
 	public VacationDTO(Long vac_seq, Long doc_seq, String vac_type, String start_date, String end_date, Double days,
-			String reason, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers) {
+			String reason, Double remaining_days, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers) {
 		super();
 		this.vac_seq = vac_seq;
 		this.doc_seq = doc_seq;
@@ -25,6 +26,7 @@ public class VacationDTO extends DraftDocumentsDTO {
 		this.end_date = end_date;
 		this.days = days;
 		this.reason = reason;
+		this.remaining_days = remaining_days;
 		this.approvers = approvers;
 		this.referrers = referrers;
 	}
@@ -69,6 +71,12 @@ public class VacationDTO extends DraftDocumentsDTO {
 	}
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+	public Double getRemaining_days() {
+		return remaining_days;
+	}
+	public void setRemaining_days(Double remaining_days) {
+		this.remaining_days = remaining_days;
 	}
 	public List<ApprovalLinesDTO> getApprovers() {
 		return approvers;
