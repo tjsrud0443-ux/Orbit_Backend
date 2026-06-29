@@ -6,12 +6,17 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.study.app.domains.file.FileService;
 
 @Service
 public class UsersService {
 	
 	@Autowired
 	private UsersDAO dao;
+	@Autowired
+	private FileService fileServ;
 	
 	public UsersDTO getHrInfo(String id) {
 		return dao.getHrInfo(id);
@@ -61,4 +66,28 @@ public class UsersService {
 	public int updateMyPageInfo(UsersDTO dto) {
 		return dao.updateMyPageInfo(dto);
 	}
+	
+	public Map<String, String> uploadUserStamp(String loginId, MultipartFile file) throws Exception {
+	    UsersDTO userInfo = dao.getMyPageInfo(loginId);
+	    if (userInfo != null && userInfo.getStamp_sysname() != null && !userInfo.getStamp_sysname().isEmpty()) {
+	        try {
+	            fileServ.deleteFromGCS(userInfo.getStamp_sysname());
+	        } catch (Exception e) {
+	            // 로그
+	        }
+	    }
+	    Map<String, String> uploadResult = fileServ.upload(file);
+	    String sysname = uploadResult.get("sysname");
+	    String oriname = uploadResult.get("oriname");
+	    // insert/update 분기
+	    int exists = dao.existsUserStamp(loginId);
+	    if (exists > 0) {
+	        dao.updateUserStamp(loginId, sysname, oriname);
+	    } else {
+	        dao.insertUserStamp(loginId, sysname, oriname);
+	    }
+	    
+	    return uploadResult;
+	}
+
 }

@@ -75,6 +75,29 @@ public class UsersDAO {
 		return batis.update("Users.updateMyPageInfo",dto);
 	}
 	
+	// 도장 존재 여부 확인
+	public int existsUserStamp(String id) {
+	    return batis.selectOne("Users.existsUserStamp", id);
+	}
+	
+	// 도장 등록
+	public int insertUserStamp(String id, String sysname, String oriname) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("id", id);
+	    params.put("sysname", sysname);
+	    params.put("oriname", oriname);
+	    return batis.insert("Users.insertUserStamp", params);
+	}
+
+	// 도장 수정
+	public int updateUserStamp(String id, String sysname, String oriname) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("id", id);
+	    params.put("sysname", sysname);
+	    params.put("oriname", oriname);
+	    return batis.update("Users.updateUserStamp", params);
+	}
+	
 	public int isExistForId(String name, String email) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);

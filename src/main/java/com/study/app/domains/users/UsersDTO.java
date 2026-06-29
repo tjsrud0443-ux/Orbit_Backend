@@ -29,12 +29,18 @@ public class UsersDTO {
     private String rank_name;
     private String auth_group;
     private Long parent_dept_seq;
+    
+    private String stamp_sysname;
+    private String stamp_oriname;
+    private Long stamp_seq;
 	
 	public UsersDTO() {}
+
 	public UsersDTO(String id, String pw, Long users_seq, String name, String phone, String email, String oriname,
 			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
 			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
-			String created_at, String update_at, String sysname, String dept_name, String rank_name, String auth_group) {
+			String created_at, String update_at, String sysname, String dept_name, String rank_name, String auth_group,
+			Long parent_dept_seq, String stamp_sysname, String stamp_oriname, Long stamp_seq) {
 		super();
 		this.id = id;
 		this.pw = pw;
@@ -61,161 +67,242 @@ public class UsersDTO {
 		this.dept_name = dept_name;
 		this.rank_name = rank_name;
 		this.auth_group = auth_group;
+		this.parent_dept_seq = parent_dept_seq;
+		this.stamp_sysname = stamp_sysname;
+		this.stamp_oriname = stamp_oriname;
+		this.stamp_seq = stamp_seq;
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getPw() {
 		return pw;
 	}
+
 	public void setPw(String pw) {
 		this.pw = pw;
 	}
+
 	public Long getUsers_seq() {
 		return users_seq;
 	}
+
 	public void setUsers_seq(Long users_seq) {
 		this.users_seq = users_seq;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getPhone() {
 		return phone;
 	}
+
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public String getOriname() {
 		return oriname;
 	}
+
 	public void setOriname(String oriname) {
 		this.oriname = oriname;
 	}
+
 	public String getSsn_hash() {
 		return ssn_hash;
 	}
+
 	public void setSsn_hash(String ssn_hash) {
 		this.ssn_hash = ssn_hash;
 	}
+
 	public String getSsn_enc() {
 		return ssn_enc;
 	}
+
 	public void setSsn_enc(String ssn_enc) {
 		this.ssn_enc = ssn_enc;
 	}
+
 	public String getSsn_masked() {
 		return ssn_masked;
 	}
+
 	public void setSsn_masked(String ssn_masked) {
 		this.ssn_masked = ssn_masked;
 	}
+
 	public String getZonecode() {
 		return zonecode;
 	}
+
 	public void setZonecode(String zonecode) {
 		this.zonecode = zonecode;
 	}
+
 	public String getAddress1() {
 		return address1;
 	}
+
 	public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
+
 	public String getAddress2() {
 		return address2;
 	}
+
 	public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
+
 	public String getRole() {
 		return role;
 	}
+
 	public void setRole(String role) {
 		this.role = role;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public String getHire_date() {
 		return hire_date;
 	}
+
 	public void setHire_date(String hire_date) {
 		this.hire_date = hire_date;
 	}
+
 	public String getResign_date() {
 		return resign_date;
 	}
+
 	public void setResign_date(String resign_date) {
 		this.resign_date = resign_date;
 	}
+
 	public Long getDept_seq() {
 		return dept_seq;
 	}
+
 	public void setDept_seq(Long dept_seq) {
 		this.dept_seq = dept_seq;
 	}
+
 	public Long getRank_seq() {
 		return rank_seq;
 	}
+
 	public void setRank_seq(Long rank_seq) {
 		this.rank_seq = rank_seq;
 	}
+
 	public String getCreated_at() {
 		return created_at;
 	}
+
 	public void setCreated_at(String created_at) {
 		this.created_at = created_at;
 	}
+
 	public String getUpdate_at() {
 		return update_at;
 	}
+
 	public void setUpdate_at(String update_at) {
 		this.update_at = update_at;
 	}
+
 	public String getSysname() {
 		return sysname;
 	}
+
 	public void setSysname(String sysname) {
 		this.sysname = sysname;
 	}
+
 	public String getDept_name() {
 		return dept_name;
 	}
+
 	public void setDept_name(String dept_name) {
 		this.dept_name = dept_name;
 	}
+
 	public String getRank_name() {
 		return rank_name;
 	}
+
 	public void setRank_name(String rank_name) {
 		this.rank_name = rank_name;
 	}
+
 	public String getAuth_group() {
 		return auth_group;
 	}
+
 	public void setAuth_group(String auth_group) {
 		this.auth_group = auth_group;
 	}
+
 	public Long getParent_dept_seq() {
 		return parent_dept_seq;
 	}
+
 	public void setParent_dept_seq(Long parent_dept_seq) {
 		this.parent_dept_seq = parent_dept_seq;
 	}
+
+	public String getStamp_sysname() {
+		return stamp_sysname;
+	}
+
+	public void setStamp_sysname(String stamp_sysname) {
+		this.stamp_sysname = stamp_sysname;
+	}
+
+	public String getStamp_oriname() {
+		return stamp_oriname;
+	}
+
+	public void setStamp_oriname(String stamp_oriname) {
+		this.stamp_oriname = stamp_oriname;
+	}
+
+	public Long getStamp_seq() {
+		return stamp_seq;
+	}
+
+	public void setStamp_seq(Long stamp_seq) {
+		this.stamp_seq = stamp_seq;
+	}
+	
 }
