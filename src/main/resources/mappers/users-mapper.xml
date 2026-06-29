@@ -163,10 +163,14 @@
 	        d.dept_seq,
 	        d.dept_name,
 	        r.rank_seq,
-	        r.rank_name
+	        r.rank_name,
+	        s.sysname AS stamp_sysname,
+	        s.oriname AS stamp_oriname,
+	        s.stamp_seq
 	    FROM users u
 	    LEFT JOIN departments d ON u.dept_seq = d.dept_seq
 	    LEFT JOIN rank r ON u.rank_seq = r.rank_seq
+	    LEFT JOIN user_stamp s ON u.id = s.users_id
 	    WHERE u.id = #{loginId}
 	</select>
 	<update id="updateMyPageInfo">
@@ -174,6 +178,25 @@
 			phone=#{phone}, email=#{email}, zonecode=#{zonecode}, address1=#{address1}, address2=#{address2} 
 		where id = #{id}
 	</update>
+	
+	<!-- 도장 등록 -->
+	<insert id="insertUserStamp">
+	    INSERT INTO user_stamp (stamp_seq, users_id, sysname, oriname, created_at)
+	    VALUES (STAMP_SEQ.NEXTVAL, #{id}, #{sysname}, #{oriname}, SYSTIMESTAMP)
+	</insert>
+	
+	<!-- 도장 수정 -->
+	<update id="updateUserStamp">
+	    UPDATE user_stamp SET
+	        sysname = #{sysname},
+	        oriname = #{oriname},
+	        updated_at = SYSTIMESTAMP
+	    WHERE users_id = #{id}
+	</update>
+	
+	<select id="existsUserStamp" resultType="int">
+	    SELECT COUNT(*) FROM user_stamp WHERE users_id = #{id}
+	</select>
 	
 	<select id="checkDupEmail" resultType="int" parameterType="map">
 	    SELECT COUNT(*) FROM (

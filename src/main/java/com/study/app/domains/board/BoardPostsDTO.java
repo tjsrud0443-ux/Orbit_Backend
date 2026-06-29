@@ -14,14 +14,16 @@ public class BoardPostsDTO {
     private String author_name;
     private String author_sysname;  
     
+    private long row_rank;
+    
     private List<BoardFileDTO> files;
     private List<BoardCommentsDTO> comments;
     
     public BoardPostsDTO() {}
 
 	public BoardPostsDTO(Long post_seq, String title, String category, String content, String users_id, int view_count,
-			LocalDateTime created_at, String author_name, String author_sysname, List<BoardFileDTO> files,
-			List<BoardCommentsDTO> comments) {
+			LocalDateTime created_at, String author_name, String author_sysname, long row_rank,
+			List<BoardFileDTO> files, List<BoardCommentsDTO> comments) {
 		super();
 		this.post_seq = post_seq;
 		this.title = title;
@@ -32,6 +34,7 @@ public class BoardPostsDTO {
 		this.created_at = created_at;
 		this.author_name = author_name;
 		this.author_sysname = author_sysname;
+		this.row_rank = row_rank;
 		this.files = files;
 		this.comments = comments;
 	}
@@ -108,6 +111,14 @@ public class BoardPostsDTO {
 		this.author_sysname = author_sysname;
 	}
 
+	public long getRow_rank() {
+		return row_rank;
+	}
+
+	public void setRow_rank(long row_rank) {
+		this.row_rank = row_rank;
+	}
+
 	public List<BoardFileDTO> getFiles() {
 		return files;
 	}
@@ -123,5 +134,7 @@ public class BoardPostsDTO {
 	public void setComments(List<BoardCommentsDTO> comments) {
 		this.comments = comments;
 	}
+
+	
     
 }

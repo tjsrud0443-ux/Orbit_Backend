@@ -118,9 +118,13 @@ public class BoardController {
 	    List<BoardPostsDTO> list = boardServ.getBoardList(params);
 	    int total = boardServ.getBoardCount(params);
 
+	    Map<String, Object> allParams = new HashMap<>();
+	    int totalAll = boardServ.getBoardCount(allParams);
+
 	    Map<String, Object> result = new HashMap<>();
 	    result.put("list", list);
 	    result.put("total", total);
+	    result.put("totalAll", totalAll);
 	    result.put("totalPages", (int) Math.ceil((double) total / size));
 
 	    return ResponseEntity.ok(result);

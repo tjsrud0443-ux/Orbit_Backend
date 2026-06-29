@@ -31,30 +31,38 @@
 	
 	<!--출력-->
 	<select id="getBoardList" resultType="com.study.app.domains.board.BoardPostsDTO">
-		 SELECT * FROM (
-	        SELECT ROWNUM AS rn, a.* FROM (
-	            SELECT 
-					b.POST_SEQ,
-	                b.TITLE,
-	                b.CATEGORY,
-	                b.USERS_ID,
-	                b.VIEW_COUNT,
-	                b.CREATED_AT,
-	                u.NAME AS AUTHOR_NAME
-	            FROM BOARD_POSTS b
-	            LEFT JOIN USERS u ON b.USERS_ID = u.ID
-	            <where>
-	                <if test="keyword != null and keyword != ''">
-	                    AND (b.TITLE LIKE '%' || #{keyword} || '%'
-						OR u.NAME LIKE '%' || #{keyword} || '%')
-	                </if>
-	            </where>
-	            ORDER BY 
-				  CASE WHEN b.CATEGORY IN ('공지', '경조', '생일', '승진', '부서 이동') THEN 0 ELSE 1 END ASC,
-				  b.CREATED_AT DESC
-	        ) a
-	    )
-	    WHERE rn BETWEEN #{start} AND #{end}
+		SELECT * FROM (
+		    SELECT ROWNUM AS rn, a.* FROM (
+		        SELECT * FROM (
+		            SELECT
+		                b.POST_SEQ,
+		                b.TITLE,
+		                b.CATEGORY,
+		                b.USERS_ID,
+		                b.VIEW_COUNT,
+		                b.CREATED_AT,
+		                u.NAME AS AUTHOR_NAME,
+		                ROW_NUMBER() OVER (
+		                    ORDER BY
+		                        CASE WHEN b.CATEGORY IN ('공지', '경조', '생일', '승진', '부서 이동') THEN 0 ELSE 1 END ASC,
+		                        b.CREATED_AT DESC
+		                ) AS row_rank
+		            FROM BOARD_POSTS b
+		            LEFT JOIN USERS u ON b.USERS_ID = u.ID
+		        )
+		        <where>
+		            <if test="keyword != null and keyword != ''">
+		                AND (TITLE LIKE '%' || #{keyword} || '%'
+		                OR AUTHOR_NAME LIKE '%' || #{keyword} || '%')
+		            </if>
+		        </where>
+		        ORDER BY
+		            CASE WHEN CATEGORY IN ('공지', '경조', '생일', '승진', '부서 이동') THEN 0 ELSE 1 END ASC,
+		            CREATED_AT DESC
+		    ) a
+		    WHERE ROWNUM &lt;= #{end}
+		)
+		WHERE rn BETWEEN #{start} AND #{end}
 	</select>
 	
 	<select id="getBoardCount" resultType="int">

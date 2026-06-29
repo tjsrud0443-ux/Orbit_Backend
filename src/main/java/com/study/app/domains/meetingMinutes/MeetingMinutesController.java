@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/minutes")
@@ -24,6 +26,12 @@ public class MeetingMinutesController {
 	@Autowired
 	private MeetingMinutesService minutesServ;
 
+	@PostMapping("/stt-summary")
+	public ResponseEntity<Map<String, String>> sttSummary(
+	        @RequestParam("audio") MultipartFile audioFile) throws Exception {
+	    return ResponseEntity.ok(minutesServ.sttAndSummary(audioFile));
+	}
+	
 	@PostMapping
 	public ResponseEntity<Void> insertMinutes(@RequestAttribute String loginId, @RequestBody MeetingMinutesDTO dto){
 		dto.setUsers_id(loginId);
