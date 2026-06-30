@@ -120,9 +120,15 @@ public class BoardController {
 
 	    Map<String, Object> allParams = new HashMap<>();
 	    int totalAll = boardServ.getBoardCount(allParams);
-
+	    
+	    // 공지류 목록 (키워드 검색 적용)
+	    Map<String, Object> noticeParams = new HashMap<>();
+	    noticeParams.put("keyword", keyword);
+	    List<BoardPostsDTO> noticeList = boardServ.getNoticeList(noticeParams);
+	    
 	    Map<String, Object> result = new HashMap<>();
 	    result.put("list", list);
+	    result.put("noticeList", noticeList);
 	    result.put("total", total);
 	    result.put("totalAll", totalAll);
 	    result.put("totalPages", (int) Math.ceil((double) total / size));

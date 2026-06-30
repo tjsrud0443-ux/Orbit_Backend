@@ -30,6 +30,10 @@ public class BoardDAO {
     	return mybatis.selectOne("Board.getBoardCount",params);
     }
     
+    public List<BoardPostsDTO> getNoticeList(Map<String, Object> params){
+        return mybatis.selectList("Board.getNoticeList", params);
+    }
+    
     public BoardPostsDTO getPostDetail(Long post_seq) {
     	return mybatis.selectOne("Board.getPostDetail", post_seq);
     }  

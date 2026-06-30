@@ -68,14 +68,6 @@ public class UsersService {
 	}
 	
 	public Map<String, String> uploadUserStamp(String loginId, MultipartFile file) throws Exception {
-	    UsersDTO userInfo = dao.getMyPageInfo(loginId);
-	    if (userInfo != null && userInfo.getStamp_sysname() != null && !userInfo.getStamp_sysname().isEmpty()) {
-	        try {
-	            fileServ.deleteFromGCS(userInfo.getStamp_sysname());
-	        } catch (Exception e) {
-	            // 로그
-	        }
-	    }
 	    Map<String, String> uploadResult = fileServ.upload(file);
 	    String sysname = uploadResult.get("sysname");
 	    String oriname = uploadResult.get("oriname");

@@ -41,6 +41,7 @@
 	            SELECT
 	                u.users_seq, u.name, u.id, u.role, u.hire_date,
 	                u.dept_seq, u.rank_seq,
+	                u.is_hr_manager,
 	                d.dept_name, r.rank_name,
 	                CASE u.status
 	                    WHEN 'ACTIVE' THEN '재직'
@@ -126,6 +127,7 @@
         dept_seq = NVL(#{dept_seq, jdbcType=NUMERIC}, dept_seq),
         rank_seq = NVL(#{rank_seq, jdbcType=NUMERIC}, rank_seq),
         role = #{role, jdbcType=VARCHAR},
+        is_hr_manager = NVL(#{is_hr_manager, jdbcType=CHAR}, is_hr_manager),
         update_at = sysdate
     where users_seq = #{users_seq}
 	</update>	

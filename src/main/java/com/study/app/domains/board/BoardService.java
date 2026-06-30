@@ -61,6 +61,10 @@ public class BoardService {
         return boardDAO.getBoardCount(params);
     }
     
+    public List<BoardPostsDTO> getNoticeList(Map<String, Object> params){
+        return boardDAO.getNoticeList(params);
+    }
+    
     public BoardPostsDTO getPostDetail(Long post_seq) {
     	boardDAO.incrementViewCount(post_seq);  // 조회수 +1
     	BoardPostsDTO post = boardDAO.getPostDetail(post_seq);
