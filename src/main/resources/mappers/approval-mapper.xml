@@ -8,12 +8,12 @@
 	    </selectKey>
 	    
 	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, 
-	    #{status}, null, #{is_temp}, TO_DATE(#{temp_expires_at, jdbcType=VARCHAR}, 'YYYY-MM-DD'), sysdate, sysdate)
+	    #{status}, null, #{is_temp}, TO_DATE(#{temp_expires_at, jdbcType=VARCHAR}, 'YYYY-MM-DD'), sysdate, sysdate, #{stamp_sysname, jdbcType=VARCHAR})
 	</insert>
 	
 	<insert id="insertApprovalLines">
 		insert into approval_lines values (line_seq.nextval, #{doc_seq}, #{users_id}, #{step_order}, 
-		#{status}, null, null)
+		#{status}, null, null, null)
 	</insert>
 	
 	<insert id="insertReferrers">
@@ -21,12 +21,34 @@
 	</insert>
 	
 	<insert id="insertVacationDetail">
-		insert into vacation values (vac_seq.nextval, #{doc_seq}, #{vac_type}, TO_DATE(#{start_date}, 'YYYY-MM-DD'), 
-    	TO_DATE(#{end_date}, 'YYYY-MM-DD'), #{days}, #{reason})
+		<selectKey keyProperty="vac_seq" resultType="long" order="BEFORE">
+			select vac_seq.nextval from dual
+		</selectKey>
+		insert into vacation values (#{vac_seq}, #{doc_seq}, #{vac_type}, TO_DATE(#{start_date}, 'YYYY-MM-DD'), 
+    	TO_DATE(#{end_date}, 'YYYY-MM-DD'), #{days}, #{reason}, #{remaining_days})
+	</insert>
+	
+	<select id="selectVacationOldSysnames" resultType="string">
+		select sysname from vacation_attachments where vac_seq = #{vac_seq}
+	</select>
+	
+	<insert id="insertVacationAttachment">
+		insert into vacation_attachments values (v_attachment_seq.nextval, #{vac_seq}, #{oriname}, #{sysname}, sysdate)
 	</insert>
 	
 	<insert id="insertGeneralDetail">
-		insert into general values (general_seq.nextval, #{doc_seq}, #{purpose}, #{content})
+		<selectKey keyProperty="general_seq" resultType="long" order="BEFORE">
+			select general_seq.nextval from dual
+		</selectKey>
+		insert into general values (#{general_seq}, #{doc_seq}, #{purpose}, #{content})
+	</insert>
+	
+	<select id="selectGeneralOldSysnames" resultType="string">
+		select sysname from general_attachments where general_seq = #{general_seq}
+	</select>
+	
+	<insert id="insertGeneralAttachment">
+		insert into general_attachments values (g_attachment_seq.nextval, #{general_seq}, #{oriname}, #{sysname}, sysdate)
 	</insert>
 	
 	<insert id="insertPaymentDetail">
@@ -68,7 +90,7 @@
 	    select
 	    	d.doc_seq as "doc_seq", d.title as "title", d.doc_type as "doc_type", d.users_id as "users_id", d.status as "status",
 	    	d.reject_reason as "reject_reason", d.is_temp as "is_temp", TO_CHAR(d.temp_expires_at, 'YYYY-MM-DD') as "temp_expires_at", TO_CHAR(d.created_at, 'YYYY-MM-DD') as "created_at",
-	    	TO_CHAR(d.updated_at, 'YYYY-MM-DD') as "updated_at", u.name as "name", u.users_seq as "users_seq", dept.dept_name as "dept_name", r.rank_name as "rank_name"
+	    	TO_CHAR(d.updated_at, 'YYYY-MM-DD') as "updated_at", d.stamp_sysname as "stamp_sysname", u.name as "name", u.users_seq as "users_seq", dept.dept_name as "dept_name", r.rank_name as "rank_name"
 	    	from draft_documents d
 	    left outer join users u 
 	    	on d.users_id = u.id
@@ -82,7 +104,7 @@
 	<select id="selectApprovers" resultType="map">
 		select 
 			a.line_seq as "line_seq", a.doc_seq as "doc_seq", a.users_id as "users_id", a.step_order as "step_order",
-			a.status as "status", TO_CHAR(a.handle_at, 'YYYY-MM-DD') as "handle_at", a.reject_reason as "reject_reason", 
+			a.status as "status", TO_CHAR(a.handle_at, 'YYYY-MM-DD') as "handle_at", a.reject_reason as "reject_reason", a.stamp_sysname as "stamp_sysname",
 			u.name as "name", r.rank_name as "rank_name"
 		from approval_lines a
 	    join users u on a.users_id = u.id
@@ -104,14 +126,28 @@
 	<select id="selectVacationDetail" resultType="map">
 		select 
 			vac_seq as "vac_seq", doc_seq as "doc_seq", vac_type as "vac_type", TO_CHAR(start_date, 'YYYY-MM-DD') as "start_date",
-        	TO_CHAR(end_date, 'YYYY-MM-DD') as "end_date", days as "days", reason as "reason" 
+        	TO_CHAR(end_date, 'YYYY-MM-DD') as "end_date", days as "days", reason as "reason", remaining_days as "remaining_days"
 		from vacation where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="selectVacationAttachments" resultType="map">
+		select 
+			attachment_seq as "attachment_seq", vac_seq as "vac_seq", 
+			oriname as "oriname", sysname as "sysname", TO_CHAR(created_at, 'YYYY-MM-DD') as "created_at"
+		from vacation_attachments where vac_seq = #{vac_seq} order by attachment_seq
 	</select>
 	
 	<select id="selectGeneralDetail" resultType="map">
 		select 
 			general_seq as "general_seq", doc_seq as "doc_seq", purpose as "purpose", content as "content" 
 		from general where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="selectGeneralAttachments" resultType="map">
+		select 
+			attachment_seq as "attachment_seq", general_seq as "general_seq", 
+			oriname as "oriname", sysname as "sysname", TO_CHAR(created_at, 'YYYY-MM-DD') as "created_at"
+		from general_attachments where general_seq = #{general_seq} order by attachment_seq
 	</select>
 	
 	<select id="selectPaymentDetail" resultType="map">
@@ -162,7 +198,8 @@
 	</select>
 	
 	<update id="updateApprovalLineStatus">
-		update approval_lines set status = #{status}, handle_at = sysdate where doc_seq = #{doc_seq} and users_id = #{users_id} 
+		update approval_lines set status = #{status}, handle_at = sysdate, stamp_sysname = #{stamp_sysname, jdbcType=VARCHAR} 
+		where doc_seq = #{doc_seq} and users_id = #{users_id} 
 	</update>
 	
 	<update id="updateNextApprovalLineStatus">
@@ -194,7 +231,7 @@
 		update draft_documents 
 		set title = #{title}, status = #{status}, is_temp = #{is_temp}, 
 			temp_expires_at = TO_DATE(#{temp_expires_at, jdbcType=VARCHAR}, 'YYYY-MM-DD'), 
-			created_at = sysdate, updated_at = sysdate
+			created_at = sysdate, updated_at = sysdate, stamp_sysname = #{stamp_sysname, jdbcType=VARCHAR}
 		where doc_seq = #{doc_seq}
 	</update>
 	
@@ -206,12 +243,28 @@
 		delete from approval_cc where doc_seq = #{doc_seq}
 	</delete>
 	
+	<select id="selectVac_seq" resultType="long">
+		select vac_seq from vacation where doc_seq = #{doc_seq}
+	</select>
+	
+	<delete id="deleteVacationAttachments">
+		delete from vacation_attachments where vac_seq = #{vac_seq}
+	</delete>
+	
 	<update id="updateVacationDetail">
 		update vacation set 
 			vac_type = #{vac_type}, start_date = TO_DATE(#{start_date}, 'YYYY-MM-DD'), 
 			end_date = TO_DATE(#{end_date}, 'YYYY-MM-DD'), days = #{days}, reason = #{reason}
 		where doc_seq = #{doc_seq}
 	</update>
+	
+	<select id="selectGeneral_seq" resultType="long">
+		select general_seq from general where doc_seq = #{doc_seq}
+	</select>
+	
+	<delete id="deleteGeneralAttachments">
+		delete from general_attachments where general_seq = #{general_seq}
+	</delete>
 	
 	<update id="updateGeneralDetail">
 		update general set purpose = #{purpose, jdbcType=VARCHAR}, content = #{content, jdbcType=VARCHAR} where doc_seq = #{doc_seq}

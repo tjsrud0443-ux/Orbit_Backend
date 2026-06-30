@@ -45,6 +45,10 @@ public class ApprovalService {
 		}else {
 			dto.setTemp_expires_at(null);
 		}
+		String currentStampSysname = usersServ.selectUserStampSysname(dto.getUsers_id());
+		dto.setStamp_sysname((currentStampSysname != null && !currentStampSysname.isBlank()) 
+			    ? currentStampSysname 
+			    : null);
 		dao.insertDraftDocument(dto); 
 		Long docSeq = dto.getDoc_seq();
 
@@ -83,7 +87,7 @@ public class ApprovalService {
 	
 	// 휴가 신청서
 	@Transactional
-	public void insertVacation(VacationDTO dto) {
+	public void insertVacation(VacationDTO dto, List<MultipartFile> files) {
 		if(dto.getIs_temp() == 0) {
 			String users_id = dto.getUsers_id();
 			Double used_days = dto.getDays();
@@ -95,17 +99,58 @@ public class ApprovalService {
 					throw new IllegalArgumentException("잔여 연차가 부족하여 휴가 신청서를 상신할 수 없습니다. \n(잔여: " 
 							+ currentRemaining + "일)");
 				}
+				dto.setRemaining_days(currentRemaining);
 			}
 		}
 		insertCommonApprovalData(dto);
 		dao.insertVacationDetail(dto);
+		Long vac_seq = dto.getVac_seq();
+		
+		if(files != null && !files.isEmpty()) {
+			for(MultipartFile file : files) {
+				try {
+					Map<String, String> upload = fileServ.upload(file);
+
+					VacationAttachmentsDTO attach = new VacationAttachmentsDTO();
+					attach.setVac_seq(vac_seq);
+					attach.setOriname(upload.get("oriname"));
+					attach.setSysname(upload.get("sysname"));
+
+					dao.insertVacationAttachment(attach);
+
+				}catch(Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
+				}
+			}
+		}
 	}
 	
 	// 일반 품의서
 	@Transactional
-	public void insertGeneral(GeneralDTO dto) {
+	public void insertGeneral(GeneralDTO dto, List<MultipartFile> files) {
 		insertCommonApprovalData(dto);
 		dao.insertGeneralDetail(dto);
+		Long general_seq = dto.getGeneral_seq();
+		
+		if(files != null && !files.isEmpty()) {
+			for(MultipartFile file : files) {
+				try {
+					Map<String, String> upload = fileServ.upload(file);
+
+					GeneralAttachmentsDTO attach = new GeneralAttachmentsDTO();
+					attach.setGeneral_seq(general_seq);
+					attach.setOriname(upload.get("oriname"));
+					attach.setSysname(upload.get("sysname"));
+
+					dao.insertGeneralAttachment(attach);
+
+				}catch(Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
+				}
+			}
+		}
 	}
 	
 	// 지출 결의서
@@ -196,11 +241,24 @@ public class ApprovalService {
         switch (doc_type) {
             case "VACATION":
                 detail = dao.selectVacationDetail(doc_seq);
+                if (detail != null) {
+                	Object vacSeqObj = detail.get("vac_seq");
+                    Long vac_seq = Long.parseLong(String.valueOf(vacSeqObj));
+                    
+                    List<Map<String, Object>> attachments = dao.selectVacationAttachments(vac_seq);
+                    result.put("attachments", attachments);
+                }
                 break;
                 
             case "GENERAL":
                 detail = dao.selectGeneralDetail(doc_seq);
-                break;
+                if (detail != null) {
+                	Object generalSeqObj = detail.get("general_seq");
+                    Long general_seq = Long.parseLong(String.valueOf(generalSeqObj));
+                    
+                    List<Map<String, Object>> attachments = dao.selectGeneralAttachments(general_seq);
+                    result.put("attachments", attachments);
+                }
                 
             case "PAYMENT":
                 detail = dao.selectPaymentDetail(doc_seq);
@@ -238,10 +296,15 @@ public class ApprovalService {
 
 	@Transactional
 	public void approveDraft(Long doc_seq, String loginId, String doc_type) {
+		String currentStampSysname = usersServ.selectUserStampSysname(loginId);
+		String safeStampSysname = (currentStampSysname != null && !currentStampSysname.isBlank())
+			    ? currentStampSysname
+			    : null;
+		
 	    Map<String, Object> currentLine = dao.selectMyApprovalLine(doc_seq, loginId);
 	    Long currentStepOrder = Long.parseLong(String.valueOf(currentLine.get("step_order")));
 
-	    dao.updateApprovalLineStatus(doc_seq, loginId, "APPROVED");
+	    dao.updateApprovalLineStatus(doc_seq, loginId, "APPROVED", safeStampSysname);
 
 	    Map<String, Object> nextLine = dao.selectNextApprovalLine(doc_seq, currentStepOrder);
 
@@ -324,6 +387,10 @@ public class ApprovalService {
 			dto.setIs_temp(Long.valueOf(0));
 			dto.setTemp_expires_at(null);
 		}
+		String currentStampSysname = usersServ.selectUserStampSysname(dto.getUsers_id());
+		dto.setStamp_sysname((currentStampSysname != null && !currentStampSysname.isBlank()) 
+		        ? currentStampSysname 
+		        : null);
 		dao.updateDraftDocument(dto);
 
 		dao.deleteApprovalLines(dto.getDoc_seq());
@@ -359,17 +426,107 @@ public class ApprovalService {
 	}
 	
 	@Transactional
-	public void updateVacation(Long doc_seq, VacationDTO dto) {
+	public void updateVacation(Long doc_seq, VacationDTO dto, List<MultipartFile> files) {
 		dto.setDoc_seq(doc_seq);
 		updateCommonApprovalData(dto);
+		Long vac_seq = dao.selectVac_seq(doc_seq);
+		dto.setVac_seq(vac_seq);
 		dao.updateVacationDetail(dto);
+		
+		List<String> keptSysnames = new ArrayList<>();
+		if(dto.getAttachments() != null) {
+			for(VacationAttachmentsDTO kept : dto.getAttachments()) {
+				keptSysnames.add(kept.getSysname());
+			}
+		}
+		
+		List<String> oldSysnames = dao.selectVacationOldSysnames(vac_seq);
+		for(String sysname : oldSysnames) {
+			if(sysname != null && !keptSysnames.contains(sysname)) {
+				fileServ.deleteFromGCS(sysname);
+			}
+		}
+		
+		dao.deleteVacationAttachments(vac_seq);
+		
+	    if (dto.getAttachments() != null) {
+	        for (VacationAttachmentsDTO kept : dto.getAttachments()) {
+	            kept.setVac_seq(vac_seq);
+	            dao.insertVacationAttachment(kept);
+	        }
+	    }
+		
+		if(files != null) {
+			for(MultipartFile file : files) {
+				if(!file.isEmpty()) {
+					try {
+						Map<String, String> upload = fileServ.upload(file);
+						
+						VacationAttachmentsDTO attach = new VacationAttachmentsDTO();
+						attach.setVac_seq(vac_seq);
+						attach.setOriname(upload.get("oriname"));
+						attach.setSysname(upload.get("sysname"));
+
+						dao.insertVacationAttachment(attach);
+					}catch(Exception e) {
+						e.printStackTrace();
+						throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
+					}
+				}
+			}
+		}
 	}
 
 	@Transactional
-	public void updateGeneral(Long doc_seq, GeneralDTO dto) {
+	public void updateGeneral(Long doc_seq, GeneralDTO dto, List<MultipartFile> files) {
 		dto.setDoc_seq(doc_seq);
 		updateCommonApprovalData(dto);
+		Long general_seq = dao.selectGeneral_seq(doc_seq);
+		dto.setGeneral_seq(general_seq);
 		dao.updateGeneralDetail(dto);
+		
+		List<String> keptSysnames = new ArrayList<>();
+		if(dto.getAttachments() != null) {
+			for(GeneralAttachmentsDTO kept : dto.getAttachments()) {
+				keptSysnames.add(kept.getSysname());
+			}
+		}
+		
+		List<String> oldSysnames = dao.selectGeneralOldSysnames(general_seq);
+		for(String sysname : oldSysnames) {
+			if(sysname != null && !keptSysnames.contains(sysname)) {
+				fileServ.deleteFromGCS(sysname);
+			}
+		}
+		
+		dao.deleteGeneralAttachments(general_seq);
+		
+	    if (dto.getAttachments() != null) {
+	        for (GeneralAttachmentsDTO kept : dto.getAttachments()) {
+	            kept.setGeneral_seq(general_seq);
+	            dao.insertGeneralAttachment(kept);
+	        }
+	    }
+		
+		if(files != null) {
+			for(MultipartFile file : files) {
+				if(!file.isEmpty()) {
+					try {
+						Map<String, String> upload = fileServ.upload(file);
+						
+						GeneralAttachmentsDTO attach = new GeneralAttachmentsDTO();
+						attach.setGeneral_seq(general_seq);
+						attach.setOriname(upload.get("oriname"));
+						attach.setSysname(upload.get("sysname"));
+
+						dao.insertGeneralAttachment(attach);
+					}catch(Exception e) {
+						e.printStackTrace();
+						throw new RuntimeException(file.getOriginalFilename() + " 파일 업로드 중 오류 발생", e);
+					}
+				}
+			}
+		}
 	}
 	
 	@Transactional

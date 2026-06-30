@@ -10,10 +10,11 @@ public class GeneralDTO extends DraftDocumentsDTO{
 	
 	private List<ApprovalLinesDTO> approvers;
     private List<ApprovalCcDTO> referrers;
+    private List<GeneralAttachmentsDTO> attachments;
 	
 	public GeneralDTO() {}
 	public GeneralDTO(Long general_seq, Long doc_seq, String purpose, String content, List<ApprovalLinesDTO> approvers,
-			List<ApprovalCcDTO> referrers) {
+			List<ApprovalCcDTO> referrers, List<GeneralAttachmentsDTO> attachments) {
 		super();
 		this.general_seq = general_seq;
 		this.doc_seq = doc_seq;
@@ -21,6 +22,7 @@ public class GeneralDTO extends DraftDocumentsDTO{
 		this.content = content;
 		this.approvers = approvers;
 		this.referrers = referrers;
+		this.attachments = attachments;
 	}
 	public Long getGeneral_seq() {
 		return general_seq;
@@ -57,5 +59,11 @@ public class GeneralDTO extends DraftDocumentsDTO{
 	}
 	public void setReferrers(List<ApprovalCcDTO> referrers) {
 		this.referrers = referrers;
+	}
+	public List<GeneralAttachmentsDTO> getAttachments() {
+		return attachments;
+	}
+	public void setAttachments(List<GeneralAttachmentsDTO> attachments) {
+		this.attachments = attachments;
 	}
 }

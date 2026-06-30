@@ -127,4 +127,8 @@ public class UsersDAO {
 	public Long selectRankSeqByLoginId(String loginId) {
 		return batis.selectOne("Users.selectRankSeqByLoginId", loginId);
 	}
+	
+	public String selectUserStampSysname(String users_id) {
+		return batis.selectOne("Users.selectUserStampSysname", users_id);
+	}
 }
