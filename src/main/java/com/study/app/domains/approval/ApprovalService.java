@@ -257,6 +257,7 @@ public class ApprovalService {
 				List<Map<String, Object>> attachments = dao.selectGeneralAttachments(general_seq);
 				result.put("attachments", attachments);
 			}
+			break;
 
 		case "PAYMENT":
 			detail = dao.selectPaymentDetail(doc_seq);
