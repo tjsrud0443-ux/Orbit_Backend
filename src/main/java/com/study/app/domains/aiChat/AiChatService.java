@@ -64,6 +64,16 @@ public class AiChatService {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private RagRouteClassifier ragRouteClassifier;
+	
+	@Autowired
+	private DbRagService dbRagService;
+	
+	@Autowired
+	private ProfanityFilter profanityFilter;
+	
 
 	@Transactional
 	public Map<String, Object> getRagResponse(String loginId, Long chat_seq, String role, String content) {
@@ -71,6 +81,11 @@ public class AiChatService {
 		// 첫 문의일 경우 AI_CHAT title 뽑기
 		if(chat_seq == 0) {
 			String rawTitle =  content.trim();
+			
+			if(profanityFilter.containsProfanity(rawTitle)) {
+				rawTitle = "기분나쁜 감정 표현 😡";
+			}
+			
 			String chatTitle = rawTitle.length() > 20 ? rawTitle.substring(0, 20) + "..." : rawTitle;
 
 			AiChatDTO aiChatDTO = new AiChatDTO();
@@ -84,9 +99,37 @@ public class AiChatService {
 		}
 
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, role, content, null, null, null, null));
-
+		
 		Map<String, Object> aiResult = new HashMap<>();
 		aiResult.put("chat_seq", chat_seq);
+		
+
+		if(profanityFilter.containsProfanity(content)) {
+			String aiAnswer = "부적절한 표현이 포함되어 있어 답변을 진행할 수 없습니다. 업무와 관련된 내용으로 다시 질문해 주세요.";
+			
+			AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, "[]", null, null, "[]");
+			aiDao.insertMessage(aiMessage);
+			
+			aiResult.put("msg_seq", aiMessage.getMsg_seq());
+		    aiResult.put("aiAnswer", aiAnswer);
+		    aiResult.put("resultSources", Collections.emptyList());
+
+		    return aiResult;
+		}
+		
+		String route = ragRouteClassifier.classify(content);
+		
+		if("DB".equals(route)) {
+			String aiAnswer = dbRagService.answer(loginId, content);
+			AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, "[]", null, null, "[]");
+			aiDao.insertMessage(aiMessage);
+			
+			aiResult.put("msg_seq", aiMessage.getMsg_seq());
+		    aiResult.put("aiAnswer", aiAnswer);
+		    aiResult.put("resultSources", Collections.emptyList());
+
+		    return aiResult;
+		}
 
 		boolean meetingKeyword = content.contains("회의")
 				|| content.contains("회의록")

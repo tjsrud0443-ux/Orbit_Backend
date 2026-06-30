@@ -5,20 +5,29 @@
 
 	<select id="selectGroupTree"
 		resultType="com.study.app.domains.departments.GroupTreeDTO">
-		select d.dept_seq as deptSeq, d.dept_code as deptCode, d.dept_name as
-		deptName, u.sysname as sysname,
-		d.parent_dept_seq as parentDeptSeq, d.auth_group as auth_group, u.name as name, r.rank_name as
-		position
-		from departments d
-		left join (
-		select u1.dept_seq, u1.name, u1.rank_seq, u1.sysname
-		from users u1
-		where u1.users_seq in
-		(select min(u2.users_seq)
-		from users u2 group by u2.dept_seq)
-		) u
-		on d.dept_seq = u.dept_seq
-		left join rank r on u.rank_seq = r.rank_seq
+		select 
+			d.dept_seq as deptSeq, 
+			d.dept_code as deptCode, 
+			d.dept_name as deptName, 
+			u.sysname as sysname,
+			d.parent_dept_seq as parentDeptSeq, 
+			d.auth_group as auth_group, 
+			u.name as name, 
+			r.rank_name as position
+			
+			from departments d
+			left join (
+				select u1.dept_seq, u1.name, u1.rank_seq, u1.sysname
+			from users u1
+			
+			where u1.status in ('ACTIVE', 'INACTIVE')
+			and u1.users_seq in
+				(select min(u2.users_seq)
+				from users u2 
+				where u2.status in ('ACTIVE', 'INACTIVE')
+				group by u2.dept_seq)
+			) u on d.dept_seq = u.dept_seq
+			left join rank r on u.rank_seq = r.rank_seq
 		order by d.dept_seq
 	</select>
 
@@ -35,6 +44,7 @@
 			u.phone,
 
 			case
+				when u.status = 'INACTIVE' then '휴직'
 				when v.vac_type = '연차' then '연차'
 				
 				when v.vac_type = '오전반차' then
@@ -75,16 +85,22 @@
 						and trunc(sysdate) between trunc(v.start_date) and trunc(v.end_date)
 				) v on u.id = v.users_id
 				
+			where u.status in ('ACTIVE', 'INACTIVE')
 			order by r.rank_order asc, u.name asc
 	</select>
 
 	<select id="selectMembers"
 		resultType="com.study.app.domains.departments.GroupMemberDTO">
-		select u.id as id, u.name as name, r.rank_name as position, u.sysname as
-		sysname
+		select 
+		u.id as id, 
+		u.name as name, 
+		r.rank_name as position, 
+		u.sysname as sysname,
+		u.phone as phone,
+		u.email as email
 		from users u
 		left join rank r on u.rank_seq = r.rank_seq
-		where u.dept_seq = #{deptSeq}
+		where u.dept_seq = #{deptSeq} and u.status in ('ACTIVE', 'INACTIVE')
 		order by r.rank_order
 	</select>
 
