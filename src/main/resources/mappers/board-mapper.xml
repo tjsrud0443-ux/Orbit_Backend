@@ -42,13 +42,10 @@
 		                b.VIEW_COUNT,
 		                b.CREATED_AT,
 		                u.NAME AS AUTHOR_NAME,
-		                ROW_NUMBER() OVER (
-		                    ORDER BY
-		                        CASE WHEN b.CATEGORY IN ('공지', '경조', '생일', '승진', '부서 이동') THEN 0 ELSE 1 END ASC,
-		                        b.CREATED_AT DESC
-		                ) AS row_rank
+		                ROW_NUMBER() OVER (ORDER BY b.CREATED_AT DESC) AS row_rank
 		            FROM BOARD_POSTS b
 		            LEFT JOIN USERS u ON b.USERS_ID = u.ID
+		            WHERE b.CATEGORY = '자유'
 		        )
 		        <where>
 		            <if test="keyword != null and keyword != ''">
@@ -56,9 +53,7 @@
 		                OR AUTHOR_NAME LIKE '%' || #{keyword} || '%')
 		            </if>
 		        </where>
-		        ORDER BY
-		            CASE WHEN CATEGORY IN ('공지', '경조', '생일', '승진', '부서 이동') THEN 0 ELSE 1 END ASC,
-		            CREATED_AT DESC
+		        ORDER BY CREATED_AT DESC
 		    ) a
 		    WHERE ROWNUM &lt;= #{end}
 		)
@@ -68,6 +63,7 @@
 	<select id="getBoardCount" resultType="int">
 	    SELECT COUNT(*) FROM BOARD_POSTS
 	    <where>
+	    CATEGORY = '자유'
 	        <if test="keyword != null and keyword != ''">
 	            AND (TITLE LIKE '%' || #{keyword} || '%'
 	            OR USERS_ID LIKE '%' || #{keyword} || '%')
@@ -75,18 +71,30 @@
 	    </where>
 	</select>
 	
-	<select id="getFileBySeq" resultType="com.study.app.domains.board.BoardFileDTO">
-	    SELECT * FROM BOARD_FILE WHERE FILE_SEQ = #{fileSeq}
+	<!--공지류 목록 (상단 고정용, 페이징 없음)-->
+	<select id="getNoticeList" resultType="com.study.app.domains.board.BoardPostsDTO">
+	    SELECT
+	        b.POST_SEQ,
+	        b.TITLE,
+	        b.CATEGORY,
+	        b.USERS_ID,
+	        b.VIEW_COUNT,
+	        b.CREATED_AT,
+	        u.NAME AS AUTHOR_NAME
+	    FROM BOARD_POSTS b
+	    LEFT JOIN USERS u ON b.USERS_ID = u.ID
+	    WHERE b.CATEGORY != '자유'
+	    <if test="keyword != null and keyword != ''">
+	        AND (b.TITLE LIKE '%' || #{keyword} || '%'
+	        OR u.NAME LIKE '%' || #{keyword} || '%')
+	    </if>
+	     ORDER BY 
+		    CASE WHEN b.CATEGORY = '공지' THEN 0 ELSE 1 END ASC,
+		    b.CREATED_AT DESC
 	</select>
 	
-	<select id="getNoticeList" resultType="com.study.app.domains.board.BoardPostsDTO">
-	    SELECT POST_SEQ, TITLE, CATEGORY, USERS_ID, VIEW_COUNT, CREATED_AT
-	    FROM (
-	        SELECT * FROM BOARD_POSTS
-	        WHERE CATEGORY != '자유'
-	        ORDER BY CREATED_AT DESC
-	    )
-	    WHERE ROWNUM &lt;= 5
+	<select id="getFileBySeq" resultType="com.study.app.domains.board.BoardFileDTO">
+	    SELECT * FROM BOARD_FILE WHERE FILE_SEQ = #{fileSeq}
 	</select>
 
 	<select id="getPostDetail" resultType="com.study.app.domains.board.BoardPostsDTO">
