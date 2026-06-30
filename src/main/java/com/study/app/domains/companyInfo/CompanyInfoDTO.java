@@ -14,12 +14,13 @@ public class CompanyInfoDTO {
 	private String created_at;
 	private String updated_at;
 	private String updated_id;
+	private String companyZonecode;
 	
 	public CompanyInfoDTO() {}
 	
 	public CompanyInfoDTO(Long companySeq, String companyName, String ceoName, String businessNumber, String companyTel,
 			String companyEmail, String companyAddress, String companyDetailAddr, String companyFax, String created_at,
-			String updated_at, String updated_id) {
+			String updated_at, String updated_id, String companyZonecode) {
 		super();
 		this.companySeq = companySeq;
 		this.companyName = companyName;
@@ -33,6 +34,7 @@ public class CompanyInfoDTO {
 		this.created_at = created_at;
 		this.updated_at = updated_at;
 		this.updated_id = updated_id;
+		this.companyZonecode = companyZonecode;
 	}
 
 	public Long getCompanySeq() {
@@ -129,5 +131,13 @@ public class CompanyInfoDTO {
 
 	public void setUpdated_id(String updated_id) {
 		this.updated_id = updated_id;
+	}
+
+	public String getCompanyZonecode() {
+		return companyZonecode;
+	}
+
+	public void setCompanyZonecode(String companyZonecode) {
+		this.companyZonecode = companyZonecode;
 	}
 }
