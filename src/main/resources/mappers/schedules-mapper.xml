@@ -5,19 +5,24 @@
 		<selectKey keyProperty="schedule_seq" resultType="Long" order="BEFORE">
 			SELECT schedule_seq.nextval FROM dual
 		</selectKey>
-		insert into schedules values(
-			#{schedule_seq},
-			#{title},
-			#{schedule_type},
-			#{users_id},
-			TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
-			TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
-			#{sked_reason, jdbcType=VARCHAR},
-			#{is_public, jdbcType=INTEGER},
-			#{ref_seq, jdbcType=NUMERIC},
-			#{ref_type, jdbcType=VARCHAR},
-			sysdate
-		)
+		 INSERT INTO SCHEDULES (
+	        SCHEDULE_SEQ, TITLE, SCHEDULE_TYPE, USERS_ID,
+	        START_DT, END_DT, SKED_REASON, IS_PUBLIC,
+	        SHOW_IN_COMPANY, REF_SEQ, REF_TYPE, CREATED_AT
+	    ) VALUES (
+	        #{schedule_seq},
+	        #{title},
+	        #{schedule_type},
+	        #{users_id},
+	        TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+	        TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
+	        #{sked_reason, jdbcType=VARCHAR},
+	        #{is_public, jdbcType=INTEGER},
+	        #{show_in_company, jdbcType=INTEGER},
+	        #{ref_seq, jdbcType=NUMERIC},
+	        #{ref_type, jdbcType=VARCHAR},
+	        sysdate
+	    )
 	</insert>
 	<select id="getSchedules" resultType="com.study.app.domains.schedules.SchedulesDTO">
 		SELECT * FROM SCHEDULES 
@@ -34,7 +39,8 @@
 			schedule_type=#{schedule_type},
 			start_dt = TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
         	end_dt   = TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
-			sked_reason=#{sked_reason} 
+			sked_reason=#{sked_reason},
+			show_in_company = #{show_in_company, jdbcType=INTEGER} 
 		where Schedule_seq=#{schedule_seq}
 	</update>
 	
@@ -48,6 +54,7 @@
 	        CAST(v.end_date AS TIMESTAMP) as end_dt,
 	        v.reason as sked_reason,
 	        0 as is_public,
+	        0 as show_in_company,
 	        null as ref_seq,
 	        null as ref_type,
 	        d.created_at
@@ -69,7 +76,7 @@
 		insert into schedules values (schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, 
 			TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
     		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
-			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate)
+			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate,0)
 	</insert>
 	
 	<delete id="deleteMeetingSchedule">
@@ -81,7 +88,7 @@
 			(schedule_seq.nextval, #{title}, 'MEETING', #{users_id}, 
 			TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
     		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
-			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate)
+			#{sked_reason}, 0, #{ref_seq}, 'MEETING', sysdate, 0)
 	</insert>
 	
 	<update id="updateMeetSchedule">
@@ -99,14 +106,14 @@
 		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, 
 		TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
 		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
-			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate)
+			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate, 0)
 	</insert>
 	
 	<insert id="insertProjectMemberSchedule">
 		insert into schedules values (schedule_seq.nextval, #{title}, 'PROJECT', #{users_id}, 
 		TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
 		TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'), 
-			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate)
+			#{sked_reason}, 0, #{ref_seq}, 'PROJECT', sysdate, 0)
 	</insert>
 	
 	<delete id="deleteProjectMemberSchedule">
