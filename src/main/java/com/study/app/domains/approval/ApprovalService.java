@@ -855,4 +855,8 @@ public class ApprovalService {
 		dao.deletePurDoc(doc_seq);
 		deleteCommon(doc_seq);
 	}
+	
+	public List<UsersDTO> getTopReferrers(String loginId) {
+		return dao.getTopReferrers(loginId);
+	}
 }
