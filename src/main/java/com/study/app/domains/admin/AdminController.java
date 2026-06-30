@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
+import com.study.app.domains.companyInfo.CompanyInfoDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
@@ -424,4 +425,24 @@ public class AdminController {
 			@RequestParam Long dept_seq, @RequestParam String auth_group) {
 		return ResponseEntity.ok(adminServ.adminAiQuestionsData(dept_seq, auth_group));
 	}
+	
+	@GetMapping("/company/getCompanyInfo")
+	public ResponseEntity<CompanyInfoDTO> getCompanyInfo() {
+		return ResponseEntity.ok(adminServ.getCompanyInfo());
+	}
+	
+	@PostMapping("/company/insertCompanyInfo")
+	public ResponseEntity<Void> insertCompanyInfo(@RequestBody CompanyInfoDTO dto) {
+		adminServ.insertCompanyInfo(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("/company/updateCompanyInfo")
+	public ResponseEntity<Void> updateCompanyInfo(@RequestBody CompanyInfoDTO dto,
+									@RequestAttribute String loginId) {
+		adminServ.updateCompanyInfo(dto, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	
 }

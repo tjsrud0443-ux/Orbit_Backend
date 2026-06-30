@@ -6,11 +6,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.checkoutRequest.CheckoutRequestService;
+import com.study.app.domains.companyInfo.CompanyInfoDAO;
+import com.study.app.domains.companyInfo.CompanyInfoDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDAO;
 import com.study.app.domains.departments.DepartmentsDTO;
@@ -62,6 +63,8 @@ public class AdminService {
 	private DocumentsDAO docDao;
 	@Autowired
 	private SupplyDAO supplyDAO;
+	@Autowired
+	private CompanyInfoDAO comDao;
 	
 	public Map<String, Object> getAllRequest(Long cPage, String status, String searchTerm) {
 		return signupServ.getAllRequest(cPage, status, searchTerm);
@@ -266,5 +269,20 @@ public class AdminService {
 		params.put("auth_group", auth_group);
 		
 		return adminDao.adminAiQuestionsData(params);
+	}
+	
+	public CompanyInfoDTO getCompanyInfo() {
+		return comDao.getCompanyInfo();
+	}
+	
+	public void insertCompanyInfo(CompanyInfoDTO dto) {
+		comDao.insertCompanyInfo(dto);
+	}
+	
+	public void updateCompanyInfo(CompanyInfoDTO dto, String loginId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("dto", dto);
+		params.put("loginId", loginId);
+		comDao.updateCompanyInfo(params);
 	}
 }

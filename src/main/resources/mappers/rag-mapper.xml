@@ -84,4 +84,16 @@
 				#{seq}
 			</foreach>
 	</select>
+	
+	<select id="findRagDocSeqsByMeetingSeq" resultType="Long">
+		select rag_doc_seq from rag_documents 
+			where source_type = 'MEETING_MINUTES' and source_seq in
+			<foreach collection="meetingSeqs"
+						item="seq"
+						open="("
+						separator=","
+						close=")">
+				#{seq}
+			</foreach>
+	</select>
 </mapper>

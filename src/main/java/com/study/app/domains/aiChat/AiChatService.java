@@ -64,16 +64,16 @@ public class AiChatService {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	@Autowired
 	private RagRouteClassifier ragRouteClassifier;
-	
+
 	@Autowired
 	private DbRagService dbRagService;
-	
+
 	@Autowired
 	private ProfanityFilter profanityFilter;
-	
+
 
 	@Transactional
 	public Map<String, Object> getRagResponse(String loginId, Long chat_seq, String role, String content) {
@@ -81,11 +81,11 @@ public class AiChatService {
 		// 첫 문의일 경우 AI_CHAT title 뽑기
 		if(chat_seq == 0) {
 			String rawTitle =  content.trim();
-			
+
 			if(profanityFilter.containsProfanity(rawTitle)) {
 				rawTitle = "기분나쁜 감정 표현 😡";
 			}
-			
+
 			String chatTitle = rawTitle.length() > 20 ? rawTitle.substring(0, 20) + "..." : rawTitle;
 
 			AiChatDTO aiChatDTO = new AiChatDTO();
@@ -99,36 +99,36 @@ public class AiChatService {
 		}
 
 		aiDao.insertMessage(new AiMessagesDTO(0L, chat_seq, role, content, null, null, null, null));
-		
+
 		Map<String, Object> aiResult = new HashMap<>();
 		aiResult.put("chat_seq", chat_seq);
-		
+
 
 		if(profanityFilter.containsProfanity(content)) {
 			String aiAnswer = "부적절한 표현이 포함되어 있어 답변을 진행할 수 없습니다. 업무와 관련된 내용으로 다시 질문해 주세요.";
-			
+
 			AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, "[]", null, null, "[]");
 			aiDao.insertMessage(aiMessage);
-			
-			aiResult.put("msg_seq", aiMessage.getMsg_seq());
-		    aiResult.put("aiAnswer", aiAnswer);
-		    aiResult.put("resultSources", Collections.emptyList());
 
-		    return aiResult;
+			aiResult.put("msg_seq", aiMessage.getMsg_seq());
+			aiResult.put("aiAnswer", aiAnswer);
+			aiResult.put("resultSources", Collections.emptyList());
+
+			return aiResult;
 		}
-		
+
 		String route = ragRouteClassifier.classify(content);
-		
+
 		if("DB".equals(route)) {
 			String aiAnswer = dbRagService.answer(loginId, content);
 			AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, "[]", null, null, "[]");
 			aiDao.insertMessage(aiMessage);
-			
-			aiResult.put("msg_seq", aiMessage.getMsg_seq());
-		    aiResult.put("aiAnswer", aiAnswer);
-		    aiResult.put("resultSources", Collections.emptyList());
 
-		    return aiResult;
+			aiResult.put("msg_seq", aiMessage.getMsg_seq());
+			aiResult.put("aiAnswer", aiAnswer);
+			aiResult.put("resultSources", Collections.emptyList());
+
+			return aiResult;
 		}
 
 		boolean meetingKeyword = content.contains("회의")
@@ -220,12 +220,29 @@ public class AiChatService {
 
 			tempDate = String.format("%d-%02d-%02d", year, month, day);
 		}
-		
+
 		final String targetDate = tempDate;
 
 		if(targetDate != null) {
 			filteredDocs.stream()
 			.filter(doc -> doc.getText().contains("회의 일자: " + targetDate)).toList();
+		}
+
+		List<Long> forcedMeetingRagDocSeqs = new ArrayList<>();
+
+		if(meetingKeyword && targetDate != null) {
+			Map<String, Object> params = new HashMap<>();
+			params.put("targetDate", targetDate);
+			params.put("loginId", loginId);
+
+			List<Long> meetingSeqsByDate = meetingMinutesDao.meetingSeqsByDate(params);
+
+			if(!meetingSeqsByDate.isEmpty()) {
+				Map<String, Object> ragParams = new HashMap<>();
+				ragParams.put("meetingSeqs", meetingSeqs);
+
+				forcedMeetingRagDocSeqs = ragDao.findRagDocSeqsByMeetingSeq(ragParams);
+			}
 		}
 
 		List<Long> ragDocSeqs = filteredDocs.stream()
@@ -278,8 +295,11 @@ public class AiChatService {
 		String context;
 		List<Long> meetingRagDocSeqs;
 		boolean useMeetingPrompt = multiMeetingKeyword || meetingKeyword;
-		
-		if(multiMeetingKeyword) {
+
+
+		if(forcedMeetingRagDocSeqs.isEmpty()) {
+			meetingRagDocSeqs = forcedMeetingRagDocSeqs;
+		}else if(multiMeetingKeyword) {
 			meetingRagDocSeqs =
 					filteredDocs.stream()
 					.map(SearchResultDTO::getRag_doc_seq)
@@ -298,7 +318,7 @@ public class AiChatService {
 					.limit(1)
 					.toList();
 		}
-		
+
 		if(useMeetingPrompt){
 			List<RagChunksDTO> expandedChunks =
 					new ArrayList<>();
@@ -328,7 +348,7 @@ public class AiChatService {
 
 		String dbRefChunkValue;
 		String dbRefRagDocValue;
-		
+
 		try {
 			dbRefChunkValue = objectMapper.writeValueAsString(refChunkIds);
 			dbRefRagDocValue = objectMapper.writeValueAsString(ragDocSeqs);
@@ -339,8 +359,8 @@ public class AiChatService {
 
 		LocalDate now = LocalDate.now();
 		String currentDate =
-			    now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		
+				now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
 		String systemPrompt;
 		if(useMeetingPrompt) {
 			systemPrompt ="당신은 사내 그룹웨어 시스템의 스마트 업무 지원 AI 비서이자, 프로페셔널한 회의록 요약 전문가입니다."
@@ -452,11 +472,11 @@ public class AiChatService {
 		}
 
 		AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, dbRefChunkValue, null, null, dbRefRagDocValue);
-		
+
 		aiDao.insertMessage(aiMessage);
 		aiResult.put("msg_seq", aiMessage.getMsg_seq());
 		aiResult.put("aiAnswer", aiAnswer);
-		
+
 		return aiResult;
 	}
 

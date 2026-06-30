@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CompanyInfo">
+
+
+	<select id="getCompanyInfo" resultType="com.study.app.domains.companyInfo.CompanyInfoDTO">
+		select
+	        company_seq as companySeq,
+	        company_name as companyName,
+	        ceo_name as ceoName,
+	        business_number as businessNumber,
+	        company_tel as companyTel,
+	        company_email as companyEmail,
+	        company_address as companyAddress,
+	        company_detail_addr as companyDetailAddr,
+	        company_fax as companyFax,
+	        created_at as createdAt,
+	        updated_at as updatedAt,
+	        updated_id as updatedId,
+	        company_zonecode as companyZonecode
+    	from company_info
+	</select>
+	
+	<insert id="insertCompanyInfo">
+		insert into company_info values (
+			1, #{companyName}, #{ceoName}, #{businessNumber}, #{companyTel},
+            #{companyEmail}, #{companyAddress}, #{companyDetailAddr}, #{companyFax},
+            CAST(SYSTIMESTAMP AS TIMESTAMP), null, null, #{companZonecode}
+		)
+	</insert>
+	
+	<update id="updateCompanyInfo">
+		update company_info set 
+			company_name = #{dto.companyName},
+            ceo_name = #{dto.ceoName},
+            business_number = #{dto.businessNumber},
+            company_tel = #{dto.companyTel},
+            company_email = #{dto.companyEmail},
+            company_address = #{dto.companyAddress},
+            company_detail_addr = #{dto.companyDetailAddr},
+            company_fax = #{dto.companyFax},
+            updated_at = CAST(SYSTIMESTAMP AS TIMESTAMP),
+            company_zonecode = #{dto.companyZonecode},
+            updated_id = #{loginId}
+        where company_seq = #{dto.companySeq}
+	</update>
+</mapper>

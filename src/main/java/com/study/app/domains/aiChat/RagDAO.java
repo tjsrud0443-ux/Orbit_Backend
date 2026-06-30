@@ -59,4 +59,8 @@ public class RagDAO {
 	public List<RagDocumentsDTO> sourcesByRagDocSeqs(List<Long> ragDocSeqs) {
 		return batis.selectList("Rag.sourcesByRagDocSeqs", ragDocSeqs);
 	}
+	
+	public List<Long> findRagDocSeqsByMeetingSeq(Map<String, Object> params) {
+		return batis.selectList("Rag.findRagDocSeqsByMeetingSeq", params);
+	}
 }

@@ -1,6 +1,7 @@
 package com.study.app.domains.meetingMinutes;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,9 @@ public class MeetingMinutesDAO {
 	
 	public List<Long> meetingSeqs(String loginId) {
 		return mybatis.selectList("MeetingMinutes.meetingSeqs", loginId);
+	}
+	
+	public List<Long> meetingSeqsByDate(Map<String, Object> params) {
+		return mybatis.selectList("MeetingMinutes.meetingSeqsByDate", params);
 	}
 }
