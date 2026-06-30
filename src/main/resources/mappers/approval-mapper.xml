@@ -56,7 +56,8 @@
 			select pay_seq.nextval from dual
 		</selectKey>
 		insert into payment values (#{pay_seq}, #{doc_seq}, TO_DATE(#{pay_date}, 'YYYY-MM-DD'),
-		 #{total_amount, jdbcType=NUMERIC}, #{pay_reason, jdbcType=VARCHAR}, #{account_info, jdbcType=VARCHAR})
+		 #{total_amount, jdbcType=NUMERIC}, #{pay_reason, jdbcType=VARCHAR}, 
+		 #{bank_name, jdbcType=VARCHAR}, #{account_holder, jdbcType=VARCHAR}, #{account_number, jdbcType=VARCHAR})
 	</insert>
 	
 	<insert id="insertPaymentItem">
@@ -153,7 +154,8 @@
 	<select id="selectPaymentDetail" resultType="map">
 		select 
 			pay_seq as "pay_seq", doc_seq as "doc_seq", TO_CHAR(pay_date, 'YYYY-MM-DD') as "pay_date", 
-			total_amount as "total_amount", pay_reason as "pay_reason", account_info as "account_info"
+			total_amount as "total_amount", pay_reason as "pay_reason", bank_name as "bank_name",
+			account_holder as "account_holder", account_number as "account_number"
 		from payment where doc_seq = #{doc_seq}
 	</select>
 	
@@ -280,8 +282,9 @@
 	
 	<update id="updatePaymentDetail">
 		update payment 
-		set pay_date = TO_DATE(#{pay_date}, 'YYYY-MM-DD'), total_amount = #{total_amount, jdbcType=NUMERIC}, 
-			pay_reason = #{pay_reason, jdbcType=VARCHAR}, account_info = #{account_info, jdbcType=VARCHAR}
+		set pay_date = TO_DATE(#{pay_date, jdbcType=VARCHAR}, 'YYYY-MM-DD'), total_amount = #{total_amount, jdbcType=NUMERIC}, 
+			pay_reason = #{pay_reason, jdbcType=VARCHAR}, bank_name = #{bank_name, jdbcType=VARCHAR},
+			account_holder = #{account_holder, jdbcType=VARCHAR}, account_number = #{account_number, jdbcType=VARCHAR}
 		where pay_seq = #{pay_seq}
 	</update>
 	

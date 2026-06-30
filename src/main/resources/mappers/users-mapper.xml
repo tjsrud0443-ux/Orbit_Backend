@@ -11,7 +11,7 @@
 		insert into users values(#{id}, #{pw}, users_seq.nextval, #{name}, #{phone}, 
 		#{email}, #{oriname}, #{ssn_hash}, #{ssn_enc}, #{ssn_masked}, #{zonecode}, 
 		#{address1}, #{address2}, 'USER', 'ACTIVE', TO_TIMESTAMP(#{hire_date}, 'YYYY-MM-DD HH24:MI:SS'), null, #{dept_seq}, 
-		#{rank_seq}, sysdate, null, #{sysname})
+		#{rank_seq}, sysdate, null, #{sysname}, 'N')
 	</insert>
 	
 	<select id="getHrInfo" resultType="com.study.app.domains.users.UsersDTO">
@@ -139,6 +139,7 @@
         u.created_at,
         u.update_at,
         u.sysname,
+        u.is_hr_manager,
         d.dept_seq AS dept_seq,
         d.dept_name AS dept_name,
         d.parent_dept_seq AS parent_dept_seq,
