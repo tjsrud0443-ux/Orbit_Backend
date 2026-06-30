@@ -593,4 +593,32 @@
 	<select id="getAllVacationTypes" resultType="com.study.app.domains.approval.VacationTypesDTO">
 		select v_types_seq, vac_type, is_deduction, deduct_days from vacation_types order by v_types_seq
 	</select>
+	
+	<select id="findVacSeq" resultType="Long">
+		select vac_seq from vacation where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="findVacAttach" resultType="String">
+		select sysname from vacation_attachments where vac_seq = #{vac_seq}
+	</select>
+	
+	<delete id="deleteVacAttach">
+		delete from vacation_attachments where vac_seq in
+    		(select vac_seq from vacation where doc_seq = #{doc_seq}
+    	)
+	</delete>
+	
+	<select id="findGenSeq" resultType="Long">
+		select general_seq from general where doc_seq = #{doc_seq}
+	</select>
+	
+	<select id="findGenAttach" resultType="String">
+		select sysname from general_attachments where general_seq = #{general_seq}
+	</select>
+		
+	<delete id="deleteGenAttach">
+		delete from general_attachments where general_seq in
+			(select general_seq from general where doc_seq = #{doc_seq}
+		)
+	</delete>
 </mapper>

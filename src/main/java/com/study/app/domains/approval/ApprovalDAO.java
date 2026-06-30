@@ -386,4 +386,28 @@ public class ApprovalDAO {
 	public List<VacationTypesDTO> getAllVacationTypes() {
 		return mybatis.selectList("Approval.getAllVacationTypes");
 	}
+	
+	public Long findVacSeq(Long doc_seq) {
+		return mybatis.selectOne("Approval.findVacSeq", doc_seq);
+	}
+	
+	public List<String> findVacAttach(Long vac_seq) {
+		return mybatis.selectList("Approval.findVacAttach", vac_seq);
+	}
+	
+	public void deleteVacAttach(Long doc_seq) {
+		mybatis.delete("Approval.deleteVacAttach", doc_seq);
+	}
+	
+	public Long findGenSeq(Long doc_seq) {
+		return mybatis.selectOne("Approval.findGenSeq", doc_seq);
+	}
+	
+	public List<String> findGenAttach(Long general_seq) {
+		return mybatis.selectList("Approval.findGenAttach", general_seq);
+	}
+	
+	public void deleteGenAttach(Long doc_seq) {
+		mybatis.delete("Approval.deleteGenAttach", doc_seq);
+	}
 }

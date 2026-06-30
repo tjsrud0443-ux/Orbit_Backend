@@ -39,4 +39,8 @@ public class MeetingMinutesDAO {
 	public List<Long> meetingSeqsByDate(Map<String, Object> params) {
 		return mybatis.selectList("MeetingMinutes.meetingSeqsByDate", params);
 	}
+	
+	public List<Long> meetingSeqsByMonth(Map<String, Object> params) {
+		return mybatis.selectList("MeetingMinutes.meetingSeqsByMonth", params);
+	}
 }

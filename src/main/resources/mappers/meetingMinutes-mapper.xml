@@ -126,4 +126,14 @@
 										or a.users_id = #{loginId})
 					and trunc(m.meeting_dt) = TO_DATE(#{targetDate}, 'YYYY-MM-DD')
 	</select>
+	
+	<select id="meetingSeqsByMonth" resultType="Long">
+	    select distinct m.minute_seq, m.meeting_dt from meeting_minutes m
+		        left join minutes_attendees a on m.minute_seq = a.minute_seq
+		    where (m.users_id = #{loginId} or m.host_users_id = #{loginId}
+		        							or a.users_id = #{loginId})
+		      and m.meeting_dt >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+		      and m.meeting_dt &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+	    order by m.meeting_dt desc, m.minute_seq desc
+	</select>
 </mapper>

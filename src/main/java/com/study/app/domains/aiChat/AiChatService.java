@@ -118,7 +118,7 @@ public class AiChatService {
 		}
 
 		String route = ragRouteClassifier.classify(content);
-
+		
 		if("DB".equals(route)) {
 			String aiAnswer = dbRagService.answer(loginId, content);
 			AiMessagesDTO aiMessage = new AiMessagesDTO(0L, chat_seq, "AI", aiAnswer, "[]", null, null, "[]");
@@ -138,11 +138,31 @@ public class AiChatService {
 				|| content.contains("결정 사항")
 				|| content.contains("할 일");
 
-		boolean multiMeetingKeyword = content.contains("회의들")
+		boolean listIntent = content.contains("목록")
+				|| content.contains("리스트")
+				|| content.contains("정리")
+				|| content.contains("조회")
+				|| content.contains("보여")
+				|| content.contains("알려")
+				|| content.contains("진행한")
+				|| content.contains("작성된");
+
+		boolean allIntent = content.contains("회의들")
 				|| content.contains("회의록들")
 				|| content.contains("모든 회의")
 				|| content.contains("전체 회의")
-				|| content.contains("목록들");
+				|| content.contains("전체")
+				|| content.contains("모든")
+				|| content.contains("전부");
+
+		boolean monthQuery = content.matches(".*\\d{1,2}월(달)?.*")
+				|| content.matches(".*\\d{4}년\\s*\\d{1,2}월.*");
+
+		boolean multiMeetingKeyword = meetingKeyword && (
+				allIntent
+				|| listIntent
+				|| monthQuery
+				);
 
 		boolean dateQuery = content.matches(".*\\d+월\\s*\\d+일.*")
 				|| content.matches(".*\\d+/\\d+.*")
@@ -212,20 +232,42 @@ public class AiChatService {
 		Pattern datePattern = Pattern.compile("(\\d+)월\\s*(\\d+)일");
 		Matcher dateMatch = datePattern.matcher(content);
 		String tempDate = null;
+		Integer targetYear = null;
+		Integer targetMonth = null;
 
-		if(dateMatch.find()) {
+		Pattern isoDatePattern = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
+		Matcher isoDateMatch = isoDatePattern.matcher(content);
+
+		Pattern koreanDatePattern = Pattern.compile("(\\d{1,2})월\\s*(\\d{1,2})일");
+		Matcher koreanDateMatch = koreanDatePattern.matcher(content);
+
+		Pattern yearMonthPattern = Pattern.compile("(?:(\\d{4})년\\s*)?(\\d{1,2})월(?:달)?");
+		Matcher yearMonthMatch = yearMonthPattern.matcher(content);
+
+		if(isoDateMatch.find()) {
+			tempDate = isoDateMatch.group(1) + "-" + isoDateMatch.group(2) + "-" + isoDateMatch.group(3);
+		} else if(koreanDateMatch.find()) {
 			int year = LocalDate.now().getYear();
-			int month = Integer.parseInt(dateMatch.group(1));
-			int day = Integer.parseInt(dateMatch.group(2));
+			int month = Integer.parseInt(koreanDateMatch.group(1));
+			int day = Integer.parseInt(koreanDateMatch.group(2));
 
 			tempDate = String.format("%d-%02d-%02d", year, month, day);
+		}
+
+		if(yearMonthMatch.find()) {
+			targetYear = yearMonthMatch.group(1) != null
+					? Integer.parseInt(yearMonthMatch.group(1))
+							: LocalDate.now().getYear();
+
+			targetMonth = Integer.parseInt(yearMonthMatch.group(2));
 		}
 
 		final String targetDate = tempDate;
 
 		if(targetDate != null) {
-			filteredDocs.stream()
-			.filter(doc -> doc.getText().contains("회의 일자: " + targetDate)).toList();
+			filteredDocs = filteredDocs.stream()
+					.filter(doc -> doc.getText().contains("회의 일자: " + targetDate))
+					.collect(Collectors.toList());
 		}
 
 		List<Long> forcedMeetingRagDocSeqs = new ArrayList<>();
@@ -239,7 +281,26 @@ public class AiChatService {
 
 			if(!meetingSeqsByDate.isEmpty()) {
 				Map<String, Object> ragParams = new HashMap<>();
-				ragParams.put("meetingSeqs", meetingSeqs);
+				ragParams.put("meetingSeqs", meetingSeqsByDate);
+
+				forcedMeetingRagDocSeqs = ragDao.findRagDocSeqsByMeetingSeq(ragParams);
+			}
+		}
+		
+		if(meetingKeyword && targetYear != null && targetMonth != null) {
+			LocalDate startDate = LocalDate.of(targetYear, targetMonth, 1);
+			LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+			Map<String, Object> params = new HashMap<>();
+			params.put("loginId", loginId);
+			params.put("startDate", startDate.toString());
+			params.put("endDate", endDate.toString());
+
+			List<Long> meetingSeqsByMonth = meetingMinutesDao.meetingSeqsByMonth(params);
+
+			if(!meetingSeqsByMonth.isEmpty()) {
+				Map<String, Object> ragParams = new HashMap<>();
+				ragParams.put("meetingSeqs", meetingSeqsByMonth);
 
 				forcedMeetingRagDocSeqs = ragDao.findRagDocSeqsByMeetingSeq(ragParams);
 			}
@@ -297,7 +358,7 @@ public class AiChatService {
 		boolean useMeetingPrompt = multiMeetingKeyword || meetingKeyword;
 
 
-		if(forcedMeetingRagDocSeqs.isEmpty()) {
+		if(!forcedMeetingRagDocSeqs.isEmpty()) {
 			meetingRagDocSeqs = forcedMeetingRagDocSeqs;
 		}else if(multiMeetingKeyword) {
 			meetingRagDocSeqs =
