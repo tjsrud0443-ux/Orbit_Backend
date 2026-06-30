@@ -195,4 +195,15 @@ public class ApprovalController {
 		appServ.deleteDoc(doc_seq, doc_type);
 		return ResponseEntity.ok().build();
 	}
+	
+	@GetMapping("topReferrers")
+	public ResponseEntity<List<UsersDTO>> getTopReferrers(@RequestAttribute String loginId) {
+		try {
+			List<UsersDTO> list = appServ.getTopReferrers(loginId);
+			return ResponseEntity.ok(list);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok(appServ.getTopReferrers(loginId));
+	}
 }

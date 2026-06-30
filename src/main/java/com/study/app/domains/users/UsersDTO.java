@@ -24,6 +24,7 @@ public class UsersDTO {
 	private String created_at;
 	private String update_at;
 	private String sysname;
+	private String is_hr_manager;
 	
 	private String dept_name;
     private String rank_name;
@@ -41,7 +42,7 @@ public class UsersDTO {
 	public UsersDTO(String id, String pw, Long users_seq, String name, String phone, String email, String oriname,
 			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
 			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
-			String created_at, String update_at, String sysname, String dept_name, String rank_name, String auth_group,
+			String created_at, String update_at, String sysname, String is_hr_manager, String dept_name, String rank_name, String auth_group,
 			Long parent_dept_seq, String stamp_sysname, String stamp_oriname, Long stamp_seq, Double remaining_days) {
 		super();
 		this.id = id;
@@ -66,6 +67,7 @@ public class UsersDTO {
 		this.created_at = created_at;
 		this.update_at = update_at;
 		this.sysname = sysname;
+		this.is_hr_manager = is_hr_manager;
 		this.dept_name = dept_name;
 		this.rank_name = rank_name;
 		this.auth_group = auth_group;
@@ -250,6 +252,14 @@ public class UsersDTO {
 
 	public void setSysname(String sysname) {
 		this.sysname = sysname;
+	}
+	
+	public String getIs_hr_manager() {
+		return is_hr_manager;
+	}
+
+	public void setIs_hr_manager(String is_hr_manager) {
+		this.is_hr_manager = is_hr_manager;
 	}
 
 	public String getDept_name() {

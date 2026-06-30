@@ -8,6 +8,8 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.study.app.domains.users.UsersDTO;
+
 @Repository
 public class ApprovalDAO {
 	
@@ -375,5 +377,9 @@ public class ApprovalDAO {
 	
 	public String getNotiDocType(Long doc_seq) {
 		return mybatis.selectOne("Approval.getNotiDocType", doc_seq);
+	}
+	
+	public List<UsersDTO> getTopReferrers(String users_id) {
+		return mybatis.selectList("Approval.getTopReferrers", users_id);
 	}
 }
