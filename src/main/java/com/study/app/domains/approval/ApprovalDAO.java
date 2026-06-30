@@ -382,4 +382,8 @@ public class ApprovalDAO {
 	public List<UsersDTO> getTopReferrers(String users_id) {
 		return mybatis.selectList("Approval.getTopReferrers", users_id);
 	}
+	
+	public List<VacationTypesDTO> getAllVacationTypes() {
+		return mybatis.selectList("Approval.getAllVacationTypes");
+	}
 }

@@ -859,4 +859,8 @@ public class ApprovalService {
 	public List<UsersDTO> getTopReferrers(String loginId) {
 		return dao.getTopReferrers(loginId);
 	}
+	
+	public List<VacationTypesDTO> getAllVacationTypes() {
+		return dao.getAllVacationTypes();
+	}
 }

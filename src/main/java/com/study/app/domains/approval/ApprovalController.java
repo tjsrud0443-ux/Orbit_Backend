@@ -198,12 +198,13 @@ public class ApprovalController {
 	
 	@GetMapping("topReferrers")
 	public ResponseEntity<List<UsersDTO>> getTopReferrers(@RequestAttribute String loginId) {
-		try {
-			List<UsersDTO> list = appServ.getTopReferrers(loginId);
-			return ResponseEntity.ok(list);
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return ResponseEntity.ok(appServ.getTopReferrers(loginId));
+		List<UsersDTO> list = appServ.getTopReferrers(loginId);
+		return ResponseEntity.ok(list);
+	}
+	
+	@GetMapping("vacationTypes")
+	public ResponseEntity<List<VacationTypesDTO>> getAllVacationTypes() {
+		List<VacationTypesDTO> list = appServ.getAllVacationTypes();
+		return ResponseEntity.ok(list);
 	}
 }

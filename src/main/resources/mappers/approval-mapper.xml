@@ -589,4 +589,8 @@
 	    WHERE ROWNUM <= 3
 	    ]]>
 	</select>
+	
+	<select id="getAllVacationTypes" resultType="com.study.app.domains.approval.VacationTypesDTO">
+		select v_types_seq, vac_type, is_deduction, deduct_days from vacation_types order by v_types_seq
+	</select>
 </mapper>
