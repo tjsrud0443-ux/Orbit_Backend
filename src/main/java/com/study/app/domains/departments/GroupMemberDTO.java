@@ -5,15 +5,20 @@ public class GroupMemberDTO {
 	private String name;
 	private String position;
 	private String sysname;
+	private String phone;
+	private String email;
 	
 	public GroupMemberDTO() {}
 	
-	public GroupMemberDTO(String id, String name, String position, String sysname) {
+	public GroupMemberDTO(String id, String name, String position, String sysname,
+			String phone,String email) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.position = position;
 		this.sysname = sysname;
+		this.phone = phone;
+		this.email = email;
 	}
 	
 	public String getId() {
@@ -39,5 +44,17 @@ public class GroupMemberDTO {
 	}
 	public void setSysname(String sysname) {
 		this.sysname = sysname;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }
