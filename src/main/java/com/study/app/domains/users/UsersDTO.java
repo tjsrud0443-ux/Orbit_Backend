@@ -33,6 +33,8 @@ public class UsersDTO {
     private String stamp_sysname;
     private String stamp_oriname;
     private Long stamp_seq;
+    
+    private Double remaining_days;
 	
 	public UsersDTO() {}
 
@@ -40,7 +42,7 @@ public class UsersDTO {
 			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
 			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
 			String created_at, String update_at, String sysname, String dept_name, String rank_name, String auth_group,
-			Long parent_dept_seq, String stamp_sysname, String stamp_oriname, Long stamp_seq) {
+			Long parent_dept_seq, String stamp_sysname, String stamp_oriname, Long stamp_seq, Double remaining_days) {
 		super();
 		this.id = id;
 		this.pw = pw;
@@ -71,6 +73,7 @@ public class UsersDTO {
 		this.stamp_sysname = stamp_sysname;
 		this.stamp_oriname = stamp_oriname;
 		this.stamp_seq = stamp_seq;
+		this.remaining_days = remaining_days;
 	}
 
 	public String getId() {
@@ -305,4 +308,11 @@ public class UsersDTO {
 		this.stamp_seq = stamp_seq;
 	}
 	
+	public Double getRemaining_days() {
+		return remaining_days;
+	}
+
+	public void setRemaining_days(Double remaining_days) {
+		this.remaining_days = remaining_days;
+	}
 }

@@ -14,6 +14,7 @@ public class DraftDocumentsDTO {
 	private String temp_expires_at;
 	private String created_at;
 	private String updated_at;
+	private String stamp_sysname;
 	
 	private List<ApprovalLinesDTO> approvers;
     private List<ApprovalCcDTO> referrers;
@@ -25,7 +26,8 @@ public class DraftDocumentsDTO {
     public DraftDocumentsDTO() {}
 	public DraftDocumentsDTO(Long doc_seq, String title, String doc_type, String users_id, String status,
 			String reject_reason, Long is_temp, String temp_expires_at, String created_at, String updated_at,
-			List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers, String name, String app_status, String sysname) {
+			String stamp_sysname, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers, String name,
+			String app_status, String sysname) {
 		super();
 		this.doc_seq = doc_seq;
 		this.title = title;
@@ -37,6 +39,7 @@ public class DraftDocumentsDTO {
 		this.temp_expires_at = temp_expires_at;
 		this.created_at = created_at;
 		this.updated_at = updated_at;
+		this.stamp_sysname = stamp_sysname;
 		this.approvers = approvers;
 		this.referrers = referrers;
 		this.name = name;
@@ -102,6 +105,12 @@ public class DraftDocumentsDTO {
 	}
 	public void setUpdated_at(String updated_at) {
 		this.updated_at = updated_at;
+	}
+	public String getStamp_sysname() {
+		return stamp_sysname;
+	}
+	public void setStamp_sysname(String stamp_sysname) {
+		this.stamp_sysname = stamp_sysname;
 	}
 	public List<ApprovalLinesDTO> getApprovers() {
 		return approvers;

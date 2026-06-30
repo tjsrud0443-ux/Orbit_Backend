@@ -89,5 +89,8 @@ public class UsersService {
 	    
 	    return uploadResult;
 	}
-
+	
+	public String selectUserStampSysname(String users_id) {
+		return dao.selectUserStampSysname(users_id);
+	}
 }

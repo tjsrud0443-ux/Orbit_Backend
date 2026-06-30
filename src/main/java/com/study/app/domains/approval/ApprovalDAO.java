@@ -30,8 +30,24 @@ public class ApprovalDAO {
 		mybatis.insert("Approval.insertVacationDetail", dto);
 	}
 	
+	public List<String> selectVacationOldSysnames(Long vac_seq) {
+		return mybatis.selectList("Approval.selectVacationOldSysnames", vac_seq);
+	}
+	
+	public void insertVacationAttachment(VacationAttachmentsDTO dto) {
+		mybatis.insert("Approval.insertVacationAttachment", dto);
+	}
+	
 	public void insertGeneralDetail(GeneralDTO dto) {
 		mybatis.insert("Approval.insertGeneralDetail", dto);
+	}
+	
+	public List<String> selectGeneralOldSysnames(Long general_seq) {
+		return mybatis.selectList("Approval.selectGeneralOldSysnames", general_seq);
+	}
+	
+	public void insertGeneralAttachment(GeneralAttachmentsDTO dto) {
+		mybatis.insert("Approval.insertGeneralAttachment", dto);
 	}
 	
 	public void insertPaymentDetail(PaymentDTO dto) {
@@ -74,8 +90,16 @@ public class ApprovalDAO {
 		return mybatis.selectOne("Approval.selectVacationDetail", doc_seq);
 	}
 	
+	public List<Map<String, Object>> selectVacationAttachments(Long vac_seq){
+		return mybatis.selectList("Approval.selectVacationAttachments", vac_seq);
+	}
+	
 	public Map<String, Object> selectGeneralDetail(Long doc_seq){
 		return mybatis.selectOne("Approval.selectGeneralDetail", doc_seq);
+	}
+	
+	public List<Map<String, Object>> selectGeneralAttachments(Long general_seq){
+		return mybatis.selectList("Approval.selectGeneralAttachments", general_seq);
 	}
 	
 	public Map<String, Object> selectPaymentDetail(Long doc_seq){
@@ -112,11 +136,12 @@ public class ApprovalDAO {
 	    return mybatis.selectOne("Approval.selectNextApprovalLine", params);
 	}
 
-	public void updateApprovalLineStatus(Long doc_seq, String loginId, String status) {
+	public void updateApprovalLineStatus(Long doc_seq, String loginId, String status, String stamp_sysname) {
 	    Map<String, Object> params = new HashMap<>();
 	    params.put("doc_seq", doc_seq);
 	    params.put("users_id", loginId);
 	    params.put("status", status);
+	    params.put("stamp_sysname", stamp_sysname);
 	    mybatis.update("Approval.updateApprovalLineStatus", params);
 	}
 	
@@ -168,12 +193,28 @@ public class ApprovalDAO {
 		mybatis.delete("Approval.deleteReferrers", doc_seq);
 	}
 	
+	public Long selectVac_seq(Long doc_seq) {
+		return mybatis.selectOne("Approval.selectVac_seq", doc_seq);
+	}
+	
 	public void updateVacationDetail(VacationDTO dto) {
 		mybatis.update("Approval.updateVacationDetail", dto);
 	}
 	
+	public void deleteVacationAttachments(Long vac_seq) {
+		mybatis.delete("Approval.deleteVacationAttachments", vac_seq);
+	}
+	
+	public Long selectGeneral_seq(Long doc_seq) {
+		return mybatis.selectOne("Approval.selectGeneral_seq", doc_seq);
+	}
+	
 	public void updateGeneralDetail(GeneralDTO dto) {
 		mybatis.update("Approval.updateGeneralDetail", dto);
+	}
+	
+	public void deleteGeneralAttachments(Long general_seq) {
+		mybatis.delete("Approval.deleteGeneralAttachments", general_seq);
 	}
 	
 	public Long selectPay_seq(Long doc_seq) {
@@ -335,5 +376,4 @@ public class ApprovalDAO {
 	public String getNotiDocType(Long doc_seq) {
 		return mybatis.selectOne("Approval.getNotiDocType", doc_seq);
 	}
-	
 }

@@ -34,19 +34,21 @@ public class ApprovalController {
 		return ResponseEntity.ok(allEmployees);
 	}
 
-	@PostMapping("submit/vacation")
-	public ResponseEntity<String> submitVacation(@RequestBody VacationDTO dto){ 
+	@PostMapping(value = "submit/vacation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> submitVacation(@RequestPart("dto") VacationDTO dto,
+												@RequestPart(value = "files", required = false) List<MultipartFile> files){ 
 		try{
-			appServ.insertVacation(dto);
+			appServ.insertVacation(dto, files);
 			return ResponseEntity.ok("기안 상신이 완료되었습니다.");
 		}catch(IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
 	
-	@PostMapping("submit/general")
-	public ResponseEntity<Void> submitGeneral(@RequestBody GeneralDTO dto){ 
-		appServ.insertGeneral(dto);
+	@PostMapping(value = "submit/general", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Void> submitGeneral(@RequestPart("dto") GeneralDTO dto,
+											 @RequestPart(value = "files", required = false) List<MultipartFile> files){ 
+		appServ.insertGeneral(dto, files);
 		return ResponseEntity.ok().build();
 	}
 	
@@ -101,17 +103,19 @@ public class ApprovalController {
 	
 	@PutMapping("update/vacation/{doc_seq}")
 	public ResponseEntity<Void> updateVacation(@PathVariable Long doc_seq,
-												@RequestBody VacationDTO dto){
+												@RequestPart("dto") VacationDTO dto,
+												@RequestPart(value = "files", required = false) List<MultipartFile> files){
 		
-		appServ.updateVacation(doc_seq, dto);
+		appServ.updateVacation(doc_seq, dto, files);
 		return ResponseEntity.ok().build();
 	}
 	
 	@PutMapping("update/general/{doc_seq}")
 	public ResponseEntity<Void> updateGeneral(@PathVariable Long doc_seq,
-												@RequestBody GeneralDTO dto){
+												@RequestPart("dto") GeneralDTO dto,
+												@RequestPart(value = "files", required = false) List<MultipartFile> files){
 		
-		appServ.updateGeneral(doc_seq, dto);
+		appServ.updateGeneral(doc_seq, dto, files);
 		return ResponseEntity.ok().build();
 	}
 	

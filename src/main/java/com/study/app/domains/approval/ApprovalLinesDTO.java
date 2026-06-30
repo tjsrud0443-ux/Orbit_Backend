@@ -8,6 +8,7 @@ public class ApprovalLinesDTO {
 	private String status;
 	private String handle_at;
 	private String reject_reason;
+	private String stamp_sysname;
 	
 	private String sysname;
 	private String name;
@@ -15,7 +16,8 @@ public class ApprovalLinesDTO {
 	
 	public ApprovalLinesDTO() {}
 	public ApprovalLinesDTO(Long line_seq, Long doc_seq, String users_id, Long step_order, String status,
-			String handle_at, String reject_reason, String sysname , String name, String rank_name) {
+			String handle_at, String reject_reason, String stamp_sysname, String sysname,
+			String name, String rank_name) {
 		super();
 		this.line_seq = line_seq;
 		this.doc_seq = doc_seq;
@@ -24,6 +26,7 @@ public class ApprovalLinesDTO {
 		this.status = status;
 		this.handle_at = handle_at;
 		this.reject_reason = reject_reason;
+		this.stamp_sysname = stamp_sysname;
 		this.sysname = sysname;
 		this.name = name;
 		this.rank_name = rank_name;
@@ -69,6 +72,12 @@ public class ApprovalLinesDTO {
 	}
 	public void setReject_reason(String reject_reason) {
 		this.reject_reason = reject_reason;
+	}
+	public String getStamp_sysname() {
+		return stamp_sysname;
+	}
+	public void setStamp_sysname(String stamp_sysname) {
+		this.stamp_sysname = stamp_sysname;
 	}
 	public String getSysname() {
 		return sysname;
