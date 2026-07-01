@@ -47,7 +47,7 @@
 	<select id="getApprovedVacations" resultType="com.study.app.domains.schedules.SchedulesDTO">
 	    SELECT 
 	        v.vac_seq as schedule_seq,
-	        d.title,
+	        v.vac_type as title,
 	        'ANNUAL' as schedule_type,
 	        d.users_id,
 	        CAST(v.start_date AS TIMESTAMP) as start_dt,
