@@ -426,6 +426,19 @@ public class ApprovalService {
 
 	@Transactional
 	public void updateVacation(Long doc_seq, VacationDTO dto, List<MultipartFile> files) {
+		String users_id = dto.getUsers_id();
+		Double used_days = dto.getDays();
+		Map<String, Object> leaveData = annualDao.selectAnnualLeaveData(users_id);
+		if (leaveData != null) {
+			Double currentRemaining = Double.parseDouble(String.valueOf(leaveData.get("remaining_days")));
+
+			if (used_days > currentRemaining) {
+				throw new IllegalArgumentException("잔여 연차가 부족하여 휴가 신청서를 상신할 수 없습니다. \n(잔여: " 
+						+ currentRemaining + "일)");
+			}
+			dto.setRemaining_days(currentRemaining);
+		}
+		
 		dto.setDoc_seq(doc_seq);
 		updateCommonApprovalData(dto);
 		Long vac_seq = dao.selectVac_seq(doc_seq);
