@@ -19,8 +19,16 @@ public class NotificationsDAO {
 		batis.insert("Notifications.insertNoti", dto);
 	}
 	
+	public List<NotificationsDTO> findProjectNotiBySeq(Long ref_seq) {
+	    return batis.selectList("Notifications.findProjectNotiBySeq", ref_seq);
+	}
+	
 	public void deleteProjectNotiBySeq(Long ref_seq) {
 		batis.delete("Notifications.deleteProjectNotiBySeq", ref_seq);
+	}
+	
+	public List<NotificationsDTO> findNotiByRsvnList(List<Long> rsvnList) {
+	    return batis.selectList("Notifications.findNotiByRsvnList", rsvnList);
 	}
 	
 	public void deleteNotiByRsvnList(List<Long> rsvnList) {
@@ -34,8 +42,16 @@ public class NotificationsDAO {
 		batis.delete("Notifications.deleteNotiBySeqAndId", params);
 	}
 	
+	public List<NotificationsDTO> findMeetingNotiBySeq(Long ref_seq) {
+	    return batis.selectList("Notifications.findMeetingNotiBySeq", ref_seq);
+	}
+	
 	public void deleteMeetingNotiBySeq(Long ref_seq) {
 		batis.delete("Notifications.deleteMeetingNotiBySeq", ref_seq);
+	}
+	
+	public List<NotificationsDTO> findApprovalNotiBySeq(Long ref_seq) {
+	    return batis.selectList("Notifications.findApprovalNotiBySeq", ref_seq);
 	}
 	
 	public void deleteApprovalNotiBySeq(Long ref_seq) {
@@ -49,4 +65,13 @@ public class NotificationsDAO {
 	public void updateReadNoti(Long noti_seq) {
 		batis.update("Notifications.updateReadNoti", noti_seq);
 	}
+	
+	public List<NotificationsDTO> findNotiBySeqAndId(Long rsvn_seq, String users_id) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("ref_seq", rsvn_seq);
+	    params.put("users_id", users_id);
+	    return batis.selectList("Notifications.findNotiBySeqAndId", params);
+	}
+	
+	
 }

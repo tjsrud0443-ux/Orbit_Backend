@@ -10,10 +10,21 @@
 		TO_TIMESTAMP(#{created_at},'YYYY-MM-DD HH24:MI:SS'), #{read_yn})
 	</insert>
 	
+	<select id="findProjectNotiBySeq" resultType="com.study.app.domains.notifications.NotificationsDTO">
+	    select * from notifications where ref_seq = #{ref_seq} and ref_type = 'PROJECT'
+	</select>
+
 	<delete id="deleteProjectNotiBySeq">
 		delete from notifications where ref_seq = #{ref_seq} and ref_type = 'PROJECT'
 	</delete>
 	
+	<select id="findNotiByRsvnList" resultType="com.study.app.domains.notifications.NotificationsDTO">
+	    select * from notifications where ref_type = 'MEETING' and ref_seq in
+	    <foreach collection="list" item="ref_seq" open="(" separator="," close=")">
+	        #{ref_seq}
+	    </foreach>
+	</select>
+
 	<delete id="deleteNotiByRsvnList">
 		delete from notifications 
 		where ref_type = 'MEETING' and ref_seq in
@@ -22,14 +33,27 @@
 		</foreach>
 	</delete>
 	
+	<select id="findNotiBySeqAndId" resultType="com.study.app.domains.notifications.NotificationsDTO">
+	    select * from notifications where users_id = #{users_id} and ref_type = 'MEETING'
+	      															and ref_seq = #{ref_seq}
+	</select>
+
 	<delete id="deleteNotiBySeqAndId">
 		delete from notifications where users_id = #{users_id} and ref_type = 'MEETING' and ref_seq = #{ref_seq}
 	</delete>
 	
+	<select id="findMeetingNotiBySeq" resultType="com.study.app.domains.notifications.NotificationsDTO">
+	    select * from notifications where ref_seq = #{ref_seq} and ref_type = 'MEETING'
+	</select>
+
 	<delete id="deleteMeetingNotiBySeq">
 		delete from notifications where ref_type = 'MEETING' and ref_seq = #{ref_seq}
 	</delete>
 	
+	<select id="findApprovalNotiBySeq" resultType="com.study.app.domains.notifications.NotificationsDTO">
+	    select * from notifications where ref_seq = #{ref_seq} and ref_type = 'APPROVAL'
+	</select>
+
 	<delete id="deleteApprovalNotiBySeq">
 		delete from notifications where ref_type = 'APPROVAL' and ref_seq = #{ref_seq}
 	</delete>
