@@ -85,8 +85,8 @@ public class ProjectsController {
 	}
 	
 	@DeleteMapping("/deleteTask/{task_seq}")
-	public ResponseEntity<Void> deleteTask(@PathVariable Long task_seq) {
-		projectServ.deleteTask(task_seq);
+	public ResponseEntity<Void> deleteTask(@PathVariable Long task_seq, @RequestAttribute String loginId) {
+		projectServ.deleteTask(task_seq, loginId);
 		return ResponseEntity.ok().build();
 	}
 	

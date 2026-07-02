@@ -58,6 +58,15 @@ public class NotificationsDAO {
 		batis.delete("Notifications.deleteApprovalNotiBySeq", ref_seq);
 	}
 	
+	public List<NotificationsDTO> findTaskNotiBySeq(Long ref_seq) {
+	    return batis.selectList("Notifications.findTaskNotiBySeq", ref_seq);
+	}
+	
+	public void deleteTaskNotiBySeq(Long ref_seq) {
+		batis.delete("Notifications.deleteTaskNotiBySeq", ref_seq);
+	}
+	
+	
 	public List<NotificationsDTO> getMyNotiListByLoginId(String loginId) {
 		return batis.selectList("Notifications.getMyNotiListByLoginId", loginId);
 	}

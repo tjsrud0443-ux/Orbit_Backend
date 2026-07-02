@@ -191,9 +191,27 @@ public class ProjectsService {
 			notiServ.insertNoti(noti);
 		}
 	}
-
-	public void deleteTask(Long task_seq) {
+	
+	@Transactional
+	public void deleteTask(Long task_seq, String loginId) {
+		String usersPicId = kanbanDao.selectUsersPicIdBySeq(task_seq);
+		notiServ.deleteTaskNotiBySeq(task_seq);
 		kanbanDao.deleteTask(task_seq);
+		
+		if(usersPicId != null && !usersPicId.equals(loginId)) {
+			NotificationsDTO noti = new NotificationsDTO();
+
+			noti.setUsers_id(usersPicId);
+			noti.setRef_seq(task_seq);
+			noti.setNoti_type("TASK_DELETE");
+			noti.setContent("배정된 업무가 삭제되었습니다.");
+			noti.setRef_type("TASK_DELETE");
+			noti.setRead_yn("N");
+			noti.setCreated_at(LocalDateTime.now()
+			        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			
+			notiServ.insertNoti(noti);
+		}
 	}
 
 	public void updateTaskStatus(KanbanTaskDTO dto) {

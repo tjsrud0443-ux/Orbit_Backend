@@ -58,6 +58,14 @@
 		delete from notifications where ref_type = 'APPROVAL' and ref_seq = #{ref_seq}
 	</delete>
 	
+	<select id="findTaskNotiBySeq" resultType="com.study.app.domains.notifications.NotificationsDTO">
+	    select * from notifications where ref_type = 'TASK' and ref_seq = #{ref_seq}
+	</select>
+
+	<delete id="deleteTaskNotiBySeq">
+	    delete from notifications where ref_type = 'TASK' and ref_seq = #{ref_seq}
+	</delete>
+	
 	<select id="getMyNotiListByLoginId" resultType="com.study.app.domains.notifications.NotificationsDTO">
 		select * from notifications where users_id = #{loginId} and read_yn = 'N' order by noti_seq desc
 	</select>

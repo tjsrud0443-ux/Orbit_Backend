@@ -79,6 +79,15 @@ public class NotificationsService {
 		}
 	}
 
+	public void deleteTaskNotiBySeq(Long task_seq) {
+		List<NotificationsDTO> deleteTarget = notiDao.findTaskNotiBySeq(task_seq);
+	    notiDao.deleteTaskNotiBySeq(task_seq);
+
+	    for (NotificationsDTO dto : deleteTarget) {
+	        sendDeleteEvent(dto);
+	    }
+	}
+	
 	public List<NotificationsDTO> getMyNotiListByLoginId(String loginId) {
 		return notiDao.getMyNotiListByLoginId(loginId);
 	}
