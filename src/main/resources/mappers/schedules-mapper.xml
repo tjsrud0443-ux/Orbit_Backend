@@ -40,6 +40,7 @@
 			start_dt = TO_TIMESTAMP(#{start_dt}, 'YYYY-MM-DD HH24:MI:SS'),
         	end_dt   = TO_TIMESTAMP(#{end_dt}, 'YYYY-MM-DD HH24:MI:SS'),
 			sked_reason=#{sked_reason},
+			is_public = #{is_public, jdbcType=INTEGER},
 			show_in_company = #{show_in_company, jdbcType=INTEGER} 
 		where Schedule_seq=#{schedule_seq}
 	</update>
