@@ -24,4 +24,11 @@ public class CompanyInfoDAO {
 		batis.update("CompanyInfo.updateCompanyInfo", params);
 	}
 	
+	public void updateCompanyStamp(Map<String, Object> params) {
+		batis.update("CompanyInfo.updateCompanyStamp", params);
+	}
+
+	public void updateCompanyWatermark(Map<String, Object> params) {
+		batis.update("CompanyInfo.updateCompanyWatermark", params);
+	}
 }

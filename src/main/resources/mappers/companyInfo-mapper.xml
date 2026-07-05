@@ -17,7 +17,11 @@
 	        created_at as createdAt,
 	        updated_at as updatedAt,
 	        updated_id as updatedId,
-	        company_zonecode as companyZonecode
+	        company_zonecode as companyZonecode,
+	        officialmark_oriname as officialmarkOriname,
+	        officialmark_sysname as officialmarkSysname,
+	        officialseal_oriname as officialsealOriname,
+	        officialseal_sysname as officialsealSysname
     	from company_info
 	</select>
 	
@@ -25,7 +29,7 @@
 		insert into company_info values (
 			1, #{companyName}, #{ceoName}, #{businessNumber}, #{companyTel},
             #{companyEmail}, #{companyAddress}, #{companyDetailAddr}, #{companyFax},
-            CAST(SYSTIMESTAMP AS TIMESTAMP), null, null, #{companZonecode}
+            CAST(SYSTIMESTAMP AS TIMESTAMP), null, null, #{companyZonecode}, null, null, null, null
 		)
 	</insert>
 	
@@ -43,5 +47,21 @@
             company_zonecode = #{dto.companyZonecode},
             updated_id = #{loginId}
         where company_seq = #{dto.companySeq}
+	</update>
+	
+	<update id="updateCompanyStamp">
+		update company_info set 
+			officialseal_oriname = #{oriname}, officialseal_sysname = #{sysname},
+			updated_at = CAST(SYSTIMESTAMP AS TIMESTAMP),
+	        updated_id = #{loginId}
+		where company_seq = #{companySeq}
+	</update>
+	
+	<update id="updateCompanyWatermark">
+		update company_info set 
+			officialmark_oriname = #{oriname}, Officialmark_sysname = #{sysname},
+			updated_at = CAST(SYSTIMESTAMP AS TIMESTAMP),
+	        updated_id = #{loginId}
+		where company_seq = #{companySeq}
 	</update>
 </mapper>

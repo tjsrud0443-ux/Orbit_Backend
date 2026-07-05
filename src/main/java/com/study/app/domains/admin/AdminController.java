@@ -444,5 +444,25 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@PutMapping("/company/updateCompanyStamp")
+	public ResponseEntity<Void> updateCompanyStamp(@RequestAttribute String loginId,
+									@RequestParam("file") MultipartFile file) throws Exception{
+		adminServ.updateCompanyStamp(loginId, file);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("/company/updateCompanyWatermark")
+	public ResponseEntity<Void> updateCompanyWatermark(@RequestAttribute String loginId,
+									@RequestParam("file") MultipartFile file) throws Exception{
+		adminServ.updateCompanyWatermark(loginId, file);
+		return ResponseEntity.ok().build();
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 }

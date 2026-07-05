@@ -15,12 +15,17 @@ public class CompanyInfoDTO {
 	private String updated_at;
 	private String updated_id;
 	private String companyZonecode;
+	private String officialmarkOriname;
+	private String officialmarkSysname;
+	private String officialsealOriname;
+	private String officialsealSysname;
 	
 	public CompanyInfoDTO() {}
 	
 	public CompanyInfoDTO(Long companySeq, String companyName, String ceoName, String businessNumber, String companyTel,
 			String companyEmail, String companyAddress, String companyDetailAddr, String companyFax, String created_at,
-			String updated_at, String updated_id, String companyZonecode) {
+			String updated_at, String updated_id, String companyZonecode,String officialmarkOriname, String officialmarkSysname,
+			String officialsealOriname, String officialsealSysname) {
 		super();
 		this.companySeq = companySeq;
 		this.companyName = companyName;
@@ -35,6 +40,10 @@ public class CompanyInfoDTO {
 		this.updated_at = updated_at;
 		this.updated_id = updated_id;
 		this.companyZonecode = companyZonecode;
+		this.officialmarkOriname = officialmarkOriname;
+		this.officialmarkSysname = officialmarkSysname;
+		this.officialsealOriname = officialsealOriname;
+		this.officialsealSysname = officialsealSysname;
 	}
 
 	public Long getCompanySeq() {
@@ -139,5 +148,37 @@ public class CompanyInfoDTO {
 
 	public void setCompanyZonecode(String companyZonecode) {
 		this.companyZonecode = companyZonecode;
+	}
+
+	public String getOfficialmarkOriname() {
+		return officialmarkOriname;
+	}
+
+	public void setOfficialmarkOriname(String officialmarkOriname) {
+		this.officialmarkOriname = officialmarkOriname;
+	}
+
+	public String getOfficialmarkSysname() {
+		return officialmarkSysname;
+	}
+
+	public void setOfficialmarkSysname(String officialmarkSysname) {
+		this.officialmarkSysname = officialmarkSysname;
+	}
+
+	public String getOfficialsealOriname() {
+		return officialsealOriname;
+	}
+
+	public void setOfficialsealOriname(String officialsealOriname) {
+		this.officialsealOriname = officialsealOriname;
+	}
+
+	public String getOfficialsealSysname() {
+		return officialsealSysname;
+	}
+
+	public void setOfficialsealSysname(String officialsealSysname) {
+		this.officialsealSysname = officialsealSysname;
 	}
 }
