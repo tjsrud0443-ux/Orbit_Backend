@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CertType">
-	
 	<select id = "getCertInfo" resultType="com.study.app.domains.certType.CertTypeDTO">
 		select cert_type_seq, cert_type_name, manage_dept_code, hidden_yn, created_at from cert_type
 	</select>
-	
 </mapper>
