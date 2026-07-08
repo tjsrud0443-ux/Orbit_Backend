@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +39,10 @@ import com.study.app.domains.users.UsersService;
 
 @Service
 public class AdminService {
-
+	
+	@Value("${APP_MODE:production}")
+	private String appMode;
+	
 	@Autowired
 	private SignupService signupServ;
 	@Autowired
@@ -143,7 +147,7 @@ public class AdminService {
 	}
 
 	public List<DeptLeaveDTO> getDeptLeave() {
-		return adminDao.getDeptLeave();
+		return adminDao.getDeptLeave(appMode);
 	}
 
 	public Map<String, Object> joinResignCount() {

@@ -58,8 +58,8 @@ public class AdminDAO {
 		return batis.selectList("Admin.deptEmployeeCount");
 	}
 	
-	public List<DeptLeaveDTO> getDeptLeave() {
-		return batis.selectList("Admin.getDeptLeave");
+	public List<DeptLeaveDTO> getDeptLeave(String appMode) {
+		return batis.selectList("Admin.getDeptLeave", appMode);
 	}
 	
 	public List<JoinResignDTO> joinResignCount() {
