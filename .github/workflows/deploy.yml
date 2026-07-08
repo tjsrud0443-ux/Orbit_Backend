@@ -169,7 +169,7 @@ jobs:
           fi
 
           echo "실행할 JAR 파일: $JAR_NAME"
-          sudo bash -c "nohup java -Duser.timezone=Asia/Seoul -Doracle.jdbc.timezoneAsRegion=false -jar $JAR_NAME > nohup.out 2>&1 < /dev/null &"
+          sudo bash -c "APP_MODE=demo nohup java -Duser.timezone=Asia/Seoul -Doracle.jdbc.timezoneAsRegion=false -jar $JAR_NAME > nohup.out 2>&1 < /dev/null &"
 
           sleep 1
           echo "🚀 새 애플리케이션이 데모 서버(GCP B)에 관리자 권한으로 백그라운드 구동 명령을 받았습니다."
