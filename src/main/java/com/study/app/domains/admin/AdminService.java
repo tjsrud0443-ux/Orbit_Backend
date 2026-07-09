@@ -147,11 +147,7 @@ public class AdminService {
 	}
 
 	public List<DeptLeaveDTO> getDeptLeave() {
-		System.out.println("========== getDeptLeave SERVICE 호출 ==========");
-	    System.out.println("appMode = [" + appMode + "]");
-
-		return adminDao.getDeptLeave(appMode);
-		
+		return adminDao.getDeptLeave(appMode);	
 	}
 
 	public Map<String, Object> joinResignCount() {
