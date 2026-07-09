@@ -74,7 +74,7 @@ public class TokenValidator implements HandlerInterceptor{
 				}
 
 				if(uri.startsWith("/admin/document")|| uri.startsWith("/admin/ai")) {
-					if(!"부서장".equals(rank) && !"본부장".equals(rank) && !"대표".equals(rank)) {
+					if(!"부서장".equals(rank) && !"본부장".equals(rank) && !"대표".equals(rank) && !"팀장".equals(rank) && !"원장".equals(rank)) {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 						return false;
 					}
