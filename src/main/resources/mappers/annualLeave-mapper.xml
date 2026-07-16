@@ -38,26 +38,60 @@
 		where leave_seq = #{leave_seq}
 	</update>
 	
-<!--	연차 관리
-	<select id="selectAllLeaveList" resultType="com.study.app.domains.annualLeave.AdminLeaveListDTO">
-	    SELECT
-	        u.id            AS "users_id",
-	        u.name          AS "name",
-	        u.dept_name     AS "dept_name",
-	        u.rank_name     AS "rank_name",
-	        TO_CHAR(u.hire_date, 'YYYY-MM-DD') AS "hire_date",
-	        a.leave_seq     AS "leave_seq",
-	        a.total_days    AS "total_days",
-	        a.used_days     AS "used_days",
-	        a.remaining_days AS "remaining_days"
-	    FROM users u
-	    JOIN annual_leave a ON u.id = a.users_id
-	    WHERE a.year = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
-	    <if test="keyword != null and keyword != ''">
-	        AND (u.id LIKE '%' || #{keyword} || '%'
-	             OR u.name LIKE '%' || #{keyword} || '%'
-	             OR u.dept_name LIKE '%' || #{keyword} || '%')
-	    </if>
-	    ORDER BY u.id
-	</select>-->
+	<!--연차 관리-->
+	<select id="getAllLeaveList" resultType="com.study.app.domains.annualLeave.AdminLeaveDTO">
+	    SELECT * FROM (
+	        SELECT ROWNUM AS rn, a.* FROM (
+	            SELECT
+	            	u.USERS_SEQ     AS "users_seq",
+	                u.ID            AS "users_id",
+	                u.NAME          AS "name",
+	                d.DEPT_NAME     AS "dept_name",
+	                r.RANK_NAME     AS "rank_name",
+	                TO_CHAR(u.HIRE_DATE, 'YYYY-MM-DD') AS "hire_date",
+	                a.LEAVE_SEQ     AS "leave_seq",
+	                a.TOTAL_DAYS    AS "total_days",
+	                a.USED_DAYS     AS "used_days",
+	                a.REMAINING_DAYS AS "remaining_days"
+	            FROM USERS u
+	            JOIN DEPARTMENTS d ON u.DEPT_SEQ = d.DEPT_SEQ
+		        JOIN "RANK" r ON u.RANK_SEQ = r.RANK_SEQ
+		        JOIN ANNUAL_LEAVE a ON u.ID = a.USERS_ID
+	            WHERE a.YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
+	            <if test="keyword != null and keyword != ''">
+	                AND (u.ID LIKE '%' || #{keyword} || '%'
+	                     OR u.NAME LIKE '%' || #{keyword} || '%'
+	                     OR d.DEPT_NAME LIKE '%' || #{keyword} || '%')
+	            </if>
+	            ORDER BY u.USERS_SEQ 
+	        ) a
+	        WHERE ROWNUM &lt;= #{end}
+	    )
+	    WHERE rn BETWEEN #{start} AND #{end}
+	</select>
+	<select id="getLeaveCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM USERS u
+	    JOIN DEPARTMENTS d ON u.DEPT_SEQ = d.DEPT_SEQ
+    	JOIN ANNUAL_LEAVE a ON u.ID = a.USERS_ID
+	    <where>
+	        a.YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
+	        <if test="keyword != null and keyword != ''">
+	            AND (u.ID LIKE '%' || #{keyword} || '%'
+	            OR u.NAME LIKE '%' || #{keyword} || '%'
+	            OR d.DEPT_NAME LIKE '%' || #{keyword} || '%')
+	        </if>
+	    </where>
+	</select>
+	<update id="updateAdminLeave">
+	    update annual_leave
+	    set total_days = #{total_days},
+	        remaining_days = #{remaining_days}
+	    where leave_seq = #{leave_seq}
+	</update>
+	<select id="getLeaveBySeq" resultType="com.study.app.domains.annualLeave.AdminLeaveDTO">
+	    SELECT total_days, used_days
+	    FROM annual_leave
+	    WHERE leave_seq = #{leaveSeq}
+	</select>
 </mapper>

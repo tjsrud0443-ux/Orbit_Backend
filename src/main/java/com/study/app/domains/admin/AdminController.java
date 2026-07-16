@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
+import com.study.app.domains.annualLeave.AdminLeaveDTO;
 import com.study.app.domains.companyInfo.CompanyInfoDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
@@ -748,5 +749,19 @@ public class AdminController {
 
 
 
-
+//연차관리
+	@GetMapping("/hr/getAllLeaveList")
+	public ResponseEntity<Map<String, Object>> getAllLeaveList(
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false) Long cPage) {
+		Map<String, Object> result = adminServ.getAllLeaveList(keyword, cPage);
+		return ResponseEntity.ok(result);
+	}
+	
+	@PutMapping("/hr/updateUserLeave/{leaveSeq}")
+	public ResponseEntity<?> updateAdminLeave(@PathVariable Long leaveSeq, @RequestBody AdminLeaveDTO dto) {
+	    dto.setLeave_seq(leaveSeq);
+	    Map<String, Object> result = adminServ.updateAdminLeave(dto);
+	    return ResponseEntity.ok(result);
+	}
 }

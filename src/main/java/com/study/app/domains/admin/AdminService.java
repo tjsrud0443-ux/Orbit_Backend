@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
+import com.study.app.domains.annualLeave.AdminLeaveDTO;
+import com.study.app.domains.annualLeave.AnnualLeaveService;
 import com.study.app.domains.checkoutRequest.CheckoutRequestService;
 import com.study.app.domains.companyInfo.CompanyInfoDAO;
 import com.study.app.domains.companyInfo.CompanyInfoDTO;
@@ -741,6 +743,14 @@ public class AdminService {
 
 
 
-
-
+	//연차관리
+	@Autowired
+	private AnnualLeaveService annualLeaveServ;
+	public Map<String, Object> getAllLeaveList(String keyword, Long cPage) {
+	    return annualLeaveServ.getAllLeaveList(keyword, cPage);
+	}
+	
+	public Map<String, Object> updateAdminLeave(AdminLeaveDTO dto) {
+	    return annualLeaveServ.updateAdminLeave(dto);
+	}
 }
