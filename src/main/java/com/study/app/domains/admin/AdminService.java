@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
@@ -352,6 +353,29 @@ public class AdminService {
 	
 	public void insertRank(RankDTO dto) {
 		rankDao.insertRank(dto);
+	}
+	
+	public void updateRank(RankDTO dto) {
+		rankDao.updateRank(dto);
+	}
+	
+	@Transactional
+	public void deleteRank(Long rank_seq) {
+		int userCount = rankDao.countUsersByRank(rank_seq);
+		if(userCount > 0) {
+			throw new IllegalStateException(
+					"해당 직급을 사용하는 직원이 있어 삭제할 수 없습니다.\n"
+					+ "해당 직급에 포함된 직원을\n다른 직급으로 변경 후 다시 시도해 주세요."
+			);
+		}
+		
+		int result = rankDao.deleteRank(rank_seq);
+		if(result == 0) {
+			throw new IllegalStateException(
+					"삭제할 직급을 찾을 수 없습니다."
+			);
+		}
+		rankDao.reorderRanks();
 	}
 
 

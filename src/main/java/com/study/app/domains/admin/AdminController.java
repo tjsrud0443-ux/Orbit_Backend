@@ -461,8 +461,23 @@ public class AdminController {
 	@PostMapping("/hr/insertRank")
 	public ResponseEntity<Void> insertRank(@RequestBody RankDTO dto) {
 		adminServ.insertRank(dto);
-		System.out.println("insert");
 		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("/hr/updateRank")
+	public ResponseEntity<Void> updateRank(@RequestBody RankDTO dto) {
+		adminServ.updateRank(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/hr/deleteRank/{rank_seq}")
+	public ResponseEntity<?> deleteRank(@PathVariable Long rank_seq) {
+		try {
+			adminServ.deleteRank(rank_seq);
+			return ResponseEntity.ok().build();
+		}catch(IllegalStateException e) {
+			return ResponseEntity.badRequest().body(Map.of("message",e.getMessage()));
+		}
 	}
 	
 	

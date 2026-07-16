@@ -3,9 +3,7 @@
 <mapper namespace="Rank">
 
 	<select id="getRankList" resultType="com.study.app.domains.rank.RankDTO">
-		select rank_seq, rank_name, rank_order from rank 
-		where rank_order != 0
-		order by rank_order
+		select rank_seq, rank_name, rank_order from rank order by rank_order
 	</select>
 	
 	<insert id="insertRank">
@@ -18,4 +16,32 @@
 			(select nvl(max(rank_order), 0) + 1 from rank)
 		)
 	</insert>
+	
+	<update id="updateRank">
+		update rank set rank_name = #{rank_name} where rank_seq = #{rank_seq}
+	</update>
+	
+	<select id="countUsersByRank" resultType="int">
+		select count(*) from users where rank_seq = #{rank_seq}
+	</select>
+	
+	<delete id="deleteRank">
+		delete from rank where rank_seq = #{rank_seq}
+	</delete>
+	
+	<update id="reorderRanks">
+        merge into rank target
+        	using (
+				select rank_seq, 
+        			row_number() over (
+						order by rank_order, rank_seq
+					) as new_order
+				from rank
+			) source
+			on (
+				target.rank_seq = source.rank_seq
+			)
+		when matched then
+			update set target.rank_order = source.new_order
+	</update>
 </mapper>

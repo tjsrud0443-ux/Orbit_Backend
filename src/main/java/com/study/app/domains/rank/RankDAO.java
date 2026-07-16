@@ -19,4 +19,20 @@ public class RankDAO {
 	public void insertRank(RankDTO dto) {
 		mybatis.insert("Rank.insertRank", dto);
 	}
+	
+	public void updateRank(RankDTO dto) {
+		mybatis.update("Rank.updateRank", dto);
+	}
+	
+	public int countUsersByRank(Long rank_seq) {
+		return mybatis.selectOne("Rank.countUsersByRank", rank_seq);
+	}
+	
+	public int deleteRank(Long rank_seq) {
+		return mybatis.delete("Rank.deleteRank", rank_seq);
+	}
+	
+	public void reorderRanks() {
+		mybatis.update("Rank.reorderRanks");
+	}
 }
