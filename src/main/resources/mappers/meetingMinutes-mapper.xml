@@ -14,7 +14,8 @@
 		        USERS_ID,
 		        HOST_USERS_ID,
 		        CREATED_AT,
-		        MAIN_CONTENT
+		        MAIN_CONTENT,
+		        IS_SHARED
 		    ) VALUES (
 		        MINUTE_SEQ.NEXTVAL,
 		        #{title},
@@ -26,7 +27,8 @@
 		        #{users_id},
 		        #{host_users_id, jdbcType=VARCHAR},
 		        SYSDATE,
-		        #{main_content, jdbcType=CLOB}
+		        #{main_content, jdbcType=CLOB},
+		        #{is_shared, jdbcType=VARCHAR}
 		    )
 	</insert>
 	
@@ -42,6 +44,7 @@
 	    <result property="users_id" column="USERS_ID"/>
 	    <result property="host_users_id" column="HOST_USERS_ID"/>
 	    <result property="created_at" column="CREATED_AT"/>	
+	    <result property="is_shared" column="IS_SHARED"/>
 	    <collection property="attendees" ofType="com.study.app.domains.meetingMinutes.MinutesAttendeesDTO">
 	        <id property="attendee_seq" column="ATTENDEE_SEQ"/>
 	        <result property="users_id" column="ATTENDEE_USER_ID"/>
@@ -63,6 +66,7 @@
 	        m.USERS_ID,
 	        m.CREATED_AT, 
 	        m.HOST_USERS_ID,
+	        m.IS_SHARED,
 	        a.ATTENDEE_SEQ,
 	        a.USERS_ID AS ATTENDEE_USER_ID,
 	        u.NAME AS ATTENDEE_NAME,       
@@ -84,6 +88,7 @@
 	        m.USERS_ID,
 	        m.CREATED_AT,
 	        m.HOST_USERS_ID, 
+	        m.IS_SHARED,
 	        a.ATTENDEE_SEQ,
 	        a.USERS_ID AS ATTENDEE_USER_ID,
 	        u.NAME AS ATTENDEE_NAME,
@@ -110,6 +115,12 @@
 	    WHERE MINUTE_SEQ = #{minute_seq}
 	</update>
 	
+	<!--공유여부만 따로 수정-->
+	<update id="updateMinutesShare">
+	    UPDATE MEETING_MINUTES
+	    SET IS_SHARED = #{is_shared}
+	    WHERE MINUTE_SEQ = #{minute_seq}
+	</update>
 	<select id="meetingSeqs" resultType="Long">
 		select m.minute_seq 
 			from meeting_minutes m

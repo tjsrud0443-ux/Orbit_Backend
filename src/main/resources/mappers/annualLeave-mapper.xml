@@ -98,14 +98,20 @@
 	    </where>
 	</select>
 	<update id="updateAdminLeave">
-	    update annual_leave
-	    set total_days = #{total_days},
-	        remaining_days = #{remaining_days}
-	    where leave_seq = #{leave_seq}
+	    UPDATE ANNUAL_LEAVE
+    	SET TOTAL_DAYS = #{total_days},
+	        ADMIN_DAYS = #{admin_days},
+	        REMAINING_DAYS = #{remaining_days}
+    	WHERE LEAVE_SEQ = #{leave_seq}
 	</update>
 	<select id="getLeaveBySeq" resultType="com.study.app.domains.annualLeave.AdminLeaveDTO">
-	    SELECT total_days, used_days
-	    FROM annual_leave
-	    WHERE leave_seq = #{leaveSeq}
+	    SELECT
+	        LEAVE_SEQ       AS "leave_seq",
+	        TOTAL_DAYS      AS "total_days",
+	        USED_DAYS       AS "used_days",
+	        REMAINING_DAYS  AS "remaining_days",
+	        ADMIN_DAYS      AS "admin_days"
+	    FROM ANNUAL_LEAVE
+	    WHERE LEAVE_SEQ = #{leave_seq}
 	</select>
 </mapper>

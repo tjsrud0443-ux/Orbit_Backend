@@ -93,8 +93,6 @@ public class MeetingMinutesService {
 	    HttpResponse<String> response = HttpClient.newHttpClient()
 	        .send(request, HttpResponse.BodyHandlers.ofString());
 	    
-	    System.out.println("Clova Speech 응답: " + response.body());
-	    
 	 // Jackson으로 파싱
 	    ObjectMapper mapper = new ObjectMapper();
 	    JsonNode root = mapper.readTree(response.body());
@@ -296,5 +294,13 @@ public class MeetingMinutesService {
 	            minutesAttendeesDAO.insertMinutesAttendees(emp);
 	        }
 	    }
+	}
+	
+	@Transactional
+	public void updateMinutesShare(Long minute_seq, String is_shared) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("minute_seq", minute_seq);
+	    params.put("is_shared", is_shared);
+	    minutesDAO.updateMinutesShare(params);
 	}
 }
