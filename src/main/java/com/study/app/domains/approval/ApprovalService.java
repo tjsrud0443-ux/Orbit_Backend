@@ -749,13 +749,7 @@ public class ApprovalService {
 	}
 
 	public List<DraftDocumentsDTO> getMydraftDoc(String loginId) {
-		List<DraftDocumentsDTO> mydraftDocList = dao.getMydraftDoc(loginId);
-
-		for(DraftDocumentsDTO dto : mydraftDocList) {
-			List<ApprovalLinesDTO> lines = dao.getLinesBySeq(dto.getDoc_seq());
-			dto.setApprovers(lines);
-		}
-		return mydraftDocList;
+		return dao.getMydraftDoc(loginId);
 	}
 
 	public Map<String, Object> getMyDoneDocByPage(String loginId, Long cpage, String keyword, String docType) {

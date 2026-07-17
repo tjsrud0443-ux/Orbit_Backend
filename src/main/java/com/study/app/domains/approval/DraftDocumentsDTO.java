@@ -20,14 +20,14 @@ public class DraftDocumentsDTO {
     private List<ApprovalCcDTO> referrers;
     
     private String name;
-	private String app_status;
+	private String my_approval_status;
 	private String sysname;
     
     public DraftDocumentsDTO() {}
 	public DraftDocumentsDTO(Long doc_seq, String title, String doc_type, String users_id, String status,
 			String reject_reason, Long is_temp, String temp_expires_at, String created_at, String updated_at,
 			String stamp_sysname, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers, String name,
-			String app_status, String sysname) {
+			String my_approval_status, String sysname) {
 		super();
 		this.doc_seq = doc_seq;
 		this.title = title;
@@ -43,7 +43,7 @@ public class DraftDocumentsDTO {
 		this.approvers = approvers;
 		this.referrers = referrers;
 		this.name = name;
-		this.app_status = app_status;
+		this.my_approval_status = my_approval_status;
 		this.sysname = sysname;
 	}
 	public Long getDoc_seq() {
@@ -130,11 +130,11 @@ public class DraftDocumentsDTO {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getApp_status() {
-		return app_status;
+	public String getMy_approval_status() {
+		return my_approval_status;
 	}
-	public void setApp_status(String app_status) {
-		this.app_status = app_status;
+	public void setMy_approval_status(String my_approval_status) {
+		this.my_approval_status = my_approval_status;
 	}
 	public String getSysname() {
 		return sysname;
