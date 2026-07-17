@@ -19,29 +19,45 @@ public class AnnualLeaveService {
 	@Transactional
 	public void updateAnnualLeave() {
 
-		List<AnnualLeaveUpdateDTO> users = dao.findOneYearUsers();
+		dao.insertMissingAnnualLeave();
+		List<AnnualLeaveUpdateDTO> users = dao.findAnnualLeaveTargetUsers();
 		LocalDate today = LocalDate.now();
 
 		for (AnnualLeaveUpdateDTO dto : users) {
+			if (dto.getHire_date() == null || dto.getHire_date().isBlank()) {
+	            continue;
+	        }
 
-			// String -> 날짜 형식으로 변환
 			LocalDate hireDate = LocalDate.parse(dto.getHire_date());
-			// 입사일로부터 몇 개월이 흘렀는지
-			long months = ChronoUnit.MONTHS.between(hireDate,today);
-			// 위 정보로 총 연차 계산 
-			// -> 1년 미만은 근속년수 계산 -> 최대 11개 발생
-			// -> 근속년수가 12개월인 직원은 15개 지급)
-			double totalDays = Math.min(months, 11);
-
-			double remainingDays = totalDays - dto.getUsed_days();
-
-			if (remainingDays < 0) {
-				remainingDays = 0;
-			}
+			double totalDays = calculateAnnualLeaveDays(hireDate, today);
+			double usedDays = dto.getUsed_days();
+			double remainingDays = Math.max(totalDays - usedDays, 0);
 
 			dao.updateAnnualLeave(dto.getLeave_seq(),totalDays,remainingDays);
 		}
 	}
+	
+	private double calculateAnnualLeaveDays(LocalDate hireDate, LocalDate today) {
+		if(hireDate == null || hireDate.isAfter(today)) {
+			return 0;
+		}
+		
+		long completedMonths =
+	            ChronoUnit.MONTHS.between(hireDate, today);
+
+	    if (completedMonths < 12) {
+	        return Math.min(completedMonths, 11);
+	    }
+
+	    long completedYears =
+	            ChronoUnit.YEARS.between(hireDate, today);
+
+	    long additionalDays =
+	            Math.max((completedYears - 1) / 2, 0);
+
+	    return Math.min(15 + additionalDays, 25);
+	}
+	
 	//연차 관리
 	public Map<String, Object> getAllLeaveList(String keyword, Long cPage) {
 	    long page = (cPage == null || cPage < 1) ? 1 : cPage;

@@ -34,8 +34,12 @@ public class AnnualLeaveDAO {
 		return mybatis.selectOne("AnnualLeave.getAnnualLeaveSummary",loginId);
 	}
 
-	public List<AnnualLeaveUpdateDTO> findOneYearUsers() {
-		return mybatis.selectList("AnnualLeave.findOneYearUsers");
+	public List<AnnualLeaveUpdateDTO> findAnnualLeaveTargetUsers() {
+		return mybatis.selectList("AnnualLeave.findAnnualLeaveTargetUsers");
+	}
+	
+	public int insertMissingAnnualLeave() {
+		return mybatis.insert("AnnualLeave.insertMissingAnnualLeave");
 	}
 
 	public void updateAnnualLeave(Long leaveSeq,double totalDays,

@@ -24,14 +24,28 @@
 		update annual_leave set used_days = #{used_days}, remaining_days = #{remaining_days} where users_id = #{users_id}
 	</update>
 	
-	<select id="findOneYearUsers" resultType="com.study.app.domains.annualLeave.AnnualLeaveUpdateDTO">
-		select u.id, to_char(u.hire_date, 'YYYY-MM-DD') as hire_date,
-			a.leave_seq, a.used_days
+	<select id="findAnnualLeaveTargetUsers" resultType="com.study.app.domains.annualLeave.AnnualLeaveUpdateDTO">
+		select u.id as users_id, to_char(u.hire_date, 'YYYY-MM-DD') as hire_date,
+			a.leave_seq, a.total_days, a.used_days
 		from users u
 		join annual_leave a on u.id = a.users_id
-		where floor(months_between(sysdate, u.hire_date)) &lt; 12
-      	and a.year = extract(year from sysdate)
+		where a.year = extract(year from sysdate)
+			and u.hire_date is not null
+			and u.status = 'ACTIVE'
 	</select>
+	
+	<insert id="insertMissingAnnualLeave">
+		insert into annual_leave (
+			leave_seq, users_id, year, total_days, used_days, remaining_days
+		)
+		select leave_seq.nextval, u.id, extract(year from sysdate), 0, 0, 0
+		from users u where u.hire_date is not null 
+			and u.status = 'ACTIVE'
+			and not exists (
+				select 1 from annual_leave a
+				where a.users_id = u.id and a.year = extract(year from sysdate)
+			) 
+	</insert>
 	
 	<update id="updateAnnualLeave">
 		update annual_leave set total_days = #{total_days}, remaining_days = #{remaining_days} 
