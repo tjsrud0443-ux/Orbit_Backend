@@ -58,17 +58,20 @@ public class FileController {
     // 문서 미리보기
     @GetMapping("/preview/{sysname}")
     public ResponseEntity<Resource> preview(@PathVariable String sysname) throws Exception {
-        byte[] fileBytes = fileServ.getFileBytes(sysname);
+    	
+    	// 한글로 된 txt 파일 탐색 시 필요
+    	String decodedSysname = java.net.URLDecoder.decode(sysname, "UTF-8");
+    	
+        byte[] fileBytes = fileServ.getFileBytes(decodedSysname);
         if (fileBytes == null) {
             return ResponseEntity.notFound().build();
         }
         
-        String contentType = fileServ.getMimeType(sysname);
+        String contentType = fileServ.getMimeType(decodedSysname);
         if (contentType == null) {
             contentType = "application/octet-stream"; 
         }
         
-        sysname = new String(sysname.getBytes("utf8"), "ISO-8859-1");
         String oriname = sysname.split("_", 2)[1];
         
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(fileBytes));
