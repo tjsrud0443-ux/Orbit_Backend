@@ -16,13 +16,14 @@ public class MeetingMinutesDTO {
     private String users_id;
     private String host_users_id;
     private LocalDateTime created_at;
+    private String is_shared; 
     private List<MinutesAttendeesDTO> attendees;
     
 	public MeetingMinutesDTO() {}
 
 	public MeetingMinutesDTO(Long minute_seq, String title, LocalDate meeting_dt, LocalDateTime start_time,
 			LocalDateTime end_time, String main_content, String decisions, String todos, String users_id,
-			String host_users_id, LocalDateTime created_at, List<MinutesAttendeesDTO> attendees) {
+			String host_users_id, LocalDateTime created_at, String is_shared, List<MinutesAttendeesDTO> attendees) {
 		super();
 		this.minute_seq = minute_seq;
 		this.title = title;
@@ -35,6 +36,7 @@ public class MeetingMinutesDTO {
 		this.users_id = users_id;
 		this.host_users_id = host_users_id;
 		this.created_at = created_at;
+		this.is_shared = is_shared;
 		this.attendees = attendees;
 	}
 
@@ -126,6 +128,14 @@ public class MeetingMinutesDTO {
 		this.created_at = created_at;
 	}
 
+	public String getIs_shared() {
+		return is_shared;
+	}
+
+	public void setIs_shared(String is_shared) {
+		this.is_shared = is_shared;
+	}
+
 	public List<MinutesAttendeesDTO> getAttendees() {
 		return attendees;
 	}
@@ -134,5 +144,6 @@ public class MeetingMinutesDTO {
 		this.attendees = attendees;
 	}
 
+	
 }
 

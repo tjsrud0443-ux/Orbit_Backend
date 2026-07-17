@@ -32,6 +32,10 @@ public class MeetingMinutesDAO {
 		return mybatis.delete("MeetingMinutes.updateMinutes",dto);
 	}
 	
+	public int updateMinutesShare(Map<String, Object> params) {
+	    return mybatis.update("MeetingMinutes.updateMinutesShare", params);
+	}
+	
 	public List<Long> meetingSeqs(String loginId) {
 		return mybatis.selectList("MeetingMinutes.meetingSeqs", loginId);
 	}

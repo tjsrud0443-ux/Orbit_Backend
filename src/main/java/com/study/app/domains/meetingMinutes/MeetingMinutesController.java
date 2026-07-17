@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -79,4 +80,12 @@ public class MeetingMinutesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 에러 반환
         }
     }
+	//PATCH = 리소스의 일부 필드만 부분적으로 수정
+	@PatchMapping("/{minute_seq}/share")
+	public ResponseEntity<Void> updateMinutesShare(
+	        @PathVariable Long minute_seq,
+	        @RequestBody Map<String, String> body) {
+	    minutesServ.updateMinutesShare(minute_seq, body.get("is_shared"));
+	    return ResponseEntity.ok().build();
+	}
 }

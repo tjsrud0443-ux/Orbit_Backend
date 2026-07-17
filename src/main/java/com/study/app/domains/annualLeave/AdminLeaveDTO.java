@@ -11,6 +11,7 @@ public class AdminLeaveDTO {
     private Double total_days;
     private Double used_days;
     private Double remaining_days;
+    private Double admin_days;
     
     private Double delta_days;
     
@@ -18,7 +19,7 @@ public class AdminLeaveDTO {
 
 	public AdminLeaveDTO(Long users_seq, String users_id, String name, String dept_name, String rank_name,
 			String hire_date, Long leave_seq, Double total_days, Double used_days, Double remaining_days,
-			Double delta_days) {
+			Double admin_days, Double delta_days) {
 		super();
 		this.users_seq = users_seq;
 		this.users_id = users_id;
@@ -30,6 +31,7 @@ public class AdminLeaveDTO {
 		this.total_days = total_days;
 		this.used_days = used_days;
 		this.remaining_days = remaining_days;
+		this.admin_days = admin_days;
 		this.delta_days = delta_days;
 	}
 
@@ -113,6 +115,14 @@ public class AdminLeaveDTO {
 		this.remaining_days = remaining_days;
 	}
 
+	public Double getAdmin_days() {
+		return admin_days;
+	}
+
+	public void setAdmin_days(Double admin_days) {
+		this.admin_days = admin_days;
+	}
+
 	public Double getDelta_days() {
 		return delta_days;
 	}
@@ -121,5 +131,4 @@ public class AdminLeaveDTO {
 		this.delta_days = delta_days;
 	}
 
-	
 }
