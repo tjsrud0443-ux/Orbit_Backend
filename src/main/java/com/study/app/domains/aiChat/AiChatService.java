@@ -791,6 +791,8 @@ public class AiChatService {
 	public void deleteDocumentRag(Long document_seq) {
 		Long ragDocSeq = ragDao.findRagDocSeq("DOCUMENTS", document_seq);
 
+		if(ragDocSeq == null) {return;}
+		
 		List<String> pointIds = ragDao.findPointIdsByRagDocSeq(ragDocSeq);
 
 		DeletePointIdsRequestDTO request = new DeletePointIdsRequestDTO();
