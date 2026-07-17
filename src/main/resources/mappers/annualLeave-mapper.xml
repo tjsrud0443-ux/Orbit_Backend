@@ -59,7 +59,7 @@
 		        JOIN ANNUAL_LEAVE a ON u.ID = a.USERS_ID
 	            WHERE a.YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
 	            <if test="keyword != null and keyword != ''">
-	                AND (u.ID LIKE '%' || #{keyword} || '%'
+	               AND (TO_CHAR(u.USERS_SEQ) LIKE '%' || #{keyword} || '%'
 	                     OR u.NAME LIKE '%' || #{keyword} || '%'
 	                     OR d.DEPT_NAME LIKE '%' || #{keyword} || '%')
 	            </if>
@@ -77,7 +77,7 @@
 	    <where>
 	        a.YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
 	        <if test="keyword != null and keyword != ''">
-	            AND (u.ID LIKE '%' || #{keyword} || '%'
+	            AND (TO_CHAR(u.USERS_SEQ) LIKE '%' || #{keyword} || '%'
 	            OR u.NAME LIKE '%' || #{keyword} || '%'
 	            OR d.DEPT_NAME LIKE '%' || #{keyword} || '%')
 	        </if>

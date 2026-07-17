@@ -84,7 +84,6 @@ public class AnnualLeaveService {
 	    params.put("remaining_days", remainingDays);
 
 	    int result = dao.updateAdminLeave(params);
-	    System.out.println(">>> updated rows: " + result);
 
 	    // 4. 프론트에 최종값 응답
 	    Map<String, Object> response = new HashMap<>();
