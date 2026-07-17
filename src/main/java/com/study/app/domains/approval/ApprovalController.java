@@ -207,4 +207,12 @@ public class ApprovalController {
 		List<VacationTypesDTO> list = appServ.getAllVacationTypes();
 		return ResponseEntity.ok(list);
 	}
+	
+	@PutMapping("/bulkApproveDocuments")
+	public ResponseEntity<Map<String, Object>> bulkApproveDocuments(@RequestAttribute String loginId,
+												@RequestBody List<Long> docSeqList) {
+		int approvalCount = appServ.bulkApproveDocuments(loginId, docSeqList);
+		return ResponseEntity.ok(Map.of("approved_count", approvalCount));
+	}
+	
 }
