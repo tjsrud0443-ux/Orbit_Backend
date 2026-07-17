@@ -69,9 +69,12 @@ public class DocumentsService {
 		dao.updateDocumentTitle(document_seq, title);
 
 		if (file != null && !file.isEmpty()) {
-			aiChatServ.deleteDocumentRag(document_seq);
 			DocumentsFilesDTO oldFile = dao.findFileByDocSeq(document_seq);
+			
 			if (oldFile != null) {
+				if(isAiFile(oldFile.getFile_oriname())) {
+					aiChatServ.deleteDocumentRag(document_seq);
+				}
 				fileServ.deleteFromGCS(oldFile.getFile_sysname());
 				dao.deleteDocFile(oldFile.getFile_seq());
 			}
@@ -87,9 +90,8 @@ public class DocumentsService {
 
 			dao.insertDocFile(docFileDTO);
 
-			Long file_seq = docFileDTO.getFile_seq();
-
 			if(isAiFile(docFileDTO.getFile_oriname())) {	
+				Long file_seq = docFileDTO.getFile_seq();
 				String signedUrl = fileServ.createSignedUrl(docFileDTO.getFile_sysname());
 				aiChatServ.createChunk(file_seq, document_seq, docFileDTO.getFile_oriname(), signedUrl, docFileDTO.getMime_type());
 			}
