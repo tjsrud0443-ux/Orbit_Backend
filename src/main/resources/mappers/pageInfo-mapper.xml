@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PageInfo">
+	
+	<select id="getPageCategories" resultType="string">
+		select distinct page_category from page_info where page_info is not null order by page_category desc
+	</select>
+	
+	<select id="getPageInfoList" resultType="com.study.app.domains.pageInfo.PageInfoDTO">
+		select * from page_info order by page_category desc, page_seq
+	</select>
+	
+	<update id="updatePageInfo">
+		update page_info set page_info = #{page_info}, page_category = #{page_category} where page_seq = #{page_seq}
+	</update>
+	
+	<update id="updateCategory">
+		update page_info set page_category = #{newCategoryName} where page_category = #{oldCategoryName}
+	</update>
+</mapper>

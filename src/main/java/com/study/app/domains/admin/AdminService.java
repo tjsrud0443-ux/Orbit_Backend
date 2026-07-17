@@ -26,6 +26,8 @@ import com.study.app.domains.file.FileService;
 import com.study.app.domains.meetingRooms.MeetingRoomsDTO;
 import com.study.app.domains.meetingRooms.MeetingRoomsService;
 import com.study.app.domains.overtimeRequest.OvertimeRequestService;
+import com.study.app.domains.pageInfo.PageInfoDTO;
+import com.study.app.domains.pageInfo.PageInfoService;
 import com.study.app.domains.rank.RankDAO;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
@@ -74,6 +76,8 @@ public class AdminService {
 	private CompanyInfoDAO comDao;
 	@Autowired
 	private FileService fileServ;
+	@Autowired
+	private PageInfoService pageServ;
 
 	public Map<String, Object> getAllRequest(Long cPage, String status, String searchTerm) {
 		return signupServ.getAllRequest(cPage, status, searchTerm);
@@ -395,9 +399,13 @@ public class AdminService {
 		}
 	}
 
+	public void updatePageInfo(Long page_seq, PageInfoDTO dto) {
+		pageServ.updatePageInfo(page_seq, dto);
+	}
 
-
-
+	public void updateCategory(String oldCategoryName, String newCategoryName) {
+		pageServ.updateCategory(oldCategoryName, newCategoryName);
+	}
 
 
 

@@ -28,6 +28,7 @@ import com.study.app.domains.departments.DeptLeaveDTO;
 import com.study.app.domains.documents.DocumentsDTO;
 import com.study.app.domains.documents.DocumentsService;
 import com.study.app.domains.meetingRooms.MeetingRoomsDTO;
+import com.study.app.domains.pageInfo.PageInfoDTO;
 import com.study.app.domains.rank.RankDTO;
 import com.study.app.domains.signup.SignupDTO;
 import com.study.app.domains.signup.SignupRequestDTO;
@@ -487,7 +488,20 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@PutMapping("updatePageInfo/{page_seq}")
+	public ResponseEntity<Void> updatePageInfo(@PathVariable Long page_seq,
+												@RequestBody PageInfoDTO dto) {
+		adminServ.updatePageInfo(page_seq, dto);
+		return ResponseEntity.ok().build();
+	}
 	
+	@PutMapping("updateCategory")
+	public ResponseEntity<Void> updateCategory(@RequestBody Map<String, String> body) {
+		String oldCategoryName = body.get("oldCategoryName");
+	    String newCategoryName = body.get("editCategoryNewName");
+	    adminServ.updateCategory(oldCategoryName, newCategoryName);
+	    return ResponseEntity.ok().build();
+	}
 	
 	
 	
