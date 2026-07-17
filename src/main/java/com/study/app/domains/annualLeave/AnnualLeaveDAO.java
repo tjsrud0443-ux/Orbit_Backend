@@ -48,4 +48,21 @@ public class AnnualLeaveDAO {
 
 		mybatis.update("AnnualLeave.updateAnnualLeave",params);
 	}
+	
+	//연차 관리
+	public List<AdminLeaveDTO> getAllLeaveList(Map<String, Object> params) {
+		return mybatis.selectList("AnnualLeave.getAllLeaveList", params);
+	}
+	
+	public int getLeaveCount(Map<String, Object> params) {
+	    return mybatis.selectOne("AnnualLeave.getLeaveCount", params);
+	}
+	
+	public int updateAdminLeave(Map<String, Object> params) {
+		return mybatis.update("AnnualLeave.updateAdminLeave",params);
+	}
+	
+	public AdminLeaveDTO getLeaveBySeq(Long leaveSeq) {
+	    return mybatis.selectOne("AnnualLeave.getLeaveBySeq", leaveSeq);
+	}
 }

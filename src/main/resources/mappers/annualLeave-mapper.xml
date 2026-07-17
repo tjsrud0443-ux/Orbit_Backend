@@ -37,4 +37,61 @@
 		update annual_leave set total_days = #{total_days}, remaining_days = #{remaining_days} 
 		where leave_seq = #{leave_seq}
 	</update>
+	
+	<!--연차 관리-->
+	<select id="getAllLeaveList" resultType="com.study.app.domains.annualLeave.AdminLeaveDTO">
+	    SELECT * FROM (
+	        SELECT ROWNUM AS rn, a.* FROM (
+	            SELECT
+	            	u.USERS_SEQ     AS "users_seq",
+	                u.ID            AS "users_id",
+	                u.NAME          AS "name",
+	                d.DEPT_NAME     AS "dept_name",
+	                r.RANK_NAME     AS "rank_name",
+	                TO_CHAR(u.HIRE_DATE, 'YYYY-MM-DD') AS "hire_date",
+	                a.LEAVE_SEQ     AS "leave_seq",
+	                a.TOTAL_DAYS    AS "total_days",
+	                a.USED_DAYS     AS "used_days",
+	                a.REMAINING_DAYS AS "remaining_days"
+	            FROM USERS u
+	            JOIN DEPARTMENTS d ON u.DEPT_SEQ = d.DEPT_SEQ
+		        JOIN "RANK" r ON u.RANK_SEQ = r.RANK_SEQ
+		        JOIN ANNUAL_LEAVE a ON u.ID = a.USERS_ID
+	            WHERE a.YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
+	            <if test="keyword != null and keyword != ''">
+	               AND (TO_CHAR(u.USERS_SEQ) LIKE '%' || #{keyword} || '%'
+	                     OR u.NAME LIKE '%' || #{keyword} || '%'
+	                     OR d.DEPT_NAME LIKE '%' || #{keyword} || '%')
+	            </if>
+	            ORDER BY u.USERS_SEQ 
+	        ) a
+	        WHERE ROWNUM &lt;= #{end}
+	    )
+	    WHERE rn BETWEEN #{start} AND #{end}
+	</select>
+	<select id="getLeaveCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM USERS u
+	    JOIN DEPARTMENTS d ON u.DEPT_SEQ = d.DEPT_SEQ
+    	JOIN ANNUAL_LEAVE a ON u.ID = a.USERS_ID
+	    <where>
+	        a.YEAR = TO_NUMBER(TO_CHAR(SYSDATE, 'YYYY'))
+	        <if test="keyword != null and keyword != ''">
+	            AND (TO_CHAR(u.USERS_SEQ) LIKE '%' || #{keyword} || '%'
+	            OR u.NAME LIKE '%' || #{keyword} || '%'
+	            OR d.DEPT_NAME LIKE '%' || #{keyword} || '%')
+	        </if>
+	    </where>
+	</select>
+	<update id="updateAdminLeave">
+	    update annual_leave
+	    set total_days = #{total_days},
+	        remaining_days = #{remaining_days}
+	    where leave_seq = #{leave_seq}
+	</update>
+	<select id="getLeaveBySeq" resultType="com.study.app.domains.annualLeave.AdminLeaveDTO">
+	    SELECT total_days, used_days
+	    FROM annual_leave
+	    WHERE leave_seq = #{leaveSeq}
+	</select>
 </mapper>
