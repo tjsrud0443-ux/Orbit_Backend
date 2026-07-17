@@ -887,4 +887,33 @@ public class ApprovalService {
 	public List<VacationTypesDTO> getAllVacationTypes() {
 		return dao.getAllVacationTypes();
 	}
+	
+	@Transactional
+	public int bulkApproveDocuments(String loginId, List<Long> docSeqList) {
+
+		if (docSeqList == null || docSeqList.isEmpty()) {
+			throw new IllegalArgumentException("승인할 문서가 없습니다.");
+		}
+
+		List<Long> targets = docSeqList.stream()
+				.filter(docSeq -> docSeq != null)
+				.distinct()
+				.toList();
+
+		for (Long doc_seq : targets) {
+			Map<String, Object> common = dao.selectCommonDetail(doc_seq);
+
+			if (common == null) {
+				throw new IllegalArgumentException(
+						"존재하지 않는 결재 문서입니다. 문서 번호: " + doc_seq
+				);
+			}
+
+			String doc_type = String.valueOf(common.get("doc_type"));
+
+			approveDraft(doc_seq, loginId, doc_type);
+		}
+
+		return targets.size();
+	}
 }
