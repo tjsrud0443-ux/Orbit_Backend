@@ -127,8 +127,8 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/hr/delDept/{dept_seq}")
-	public ResponseEntity<Void> delDept(@PathVariable Long dept_seq) {
-		adminServ.delDept(dept_seq);
+	public ResponseEntity<Void> deleteDept(@PathVariable Long dept_seq) {
+		adminServ.deleteDept(dept_seq);
 		return ResponseEntity.ok().build();
 	}
 

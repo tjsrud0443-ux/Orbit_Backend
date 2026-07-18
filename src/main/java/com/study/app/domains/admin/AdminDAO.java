@@ -22,20 +22,28 @@ public class AdminDAO {
 		batis.insert("Admin.addDept", dto);
 	}
 	
-	public void addTeam(DepartmentsDTO dto) {
-		batis.insert("Admin.addTeam", dto);
-	}
-	
 	public void deleteDefaultApprovalLineByDeptSeq(Long dept_seq) {
 		batis.delete("Admin.deleteDefaultApprovalLineByDeptSeq", dept_seq);
 	}
 	
-	public void delDept(Long dept_seq) {
-		batis.delete("Admin.delDept", dept_seq);
+	public int deleteDept(Long dept_seq) {
+		return batis.delete("Admin.deleteDept", dept_seq);
 	}
 	
-	public void updateDept(DepartmentsDTO dto) {
-		batis.update("Admin.updateDept", dto);
+	public DepartmentsDTO findDeptBySeq(Long dept_seq) {
+		return batis.selectOne("Admin.findDeptBySeq", dept_seq);
+	}
+	
+	public int isHq(Long dept_seq) {
+		return batis.selectOne("Admin.isHq", dept_seq);
+	}
+	
+	public int countChildDepartments(Long dept_seq) {
+		return batis.selectOne("Admin.countChildDepartments", dept_seq);
+	}
+	
+	public int updateDept(DepartmentsDTO dto) {
+		return batis.update("Admin.updateDept", dto);
 	}
 	
 	public int allEmployeeCount() {
