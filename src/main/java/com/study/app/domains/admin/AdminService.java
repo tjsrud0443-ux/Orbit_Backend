@@ -47,9 +47,6 @@ import com.study.app.domains.users.UsersService;
 @Service
 public class AdminService {
 	
-	@Value("${app.mode}")
-	private String appMode;
-	
 	@Autowired
 	private SignupService signupServ;
 	@Autowired
@@ -82,6 +79,8 @@ public class AdminService {
 	private PageInfoService pageServ;
 	@Autowired
 	private DefaultApprovalLineService defaultServ;
+	@Autowired
+	private AnnualLeaveService annualLeaveServ;
 
 	public Map<String, Object> getAllRequest(Long cPage, String status, String searchTerm) {
 		return signupServ.getAllRequest(cPage, status, searchTerm);
@@ -122,23 +121,76 @@ public class AdminService {
 	public int updateUsersInfo(UsersDTO dto) {
 		return usersDao.updateUsersInfo(dto);
 	}
-
+	
+	@Transactional
 	public void addDept(DepartmentsDTO dto) {
+		if (!"HQ".equals(dto.getDept_type())
+	            && !"SUB".equals(dto.getDept_type())) {
+	        throw new IllegalArgumentException(
+	            "올바르지 않은 조직 구분입니다."
+	        );
+	    }
 
-		if("HQ".equals(dto.getDept_type())) {
-			adminDao.addDept(dto);
-		}else if("SUB".equals(dto.getDept_type())) {
-			adminDao.addTeam(dto);
+	    if ("SUB".equals(dto.getDept_type())
+	            && dto.getParent_dept_seq() == null) {
+	        throw new IllegalStateException(
+	            "상위 본부를 선택해 주세요."
+	        );
+	    }
+
+	    adminDao.addDept(dto);
+	}
+	
+	@Transactional
+	public void deleteDept(Long dept_seq) {
+		adminDao.deleteDefaultApprovalLineByDeptSeq(dept_seq);
+		int result = adminDao.deleteDept(dept_seq);
+		
+		if(result == 0) {
+			throw new IllegalStateException("삭제할 부서를 찾을 수 없습니다.");
 		}
-
 	}
 
-	public void delDept(Long dept_seq) {
-		adminDao.delDept(dept_seq);
-	}
-
+	@Transactional
 	public void updateDept(DepartmentsDTO dto) {
-		adminDao.updateDept(dto);
+		DepartmentsDTO currentDept = adminDao.findDeptBySeq(dto.getDept_seq());
+
+		    if (currentDept == null) {
+		        throw new IllegalStateException("수정할 부서를 찾을 수 없습니다.");
+		    }
+
+		    boolean currentIsHq = adminDao.isHq(dto.getDept_seq()) > 0;
+
+		    boolean changingHqToSub = currentIsHq && "SUB".equals(dto.getDept_type());
+
+		    if (changingHqToSub) {
+		        int childCount = adminDao.countChildDepartments(dto.getDept_seq());
+
+		        if (childCount > 0) {
+		            throw new IllegalStateException("하위 부서가 존재하는 본부는 부서로 변경할 수 없습니다.");
+		        }
+		    }
+
+		    if ("SUB".equals(dto.getDept_type())) {
+		        if (dto.getParent_dept_seq() == null) {
+		            throw new IllegalStateException("상위 본부를 선택해 주세요.");
+		        }
+
+		        if (dto.getDept_seq().equals(dto.getParent_dept_seq())) {
+		            throw new IllegalStateException("자기 자신을 상위 본부로 지정할 수 없습니다.");
+		        }
+		    }
+
+		    if (!"HQ".equals(dto.getDept_type())
+		            && !"SUB".equals(dto.getDept_type())) {
+		        throw new IllegalArgumentException("올바르지 않은 조직 구분입니다.");
+		    }
+
+		    int result = adminDao.updateDept(dto);
+
+		    if (result == 0) {
+		        throw new IllegalStateException("부서 수정에 실패했습니다.");
+		    }
 	}
 
 	public Map<String, Object> getDashboard() {
@@ -378,7 +430,7 @@ public class AdminService {
 					+ "해당 직급에 포함된 직원을\n다른 직급으로 변경 후 다시 시도해 주세요."
 			);
 		}
-		
+		rankDao.deleteDefaultApprovalLineByRankSeq(rank_seq);
 		int result = rankDao.deleteRank(rank_seq);
 		if(result == 0) {
 			throw new IllegalStateException(
@@ -423,390 +475,7 @@ public class AdminService {
 		defaultServ.deleteApprovalLine(doc_type, drafter_rank_seq);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	//연차관리
-	@Autowired
-	private AnnualLeaveService annualLeaveServ;
 	public Map<String, Object> getAllLeaveList(String keyword, Long cPage) {
 	    return annualLeaveServ.getAllLeaveList(keyword, cPage);
 	}
