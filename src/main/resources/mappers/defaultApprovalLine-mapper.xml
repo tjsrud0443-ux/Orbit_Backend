@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DefaultLine">
+	
+	<select id="getApprovalLines" resultType="com.study.app.domains.defaultApprovalLine.DefaultApprovalLineDTO">
+		select 
+			dal.*, 
+			r.rank_name, 
+			d.dept_name
+		from default_approval_line dal
+		left join rank r on dal.approver_rank_seq = r.rank_seq
+		left join departments d on dal.target_dept_seq = d.dept_seq
+		where dal.doc_type = #{doc_type}
+        order by dal.drafter_rank_seq, dal.step_order
+	</select>
+	
+	<delete id="deleteDefaultLine">
+		delete from default_approval_line where doc_type = #{doc_type} and drafter_rank_seq = #{drafter_rank_seq}
+	</delete>
+	
+	<insert id="insertApprovalLine">
+		insert into default_approval_line values 
+			(d_line_seq.nextval, #{doc_type}, #{drafter_rank_seq}, #{step_order}, #{approver_scope}, 
+			#{approver_rank_seq}, #{target_dept_seq, jdbcType=NUMERIC}, sysdate, sysdate)
+	</insert>
+</mapper>

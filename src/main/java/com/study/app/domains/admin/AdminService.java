@@ -16,6 +16,8 @@ import com.study.app.domains.annualLeave.AnnualLeaveService;
 import com.study.app.domains.checkoutRequest.CheckoutRequestService;
 import com.study.app.domains.companyInfo.CompanyInfoDAO;
 import com.study.app.domains.companyInfo.CompanyInfoDTO;
+import com.study.app.domains.defaultApprovalLine.DefaultApprovalLineDTO;
+import com.study.app.domains.defaultApprovalLine.DefaultApprovalLineService;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDAO;
 import com.study.app.domains.departments.DepartmentsDTO;
@@ -78,6 +80,8 @@ public class AdminService {
 	private FileService fileServ;
 	@Autowired
 	private PageInfoService pageServ;
+	@Autowired
+	private DefaultApprovalLineService defaultServ;
 
 	public Map<String, Object> getAllRequest(Long cPage, String status, String searchTerm) {
 		return signupServ.getAllRequest(cPage, status, searchTerm);
@@ -407,11 +411,17 @@ public class AdminService {
 		pageServ.updateCategory(oldCategoryName, newCategoryName);
 	}
 
+	public List<DefaultApprovalLineDTO> getApprovalLines(String doc_type) {
+		return defaultServ.getApprovalLines(doc_type);
+	}
 
+	public void saveApprovalLines(List<DefaultApprovalLineDTO> lines, String doc_type, Long drafter_rank_seq) {
+		defaultServ.saveApprovalLines(lines, doc_type, drafter_rank_seq);
+	}
 
-
-
-
+	public void deleteApprovalLine(String doc_type, Long drafter_rank_seq) {
+		defaultServ.deleteApprovalLine(doc_type, drafter_rank_seq);
+	}
 
 
 
