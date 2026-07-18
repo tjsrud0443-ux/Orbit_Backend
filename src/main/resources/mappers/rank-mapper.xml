@@ -25,6 +25,11 @@
 		select count(*) from users where rank_seq = #{rank_seq}
 	</select>
 	
+	<delete id="deleteDefaultApprovalLineByRankSeq">
+		delete from default_approval_line 
+			where drafter_rank_seq = #{rank_seq}
+			or approver_rank_seq = #{rank_seq}
+	</delete>
 	<delete id="deleteRank">
 		delete from rank where rank_seq = #{rank_seq}
 	</delete>

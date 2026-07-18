@@ -26,6 +26,10 @@ public class AdminDAO {
 		batis.insert("Admin.addTeam", dto);
 	}
 	
+	public void deleteDefaultApprovalLineByDeptSeq(Long dept_seq) {
+		batis.delete("Admin.deleteDefaultApprovalLineByDeptSeq", dept_seq);
+	}
+	
 	public void delDept(Long dept_seq) {
 		batis.delete("Admin.delDept", dept_seq);
 	}

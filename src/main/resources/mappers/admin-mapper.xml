@@ -12,6 +12,10 @@
 			#{dept_code}, #{parent_dept_seq}, sysdate, #{auth_group})
 	</insert>
 	
+	<delete id="deleteDefaultApprovalLineByDeptSeq">
+		delete from default_approval_line where target_dept_seq = #{dept_seq}
+	</delete>
+	
 	<delete id="delDept">
 		delete from departments where dept_seq = #{dept_seq}
 	</delete>

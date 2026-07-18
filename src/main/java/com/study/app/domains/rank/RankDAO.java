@@ -28,6 +28,10 @@ public class RankDAO {
 		return mybatis.selectOne("Rank.countUsersByRank", rank_seq);
 	}
 	
+	public void deleteDefaultApprovalLineByRankSeq(Long rank_seq) {
+		mybatis.delete("Rank.deleteDefaultApprovalLineByRankSeq", rank_seq);
+	}
+	
 	public int deleteRank(Long rank_seq) {
 		return mybatis.delete("Rank.deleteRank", rank_seq);
 	}
