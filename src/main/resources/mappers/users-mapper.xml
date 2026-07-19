@@ -162,6 +162,8 @@
 	        u.id,
 	        u.phone,
 	        u.email,
+	        u.sysname,
+	        u.oriname,
 	        u.zonecode,
 	        u.address1,
 	        u.address2,
@@ -263,4 +265,13 @@
 	    )
 	    where rownum = 1
 	</select>
+	
+	<select id="findProfileSysname" resultType="String">
+		select sysname from users where id = #{users_id}
+	</select>
+	
+	<update id="updateProfileImage">
+		update users set sysname = #{sysname}, oriname = #{oriname}
+			where id = #{loginId}
+	</update>
 </mapper>

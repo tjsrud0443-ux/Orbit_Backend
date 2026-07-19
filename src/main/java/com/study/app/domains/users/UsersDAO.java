@@ -139,4 +139,12 @@ public class UsersDAO {
 	public UsersDTO findApproverBySpecificDept(Map<String, Object> searchParams) {
 		return batis.selectOne("Users.findApproverBySpecificDept", searchParams);
 	}
+	
+	public String findProfileSysname(String users_id) {
+		return batis.selectOne("Users.findProfileSysname", users_id);
+	}
+	
+	public int updateProfileImage(Map<String, Object> params) {
+		return batis.update("Users.updateProfileImage", params);
+	}
 }
