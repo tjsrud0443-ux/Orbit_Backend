@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Holiday">
+	<!--db에 연도가 있는지 체크-->
+	 <select id="countByYear" resultType="int">
+        SELECT COUNT(*) FROM HOLIDAYS WHERE HOLIDAY_YEAR = #{year}
+    </select>
+	<!--특정 연도 공휴일 목록 실제로 가져옴-->
+    <select id="getByYear" resultType="com.study.app.domains.holiday.HolidayDTO">
+        SELECT
+            TO_CHAR(LOCDATE, 'YYYY-MM-DD') AS locdate,
+            DATE_NAME AS date_name,
+            IS_HOLIDAY AS is_holiday
+        FROM HOLIDAYS
+        WHERE HOLIDAY_YEAR = #{year}
+        ORDER BY LOCDATE
+    </select>
+	<!--공휴일 api db에 저장-->
+    <insert id="insertHoliday">
+        INSERT INTO HOLIDAYS(HOLIDAY_SEQ, HOLIDAY_YEAR, LOCDATE, DATE_NAME, IS_HOLIDAY)
+        VALUES (
+            HOLIDAY_SEQ.NEXTVAL,
+            #{year},
+            TO_TIMESTAMP(#{locdate}, 'YYYY-MM-DD'),
+            #{date_name},
+            #{is_holiday, jdbcType=VARCHAR}
+        )
+    </insert>
+     <!-- 강제 재동기화를 위한 삭제 쿼리 -->
+    <delete id="deleteByYear">
+        DELETE FROM HOLIDAYS WHERE HOLIDAY_YEAR = #{year}
+    </delete>
+</mapper>

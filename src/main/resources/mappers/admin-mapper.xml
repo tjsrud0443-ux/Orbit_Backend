@@ -7,19 +7,36 @@
 			#{dept_code}, #{parent_dept_seq}, sysdate, #{auth_group})
 	</insert>
 	
-	<insert id="addTeam">
-		insert into departments values(dept_seq.nextval, #{dept_name},
-			#{dept_code}, #{parent_dept_seq}, sysdate, #{auth_group})
-	</insert>
+	<delete id="deleteDefaultApprovalLineByDeptSeq">
+		delete from default_approval_line where target_dept_seq = #{dept_seq}
+	</delete>
 	
-	<delete id="delDept">
+	<delete id="deleteDept">
 		delete from departments where dept_seq = #{dept_seq}
 	</delete>
 	
+	<select id="isHq" resultType="int">
+		select count(*) from departments d where d.dept_seq = #{dept_seq}
+			and d.parent_dept_seq = (
+				select dept_seq from departments where dept_code = 'CEO'
+			)
+	</select>
+	
+	<select id="countChildDepartments" resultType="int">
+		select count(*) from departments where parent_dept_seq = #{dept_seq}
+	</select>
+	
+	<select id="findDeptBySeq" resultType="com.study.app.domains.departments.DepartmentsDTO">
+		select * from departments where dept_seq = #{dept_seq}
+	</select>
+	
 	<update id="updateDept">
-		update departments set dept_name = #{dept_name} , 
-			dept_code = #{dept_code} , auth_group = #{auth_group}
-				where dept_seq = #{dept_seq}
+		update departments 
+			set dept_name = #{dept_name} ,
+				dept_code = #{dept_code} ,
+				auth_group = #{auth_group},
+				parent_dept_seq = #{parent_dept_seq}
+		where dept_seq = #{dept_seq}
 	</update>
 	
 	<select id="allEmployeeCount" resultType="int">
