@@ -33,4 +33,8 @@ public class HolidayDAO {
         
         mybatis.insert("Holiday.insertHoliday", params);
     }
+    
+    public void deleteByYear(int year) {
+    	mybatis.delete("Holiday.deleteByYear", year);
+    }
 }

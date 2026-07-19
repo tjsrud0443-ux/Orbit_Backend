@@ -50,6 +50,28 @@ public class HolidayService {
         return fetched;
     }
     
+    /*
+     * 특정 연도를 강제로 재동기화
+     * 기존 DB 데이터를 삭제하고 외부 API에서 다시 받아와 저장
+     * 관리자 전용 기능 (정부의 대체공휴일 추가 발표, 로직 개선 등에 대응)
+     */
+    public List<HolidayDTO> resyncHolidays(int year) {
+        holidayDAO.deleteByYear(year);
+
+        List<HolidayDTO> fetched = fetchFromExternalApi(year);
+
+        for (HolidayDTO dto : fetched) {
+            try {
+                holidayDAO.insertHoliday(year, dto);
+            } catch (Exception e) {
+                // 유니크 제약 위반 시 로그만 남기고 계속 진행
+                System.out.println("중복 공휴일 insert 스킵: " + dto.getDate_name());
+            }
+        }
+
+        return fetched;
+    }
+    
     /**
      * 공공데이터포털에 실제로 요청을 보내고, 응답 JSON을 파싱해서
      * HolidayDTO 리스트로 변환하는 내부 함수
@@ -57,35 +79,55 @@ public class HolidayService {
     private List<HolidayDTO> fetchFromExternalApi(int year) {
         List<HolidayDTO> result = new ArrayList<>();
 
-        // 공공데이터포털 요청 URL 조립 (year를 제외하면 매번 동일한 형식)
-        String url = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo"
+        // 공휴일(쉬는 날) 조회 → is_holiday = 'Y'
+        List<HolidayDTO> restDays = fetchFromEndpoint(year, "getRestDeInfo");
+        for (HolidayDTO dto : restDays) {
+            dto.setIs_holiday("Y");
+        }
+        result.addAll(restDays);
+        
+        // 국경일 조회 → is_holiday = 'N' (제헌절처럼 안 쉬는 국경일 포함)
+        List<HolidayDTO> nationalDays = fetchFromEndpoint(year, "getHoliDeInfo");
+        for (HolidayDTO dto : nationalDays) {
+            // 이미 같은 날짜+이름으로 들어온 경우(삼일절, 광복절 등 쉬는 국경일) 중복 방지
+            boolean alreadyExists = result.stream().anyMatch(existing ->
+                    existing.getLocdate().equals(dto.getLocdate()) &&
+                    existing.getDate_name().equals(dto.getDate_name())
+            );
+            if (!alreadyExists) {
+                dto.setIs_holiday("N");
+                result.add(dto);
+            }
+        }       
+
+        return result;
+    }
+    
+    /**
+     * 공공데이터포털의 특정 엔드포인트(endpoint)를 호출해서 HolidayDTO 리스트로 변환
+     * getRestDeInfo, getHoliDeInfo 둘 다 응답 구조가 동일해서 이 함수 하나로 공용 처리
+     */
+    private List<HolidayDTO> fetchFromEndpoint(int year, String endpoint) {
+        List<HolidayDTO> result = new ArrayList<>();
+
+        String url = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/" + endpoint
                 + "?serviceKey=" + apiKey
                 + "&solYear=" + year
-                + "&numOfRows=100"   // 1년치 공휴일이 다 담기도록 넉넉하게 설정
-                + "&_type=json";     // 응답 형식을 JSON으로 요청 (기본은 XML)
+                + "&numOfRows=100"
+                + "&_type=json";
 
         try {
-            // GET 요청을 보내고 응답 body를 그대로 문자열로 받음 (아직 JSON 파싱 전)
             String response = restTemplate.getForObject(url, String.class);
-
-            // 문자열을 JSON 트리 구조로 파싱 → 이제 .path()로 값에 접근 가능
             JsonNode root = objectMapper.readTree(response);
 
-            // 응답 안에 header가 있는지 확인 (resultCode로 API 자체의 성공/실패 여부 판단)
             JsonNode header = root.path("response").path("header");
             if (!"00".equals(header.path("resultCode").asText())) {
-                // "00"이 아니면 API 레벨 에러(트래픽 초과, 서비스키 오류 등)
-                // 여기서 빈 리스트를 반환하면 getHolidays()에서 insertHoliday가 실행 안 됨
-                // → DB에 아무것도 안 남음 → 다음 요청 때 countByYear가 여전히 0 → 자동 재시도됨
-                System.out.println("공휴일 API 응답 에러: " + header.path("resultMsg").asText());
+                System.out.println("공휴일 API 응답 에러(" + endpoint + "): " + header.path("resultMsg").asText());
                 return result;
             }
 
-            // 실제 공휴일 데이터가 담긴 부분 꺼냄
-            //{"response":{"body":{"items":{"item":[{"dateName":"1월1일",...}, {"dateName":"설날",...}]}}}}
             JsonNode items = root.path("response").path("body").path("items").path("item");
 
-            // 공휴일이 여러 개면 배열, 딱 1개면 단일 객체로 오는 API 특성 때문에 분기 처리
             if (items.isArray()) {
                 for (JsonNode item : items) {
                     result.add(toDTO(item));
@@ -95,9 +137,7 @@ public class HolidayService {
             }
 
         } catch (Exception e) {
-            // 네트워크 오류, JSON 파싱 실패 등 예외 상황 처리
-            // 이 경우도 result가 빈 리스트로 반환되어 DB에 저장 안 되고, 다음에 재시도 가능
-            System.out.println("공휴일 API 호출 실패 (" + year + "): " + e.getMessage());
+            System.out.println("공휴일 API 호출 실패 (" + endpoint + ", " + year + "): " + e.getMessage());
         }
 
         return result;

@@ -15,7 +15,7 @@
         WHERE HOLIDAY_YEAR = #{year}
         ORDER BY LOCDATE
     </select>
-<!--공휴일 api db에 저장-->
+	<!--공휴일 api db에 저장-->
     <insert id="insertHoliday">
         INSERT INTO HOLIDAYS(HOLIDAY_SEQ, HOLIDAY_YEAR, LOCDATE, DATE_NAME, IS_HOLIDAY)
         VALUES (
@@ -26,4 +26,8 @@
             #{is_holiday, jdbcType=VARCHAR}
         )
     </insert>
+     <!-- 강제 재동기화를 위한 삭제 쿼리 -->
+    <delete id="deleteByYear">
+        DELETE FROM HOLIDAYS WHERE HOLIDAY_YEAR = #{year}
+    </delete>
 </mapper>
