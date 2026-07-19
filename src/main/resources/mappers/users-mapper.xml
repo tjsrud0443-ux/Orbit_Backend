@@ -24,8 +24,8 @@
 	
 	<select id="getUsersInfo" resultType="com.study.app.domains.users.UsersDTO">
 		select
-		u.id as id, u.users_seq as users_seq, u.name as name, u.ssn_masked as ssn_masked, 
-		u.address1 as address1, u.address2 as address2, u.hire_date as hire_date, u.sysname as sysname,
+		u.id as id, u.users_seq as users_seq, u.name as name, u.ssn_masked as ssn_masked, u.rank_seq as rank_seq,
+		u.address1 as address1, u.address2 as address2, u.hire_date as hire_date, u.sysname as sysname, 
 		d.dept_seq as dept_seq, d.dept_name as dept_name, d.parent_dept_seq as parent_dept_seq, d.auth_group as auth_group,
 		r.rank_name rank_name, u.role as role, al.remaining_days as remaining_days, st.sysname as stamp_sysname
 		from users u
@@ -234,5 +234,33 @@
 	
 	<select id="selectUserStampSysname" resultType="String">
 		select sysname from user_stamp where users_id = #{users_id}
+	</select>
+	
+	<select id="findApproverByDept" resultType="com.study.app.domains.users.UsersDTO">
+		select *
+	    from (
+	        select u.*
+	        from users u
+	        join departments d on u.dept_seq = d.dept_seq
+	        where u.rank_seq = #{approver_rank_seq}
+	        and (
+	            u.dept_seq = #{dept_seq}
+	            or d.dept_seq = (select parent_dept_seq from departments where dept_seq = #{dept_seq})
+	        )
+	        and u.users_seq != #{drafter_seq}
+	    )
+	    where rownum = 1
+	</select>
+	
+	<select id="findApproverBySpecificDept" resultType="com.study.app.domains.users.UsersDTO">
+		select *
+		from (
+	        select u.*
+	        from users u
+	        where u.rank_seq = #{approver_rank_seq}
+	        and u.dept_seq = #{target_dept_seq}
+	        and u.users_seq != #{drafter_seq}
+	    )
+	    where rownum = 1
 	</select>
 </mapper>

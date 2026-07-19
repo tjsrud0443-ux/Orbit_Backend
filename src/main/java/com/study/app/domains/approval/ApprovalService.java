@@ -14,9 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.annualLeave.AnnualLeaveDAO;
+import com.study.app.domains.defaultApprovalLine.DefaultApprovalLineDAO;
+import com.study.app.domains.defaultApprovalLine.DefaultApprovalLineDTO;
 import com.study.app.domains.file.FileService;
 import com.study.app.domains.notifications.NotificationsDTO;
 import com.study.app.domains.notifications.NotificationsService;
+import com.study.app.domains.users.UsersDAO;
 import com.study.app.domains.users.UsersDTO;
 import com.study.app.domains.users.UsersService;
 
@@ -27,6 +30,10 @@ public class ApprovalService {
 	private ApprovalDAO dao;
 	@Autowired
 	private AnnualLeaveDAO annualDao;
+	@Autowired
+	private UsersDAO usersDao;
+	@Autowired
+	private DefaultApprovalLineDAO defaultLineDao;
 	@Autowired
 	private FileService fileServ;
 	@Autowired
@@ -915,5 +922,46 @@ public class ApprovalService {
 		}
 
 		return targets.size();
+	}
+	
+	public List<UsersDTO> getDefaultApprovers(String doc_type, String loginId) {
+		UsersDTO drafter = usersDao.getUsersInfo(loginId);
+	    
+		Map<String, Object> lineparams = new HashMap<>();
+		lineparams.put("doc_type", doc_type);
+		lineparams.put("drafter_rank_seq", drafter.getRank_seq());
+		
+		List<DefaultApprovalLineDTO> lines = defaultLineDao.getDefaultApprovalLine(lineparams);
+		List<UsersDTO> approvers = new ArrayList<>();
+		
+		for (DefaultApprovalLineDTO line : lines) {
+			UsersDTO approver = null;
+			Map<String, Object> searchParams = new HashMap<>();
+			searchParams.put("approver_rank_seq", line.getApprover_rank_seq());
+			searchParams.put("drafter_seq", drafter.getUsers_seq());
+			
+			if ("DRAFTER_DEPT".equals(line.getApprover_scope())) {
+				searchParams.put("dept_seq", drafter.getDept_seq());
+				approver = usersDao.findApproverByDept(searchParams);
+				
+			} else if ("SPECIFIC_DEPT".equals(line.getApprover_scope())) {
+				searchParams.put("target_dept_seq", line.getTarget_dept_seq());
+				approver = usersDao.findApproverBySpecificDept(searchParams);
+			}
+			
+			if (approver != null) {
+				boolean isDuplicate = false;
+				for (UsersDTO existing : approvers) {
+					if (existing.getUsers_seq().equals(approver.getUsers_seq())) {
+	                    isDuplicate = true;
+	                    break;
+	                }
+				}
+				if (!isDuplicate) {
+	                approvers.add(approver);
+	            }
+			}
+		}
+		return approvers;
 	}
 }

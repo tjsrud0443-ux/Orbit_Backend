@@ -32,4 +32,8 @@ public class DefaultApprovalLineDAO {
 		params.put("drafter_rank_seq", drafter_rank_seq);
 		myBatis.delete("DefaultLine.deleteDefaultLine", params);
 	}
+	
+	public List<DefaultApprovalLineDTO> getDefaultApprovalLine(Map<String, Object> lineparams) {
+		return myBatis.selectList("DefaultLine.getDefaultApprovalLine", lineparams);
+	}
 }
