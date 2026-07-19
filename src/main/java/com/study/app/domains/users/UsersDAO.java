@@ -131,4 +131,12 @@ public class UsersDAO {
 	public String selectUserStampSysname(String users_id) {
 		return batis.selectOne("Users.selectUserStampSysname", users_id);
 	}
+	
+	public UsersDTO findApproverByDept(Map<String, Object> searchParams) {
+		return batis.selectOne("Users.findApproverByDept", searchParams);
+	}
+	
+	public UsersDTO findApproverBySpecificDept(Map<String, Object> searchParams) {
+		return batis.selectOne("Users.findApproverBySpecificDept", searchParams);
+	}
 }

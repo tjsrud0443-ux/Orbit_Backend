@@ -215,4 +215,11 @@ public class ApprovalController {
 		return ResponseEntity.ok(Map.of("approved_count", approvalCount));
 	}
 	
+	@GetMapping("defaultApprovalLine")
+	public ResponseEntity<List<UsersDTO>> getDefaultApprovers(@RequestParam String doc_type,
+																@RequestAttribute String loginId) {
+		
+		List<UsersDTO> approvers = appServ.getDefaultApprovers(doc_type, loginId);
+		return ResponseEntity.ok(approvers);
+	}
 }
