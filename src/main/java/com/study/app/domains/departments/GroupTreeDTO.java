@@ -15,12 +15,15 @@ public class GroupTreeDTO {
     private List<GroupTreeDTO> children;
     private List<GroupMemberDTO> members;
     private String auth_group;
+    private Long rankSeq;
+    private Long rankOrder;
+    private String id;
     
 	public GroupTreeDTO() {}
 	
 	public GroupTreeDTO(Long deptSeq, String deptCode, String deptName, String sysname, Long parentDeptSeq, String name,
 			String position, List<GroupTreeDTO> children, List<GroupMemberDTO> members,
-			String auth_group) {
+			String auth_group, Long rankSeq, Long rankOrder, String id) {
 		super();
 		this.deptSeq = deptSeq;
 		this.deptCode = deptCode;
@@ -32,6 +35,9 @@ public class GroupTreeDTO {
 		this.children = children;
 		this.members = members;
 		this.auth_group = auth_group;
+		this.rankSeq = rankSeq;
+		this.rankOrder = rankOrder;
+		this.id = id;
 	}
 	
 	public Long getDeptSeq() {
@@ -88,12 +94,28 @@ public class GroupTreeDTO {
 	public void setMembers(List<GroupMemberDTO> members) {
 		this.members = members;
 	}
-
 	public String getAuth_group() {
 		return auth_group;
 	}
-
 	public void setAuth_group(String auth_group) {
 		this.auth_group = auth_group;
+	}
+	public Long getRankSeq() {
+		return rankSeq;
+	}
+	public void setRankSeq(Long rankSeq) {
+		this.rankSeq = rankSeq;
+	}
+	public Long getRankOrder() {
+		return rankOrder;
+	}
+	public void setRankOrder(Long rankOrder) {
+		this.rankOrder = rankOrder;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 }

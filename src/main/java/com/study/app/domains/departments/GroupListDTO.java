@@ -12,11 +12,13 @@ public class GroupListDTO {
 	private String position;
 	private String phone;
 	private String attendanceStatus;
+	private Long rankSeq;
+	private Long rankOrder;
 	
 	public GroupListDTO() {}
 	
 	public GroupListDTO(String id, String name, Long deptSeq, String deptCode, String deptName, String sysname, String position, String phone,
-			String attendanceStatus) {
+			String attendanceStatus, Long rankSeq, Long rankOrder) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -27,6 +29,8 @@ public class GroupListDTO {
 		this.position = position;
 		this.phone = phone;
 		this.attendanceStatus = attendanceStatus;
+		this.rankSeq = rankSeq;
+		this.rankOrder = rankOrder;
 	}
 	
 	public String getId() {
@@ -82,5 +86,17 @@ public class GroupListDTO {
 	}
 	public void setAttendanceStatus(String attendanceStatus) {
 		this.attendanceStatus = attendanceStatus;
+	}
+	public Long getRankSeq() {
+		return rankSeq;
+	}
+	public void setRankSeq(Long rankSeq) {
+		this.rankSeq = rankSeq;
+	}
+	public Long getRankOrder() {
+		return rankOrder;
+	}
+	public void setRankOrder(Long rankOrder) {
+		this.rankOrder = rankOrder;
 	}
 }

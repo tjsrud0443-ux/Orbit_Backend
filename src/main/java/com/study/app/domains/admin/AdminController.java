@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.annualLeave.AdminLeaveDTO;
 import com.study.app.domains.companyInfo.CompanyInfoDTO;
+import com.study.app.domains.defaultApprovalLine.DefaultApprovalLineDTO;
 import com.study.app.domains.departments.DepartmentsCountDTO;
 import com.study.app.domains.departments.DepartmentsDTO;
 import com.study.app.domains.departments.DeptLeaveDTO;
@@ -126,8 +127,8 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/hr/delDept/{dept_seq}")
-	public ResponseEntity<Void> delDept(@PathVariable Long dept_seq) {
-		adminServ.delDept(dept_seq);
+	public ResponseEntity<Void> deleteDept(@PathVariable Long dept_seq) {
+		adminServ.deleteDept(dept_seq);
 		return ResponseEntity.ok().build();
 	}
 
@@ -503,294 +504,29 @@ public class AdminController {
 	    return ResponseEntity.ok().build();
 	}
 	
+	@GetMapping("defaultApprovalLine/list")
+	public ResponseEntity<List<DefaultApprovalLineDTO>> getApprovalLines(@RequestParam String doc_type) {
+		return ResponseEntity.ok(adminServ.getApprovalLines(doc_type));
+	}
 	
+	@PostMapping("defaultApprovalLine/save")
+	public ResponseEntity<Void> saveApprovalLines(@RequestBody List<DefaultApprovalLineDTO> lines,
+													@RequestParam String doc_type,
+													@RequestParam Long drafter_rank_seq) {
+		
+		adminServ.saveApprovalLines(lines, doc_type, drafter_rank_seq);
+		return ResponseEntity.ok().build();
+	}
 	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//연차관리
+	@DeleteMapping("defaultApprovalLine/delete")
+	public ResponseEntity<Void> deleteApprovalLine(@RequestParam String doc_type,
+													@RequestParam Long drafter_rank_seq) {
+		
+		adminServ.deleteApprovalLine(doc_type, drafter_rank_seq);
+		return ResponseEntity.ok().build();
+	}
+
+	//연차관리
 	@GetMapping("/hr/getAllLeaveList")
 	public ResponseEntity<Map<String, Object>> getAllLeaveList(
 			@RequestParam(required = false) String keyword,

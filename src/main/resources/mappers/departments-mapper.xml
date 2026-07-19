@@ -5,108 +5,104 @@
 
 	<select id="selectGroupTree"
 		resultType="com.study.app.domains.departments.GroupTreeDTO">
-		select 
-			d.dept_seq as deptSeq, 
-			d.dept_code as deptCode, 
-			d.dept_name as deptName, 
-			u.sysname as sysname,
-			d.parent_dept_seq as parentDeptSeq, 
-			d.auth_group as auth_group, 
-			u.name as name, 
-			r.rank_name as position
-			
-			from departments d
-			left join (
-				select u1.dept_seq, u1.name, u1.rank_seq, u1.sysname
-			from users u1
-			
-			where u1.status in ('ACTIVE', 'INACTIVE')
-			and u1.users_seq in
-				(select min(u2.users_seq)
-				from users u2 
-				where u2.status in ('ACTIVE', 'INACTIVE')
-				group by u2.dept_seq)
-			) u on d.dept_seq = u.dept_seq
-			left join rank r on u.rank_seq = r.rank_seq
-		order by d.dept_seq
+			select 
+				d.dept_seq as deptSeq,
+				d.dept_code as deptCode,
+				d.dept_name as deptName,
+				d.parent_dept_seq as parentDeptSeq,
+	        	d.auth_group as auth_group
+	    	from departments d order by d.dept_seq
 	</select>
 
 	<select id="selectGroupList"
 		resultType="com.study.app.domains.departments.GroupListDTO">
-		select
-			u.id as id,
-			u.name as name,
-			u.dept_seq as deptSeq,
-			d.dept_code as deptCode,
-			d.dept_name as deptName,
-			u.sysname as sysname,
-			r.rank_name as position,
-			u.phone,
-
-			case
-				when u.status = 'INACTIVE' then '휴직'
-				when v.vac_type = '연차' then '연차'
+			select
+				u.id as id,
+				u.name as name,
+				u.dept_seq as deptSeq,
+				d.dept_code as deptCode,
+				d.dept_name as deptName,
+				u.sysname as sysname,
 				
-				when v.vac_type = '오전반차' then
-					case
-						when a.check_in is null then '오전반차'
-						when a.check_out is not null then '퇴근'
-						else '근무중'
-					end
+				r.rank_seq as rankSeq,
+				r.rank_name as position,
+				r.rank_order as rankOrder,
+				
+				u.phone,
+	
+				case
+					when u.status = 'INACTIVE' then '휴직'
+					when v.vac_type = '연차' then '연차'
 					
-				when v.vac_type = '오후반차' then
-					case
-						when a.check_in is null then null
-						when a.check_out is not null then '퇴근'
-						else '근무중'
-					end
+					when v.vac_type = '오전반차' then
+						case
+							when a.check_in is null then '오전반차'
+							when a.check_out is not null then '퇴근'
+							else '근무중'
+						end
+						
+					when v.vac_type = '오후반차' then
+						case
+							when a.check_in is null then null
+							when a.check_out is not null then '퇴근'
+							else '근무중'
+						end
+					
+					else
+						case 
+							when a.check_in is null then null
+							when a.check_out is not null then '퇴근'
+							else '근무중'
+						end
 				
-				else
-					case 
-						when a.check_in is null then null
-						when a.check_out is not null then '퇴근'
-						else '근무중'
-					end
-			
-			end as attendanceStatus
-			
-			from users u
-				left join departments d on u.dept_seq = d.dept_seq
-				left join rank r on u.rank_seq = r.rank_seq
-				left join attendance a on u.id = a.users_id
-				and trunc(a.work_date) = trunc(sysdate)
+				end as attendanceStatus
 				
-				left join (
-					select d.users_id, v.vac_type
-					from draft_documents d
-					join vacation v on d.doc_seq = v.doc_seq
-					where d.doc_type = 'VACATION'
-						and d.status = 'APPROVED'
-						and trunc(sysdate) between trunc(v.start_date) and trunc(v.end_date)
-				) v on u.id = v.users_id
-				
-			where u.status in ('ACTIVE', 'INACTIVE')
-			order by r.rank_order asc, u.name asc
-	</select>
-
-	<select id="selectMembers"
-		resultType="com.study.app.domains.departments.GroupMemberDTO">
-		select 
-		u.id as id, 
-		u.name as name, 
-		r.rank_name as position, 
-		u.sysname as sysname,
-		u.phone as phone,
-		u.email as email
-		from users u
-		left join rank r on u.rank_seq = r.rank_seq
-		where u.dept_seq = #{deptSeq} and u.status in ('ACTIVE', 'INACTIVE')
-		order by r.rank_order
+				from users u
+					left join departments d on u.dept_seq = d.dept_seq
+					left join rank r on u.rank_seq = r.rank_seq
+					left join attendance a on u.id = a.users_id
+					and trunc(a.work_date) = trunc(sysdate)
+					
+					left join (
+						select d.users_id, v.vac_type
+						from draft_documents d
+						join vacation v on d.doc_seq = v.doc_seq
+						where d.doc_type = 'VACATION'
+							and d.status = 'APPROVED'
+							and trunc(sysdate) between trunc(v.start_date) and trunc(v.end_date)
+					) v on u.id = v.users_id
+					
+				where u.status in ('ACTIVE', 'INACTIVE')
+				order by r.rank_order asc, u.name asc
 	</select>
 
 	<select id="getDeptList"
 		resultType="com.study.app.domains.departments.DepartmentsDTO">
-		select dept_seq, dept_name, parent_dept_seq from departments where parent_dept_seq is not null
-		order by parent_dept_seq
+			select dept_seq, dept_name, parent_dept_seq from departments where parent_dept_seq is not null
+			order by parent_dept_seq
+	</select>
+	
+	<select id="selectAllMembers"
+    	resultType="com.study.app.domains.departments.GroupMemberDTO">
+		    select
+		        u.id as id,
+		        u.name as name,
+		        u.dept_seq as deptSeq,
+		
+		        r.rank_seq as rankSeq,
+		        r.rank_name as position,
+		        r.rank_order as rankOrder,
+		
+		        u.sysname as sysname,
+		        u.phone as phone,
+		        u.email as email
+		    from users u
+		    left join rank r
+		        on u.rank_seq = r.rank_seq
+		    where u.status in ('ACTIVE', 'INACTIVE')
+		    order by
+		        u.dept_seq asc,
+		        r.rank_order asc nulls last,
+		        u.name asc
 	</select>
 </mapper>

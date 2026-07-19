@@ -17,39 +17,54 @@ public class DepartmentsService {
 	public Map<String, Object> getGroup() {
 
 		List<GroupTreeDTO> groupTree = dao.selectGroupTree();
-		List<GroupListDTO> groupList = dao.selectGroupList();
-		
-		Map<Long, GroupTreeDTO> nodeMap = new HashMap<>();
+	    List<GroupListDTO> groupList = dao.selectGroupList();
+	    List<GroupMemberDTO> allMembers = dao.selectAllMembers();
 
-		for(GroupTreeDTO node : groupTree) {
-			node.setChildren(new ArrayList<>());
-			node.setMembers(new ArrayList<>());
-			
-			List<GroupMemberDTO> members = dao.selectMembers(node.getDeptSeq());
-			node.setMembers(members);
-			nodeMap.put(node.getDeptSeq(), node);
-		}
+	    Map<Long, GroupTreeDTO> nodeMap = new HashMap<>();
 
-		GroupTreeDTO root = null;
+	    for (GroupTreeDTO node : groupTree) {
+	        node.setChildren(new ArrayList<>());
+	        node.setMembers(new ArrayList<>());
+	        nodeMap.put(node.getDeptSeq(), node);
+	    }
 
-		for(GroupTreeDTO node : groupTree) {
-			Long parentSeq = node.getParentDeptSeq();
+	    for (GroupMemberDTO member : allMembers) {
+	        GroupTreeDTO deptNode = nodeMap.get(member.getDeptSeq());
 
-			if(parentSeq == null) {
-				root = node;
-			}else {
-				GroupTreeDTO parent = nodeMap.get(parentSeq);
+	        if (deptNode != null) {
+	            deptNode.getMembers().add(member);
+	        }
+	    }
 
-				if(parent != null) {
-					parent.getChildren().add(node);
-				}
-			}
-		}
-		Map<String, Object> result = new HashMap<>();
-		result.put("root", root);
-		result.put("nodeMap", nodeMap);
-		result.put("users", groupList);
-		
-		return result;
+	    GroupTreeDTO root = null;
+	    
+	    for (GroupTreeDTO node : groupTree) {
+	        Long parentSeq = node.getParentDeptSeq();
+
+	        if (parentSeq == null) {
+	        	if(root != null) {
+	        		throw new IllegalStateException("최상위 부서가 여러 개 존재합니다.");
+	        	}
+	            root = node;
+	            continue;
+	        }
+
+	        GroupTreeDTO parent = nodeMap.get(parentSeq);
+
+	        if (parent != null) {
+	            parent.getChildren().add(node);
+	        }
+	    }
+	    
+	    if(root == null) {
+	    	throw new IllegalStateException("최상위 부서가 존재하지 않습니다.");
+	    }
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("root", root);
+	    result.put("nodeMap", nodeMap);
+	    result.put("users", groupList);
+
+	    return result;
 	}
 }
