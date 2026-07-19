@@ -37,6 +37,8 @@ public class UsersDTO {
     private Long stamp_seq;
     
     private Double remaining_days;
+    
+    private String user_auth_group;
 	
 	public UsersDTO() {}
 
@@ -44,7 +46,7 @@ public class UsersDTO {
 			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
 			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
 			String created_at, String update_at, String sysname, String is_hr_manager, String dept_name, String rank_name, Long rank_order,
-			String auth_group, Long parent_dept_seq, String stamp_sysname, String stamp_oriname, Long stamp_seq, Double remaining_days) {
+			String auth_group, Long parent_dept_seq, String stamp_sysname, String stamp_oriname, Long stamp_seq, Double remaining_days, String user_auth_group) {
 		super();
 		this.id = id;
 		this.pw = pw;
@@ -78,6 +80,7 @@ public class UsersDTO {
 		this.stamp_oriname = stamp_oriname;
 		this.stamp_seq = stamp_seq;
 		this.remaining_days = remaining_days;
+		this.user_auth_group = user_auth_group;
 	}
 
 	public String getId() {
@@ -334,5 +337,13 @@ public class UsersDTO {
 
 	public void setRemaining_days(Double remaining_days) {
 		this.remaining_days = remaining_days;
+	}
+	
+	public String getUser_auth_group() {
+		return user_auth_group;
+	}
+
+	public void setUser_auth_group(String user_auth_group) {
+		this.user_auth_group = user_auth_group;
 	}
 }
