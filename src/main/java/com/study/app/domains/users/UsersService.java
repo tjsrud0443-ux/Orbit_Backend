@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.file.FileService;
@@ -84,5 +85,38 @@ public class UsersService {
 	
 	public String selectUserStampSysname(String users_id) {
 		return dao.selectUserStampSysname(users_id);
+	}
+	
+	@Transactional
+	public Map<String, String> updateProfileFile(String loginId, MultipartFile file) throws Exception{
+		String oldSysname = dao.findProfileSysname(loginId);
+
+		Map<String, String> uploadResult = fileServ.upload(file);
+		String newSysname = uploadResult.get("sysname");
+		String newOriname = uploadResult.get("oriname");
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("loginId", loginId);
+		params.put("sysname", newSysname);
+		params.put("oriname", newOriname);
+
+		try {
+			int result = dao.updateProfileImage(params);
+			if(result == 0) {
+				throw new IllegalStateException("프로필 이미지를 수정할 사용자를 찾을 수 없습니다");
+			}
+		}catch(Exception e) {
+			fileServ.deleteFromGCS(newSysname);
+			throw e;
+		}
+
+		if(oldSysname != null && !oldSysname.isBlank()) {
+			try {
+				fileServ.deleteFromGCS(oldSysname);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return uploadResult;
 	}
 }
