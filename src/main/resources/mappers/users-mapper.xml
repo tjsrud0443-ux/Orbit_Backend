@@ -66,6 +66,7 @@
 	                u.users_seq, u.name, u.id, u.role, u.hire_date,
 	                u.dept_seq, u.rank_seq,
 	                u.is_hr_manager,
+	                u.resign_date, u.update_at,
 	                d.dept_name, d.auth_group, r.rank_name,
 	                CASE u.status
 	                    WHEN 'ACTIVE' THEN '재직'
