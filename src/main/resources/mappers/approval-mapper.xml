@@ -7,8 +7,8 @@
 	        select doc_seq.nextval from dual
 	    </selectKey>
 	    
-	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, 
-	    #{status}, null, #{is_temp}, TO_DATE(#{temp_expires_at, jdbcType=VARCHAR}, 'YYYY-MM-DD'), sysdate, sysdate, #{stamp_sysname, jdbcType=VARCHAR})
+	    insert into draft_documents values (#{doc_seq}, #{title}, #{doc_type}, #{users_id}, #{status}, null, #{is_temp}, 
+	    TO_DATE(#{temp_expires_at, jdbcType=VARCHAR}, 'YYYY-MM-DD'), sysdate, sysdate, #{stamp_sysname, jdbcType=VARCHAR}, null)
 	</insert>
 	
 	<insert id="insertApprovalLines">
@@ -89,10 +89,11 @@
 	
 	<select id="selectCommonDetail" resultType="map">
 	    select
-	    	d.doc_seq as "doc_seq", d.title as "title", d.doc_type as "doc_type", d.users_id as "users_id", d.status as "status",
-	    	d.reject_reason as "reject_reason", d.is_temp as "is_temp", TO_CHAR(d.temp_expires_at, 'YYYY-MM-DD') as "temp_expires_at", TO_CHAR(d.created_at, 'YYYY-MM-DD') as "created_at",
-	    	TO_CHAR(d.updated_at, 'YYYY-MM-DD') as "updated_at", d.stamp_sysname as "stamp_sysname", u.name as "name", u.users_seq as "users_seq", dept.dept_name as "dept_name", r.rank_name as "rank_name"
-	    	from draft_documents d
+	    	d.doc_seq as "doc_seq", d.title as "title", d.doc_type as "doc_type", d.users_id as "users_id", d.status as "status", d.reject_reason as "reject_reason", d.is_temp as "is_temp", 
+	    	TO_CHAR(d.temp_expires_at, 'YYYY-MM-DD') as "temp_expires_at", TO_CHAR(d.created_at, 'YYYY-MM-DD') as "created_at",
+	    	TO_CHAR(d.updated_at, 'YYYY-MM-DD') as "updated_at", d.stamp_sysname as "stamp_sysname", d.resubmit_doc_seq as "resubmit_doc_seq", 
+	    	u.name as "name", u.users_seq as "users_seq", dept.dept_name as "dept_name", r.rank_name as "rank_name"
+	    from draft_documents d
 	    left outer join users u 
 	    	on d.users_id = u.id
 	    left outer join departments dept 
@@ -624,4 +625,8 @@
 			(select general_seq from general where doc_seq = #{doc_seq}
 		)
 	</delete>
+	
+	<update id="updateResubmitDocSeq">
+		update draft_documents set resubmit_doc_seq = #{newDocSeq} where doc_seq = #{originalDocSeq}
+	</update>
 </mapper>

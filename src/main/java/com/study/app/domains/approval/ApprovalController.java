@@ -35,10 +35,11 @@ public class ApprovalController {
 	}
 
 	@PostMapping(value = "submit/vacation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> submitVacation(@RequestPart("dto") VacationDTO dto,
+	public ResponseEntity<String> submitVacation(@RequestParam(required = false) Long originalDocSeq,
+												@RequestPart("dto") VacationDTO dto,
 												@RequestPart(value = "files", required = false) List<MultipartFile> files){ 
 		try{
-			appServ.insertVacation(dto, files);
+			appServ.insertVacation(dto, files, originalDocSeq);
 			return ResponseEntity.ok("기안 상신이 완료되었습니다.");
 		}catch(IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -46,27 +47,28 @@ public class ApprovalController {
 	}
 	
 	@PostMapping(value = "submit/general", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Void> submitGeneral(@RequestPart("dto") GeneralDTO dto,
+	public ResponseEntity<Void> submitGeneral(@RequestParam(required = false) Long originalDocSeq,
+											 @RequestPart("dto") GeneralDTO dto,
 											 @RequestPart(value = "files", required = false) List<MultipartFile> files){ 
-		appServ.insertGeneral(dto, files);
+		appServ.insertGeneral(dto, files, originalDocSeq);
 		return ResponseEntity.ok().build();
 	}
 	
 	@PostMapping(value = "submit/purchase", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Void> submitPurchase(
-			@RequestPart("dto") PurchaseDTO dto,
-			@RequestPart(value = "files", required = false) List<MultipartFile> files){ 
+	public ResponseEntity<Void> submitPurchase(@RequestParam(required = false) Long originalDocSeq,
+												@RequestPart("dto") PurchaseDTO dto,
+												@RequestPart(value = "files", required = false) List<MultipartFile> files){ 
 		
-		appServ.insertPurchase(dto, files);
+		appServ.insertPurchase(dto, files, originalDocSeq);
 		return ResponseEntity.ok().build();
 	}
 	
 	@PostMapping(value = "submit/payment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Void> submitPayment(
-			@RequestPart("dto") PaymentDTO dto,
-			@RequestPart(value = "files", required = false) List<MultipartFile> files){ 
+	public ResponseEntity<Void> submitPayment(@RequestParam(required = false) Long originalDocSeq,
+												@RequestPart("dto") PaymentDTO dto,
+												@RequestPart(value = "files", required = false) List<MultipartFile> files){ 
 		
-		appServ.insertPayment(dto, files);
+		appServ.insertPayment(dto, files, originalDocSeq);
 		return ResponseEntity.ok().build();
 	}
 	

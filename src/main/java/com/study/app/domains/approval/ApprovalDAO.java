@@ -410,4 +410,11 @@ public class ApprovalDAO {
 	public void deleteGenAttach(Long doc_seq) {
 		mybatis.delete("Approval.deleteGenAttach", doc_seq);
 	}
+	
+	public void updateResubmitDocSeq(Long originalDocSeq, Long newDocSeq) {
+		Map<String, Long> params = new HashMap<>();
+		params.put("originalDocSeq", originalDocSeq);
+		params.put("newDocSeq", newDocSeq);
+		mybatis.update("Approval.updateResubmitDocSeq", params);
+	}
 }

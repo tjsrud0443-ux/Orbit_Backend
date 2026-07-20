@@ -94,7 +94,7 @@ public class ApprovalService {
 
 	// 휴가 신청서
 	@Transactional
-	public void insertVacation(VacationDTO dto, List<MultipartFile> files) {
+	public void insertVacation(VacationDTO dto, List<MultipartFile> files, Long originalDocSeq) {
 		String users_id = dto.getUsers_id();
 		Double used_days = dto.getDays();
 		Map<String, Object> leaveData = annualDao.selectAnnualLeaveData(users_id);
@@ -129,11 +129,14 @@ public class ApprovalService {
 				}
 			}
 		}
+		if (originalDocSeq != null) {
+	        dao.updateResubmitDocSeq(originalDocSeq, dto.getDoc_seq());
+	    }
 	}
 
 	// 일반 품의서
 	@Transactional
-	public void insertGeneral(GeneralDTO dto, List<MultipartFile> files) {
+	public void insertGeneral(GeneralDTO dto, List<MultipartFile> files, Long originalDocSeq) {
 		insertCommonApprovalData(dto);
 		dao.insertGeneralDetail(dto);
 		Long general_seq = dto.getGeneral_seq();
@@ -156,11 +159,14 @@ public class ApprovalService {
 				}
 			}
 		}
+		if (originalDocSeq != null) {
+	        dao.updateResubmitDocSeq(originalDocSeq, dto.getDoc_seq());
+	    }
 	}
 
 	// 지출 결의서
 	@Transactional
-	public void insertPayment(PaymentDTO dto, List<MultipartFile> files) {
+	public void insertPayment(PaymentDTO dto, List<MultipartFile> files, Long originalDocSeq) {
 		insertCommonApprovalData(dto);
 		dao.insertPaymentDetail(dto);
 
@@ -186,11 +192,14 @@ public class ApprovalService {
 				dao.insertPaymentItem(item);
 			}
 		}
+		if (originalDocSeq != null) {
+	        dao.updateResubmitDocSeq(originalDocSeq, dto.getDoc_seq());
+	    }
 	}
 
 	// 구매 신청서
 	@Transactional
-	public void insertPurchase(PurchaseDTO dto, List<MultipartFile> files) {
+	public void insertPurchase(PurchaseDTO dto, List<MultipartFile> files, Long originalDocSeq) {
 		insertCommonApprovalData(dto);
 		dao.insertPurchaseDetail(dto);
 		Long purchase_seq = dto.getPurchase_seq();
@@ -222,6 +231,9 @@ public class ApprovalService {
 				}
 			}
 		}
+		if (originalDocSeq != null) {
+	        dao.updateResubmitDocSeq(originalDocSeq, dto.getDoc_seq());
+	    }
 	}
 
 	public Map<String, Object> getApprovalDetail(String doc_type, Long doc_seq) throws Exception {
