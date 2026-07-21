@@ -11,6 +11,16 @@
 		) values ( cert_request_seq.nextval, #{dto.cert_type_seq}, #{loginId}, #{dto.request_reason})
 	</insert>
 	
+	<select id="countActiveCertRequest" resultType="int">
+		select count(*) from cert_issue_request
+			where users_id = #{loginId} and cert_type_seq = #{dto.cert_type_seq}
+				and (
+					status = 'PENDING' or status = 'APPROVED'
+						and print_expires_at >= sysdate
+						and nvl(printed_count, 0) <![CDATA[ < ]]> nvl(applied_max_print, 0)
+				)
+	</select>
+	
 	<select id="getAdminCertRequestList" resultType="com.study.app.domains.certType.CertIssueRequestDTO">
 		select
 	        cir.cert_request_seq,
@@ -23,7 +33,6 @@
 	        cir.approved_at,
 	        cir.rejected_at,
 	        cir.reject_reason,
-	        cir.canceled_at,
 	        cir.print_available_at,
 	        cir.print_expires_at,
 	        cir.applied_print_days,
@@ -42,7 +51,6 @@
 	        case
 	            when cir.status = 'APPROVED' then cir.approved_at
 	            when cir.status = 'REJECTED' then cir.rejected_at
-	            when cir.status = 'CANCELED' then cir.canceled_at
 	            else null
 	        end as processed_at
 	
@@ -61,4 +69,60 @@
 	            else 2
 	        end, cir.requested_at desc
 	</select>
+	
+	<update id="approveCertRequest">
+		update cert_issue_request cir
+		    set
+		        cir.status = 'APPROVED',
+		        cir.handle_id = #{loginId},
+		        cir.approved_at = sysdate,
+		        cir.print_available_at = sysdate,
+		
+		        cir.applied_print_days = (
+		            select ct.print_days
+		            from cert_type ct 
+		            where ct.cert_type_seq = cir.cert_type_seq
+		        ),
+		
+		        cir.applied_max_print = (
+		            select ct.max_print_count
+		            from cert_type ct
+		            where ct.cert_type_seq = cir.cert_type_seq
+		        ),
+		
+		        cir.print_expires_at =
+		            sysdate
+		            + numtodsinterval(
+		                (
+		                    select ct.print_days
+		                    from cert_type ct
+		                    where ct.cert_type_seq = cir.cert_type_seq
+		                ),
+		                'DAY'
+		            ),
+		
+		        cir.updated_at = sysdate
+		
+		    where cir.cert_request_seq = #{cert_request_seq} 
+		    	and cir.status = 'PENDING'
+	</update>
+	
+	<update id="rejectCertRequest">
+		update cert_issue_request 
+			set
+				status = 'REJECTED',
+				handle_id = #{loginId},
+				rejected_at = sysdate,
+				reject_reason = #{reject_reason},
+				updated_at = sysdate
+			where cert_request_seq = #{cert_request_seq}
+				and status = 'PENDING'
+	</update>
+	
+	<delete id="cancelCertRequest">
+		delete from cert_issue_request
+		    where cert_request_seq = #{cert_request_seq}
+		      and users_id = #{loginId}
+		      and status = 'PENDING'
+	</delete>
 </mapper>

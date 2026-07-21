@@ -14,7 +14,6 @@ public class CertIssueRequestDTO {
 	private LocalDateTime approved_at;
 	private LocalDateTime rejected_at;
 	private String reject_reason;
-	private LocalDateTime canceled_at;
 	private LocalDateTime print_available_at;
 	private LocalDateTime print_expires_at;
 	private Long applied_print_days;
@@ -34,8 +33,7 @@ public class CertIssueRequestDTO {
 	
 	public CertIssueRequestDTO(Long cert_request_seq, Long cert_type_seq, String users_id, String request_reason,
 			String status, LocalDateTime requested_at, String handle_id, LocalDateTime approved_at,
-			LocalDateTime rejected_at, String reject_reason, LocalDateTime canceled_at,
-			LocalDateTime print_available_at, LocalDateTime print_expires_at, Long applied_print_days,
+			LocalDateTime rejected_at, String reject_reason, LocalDateTime print_available_at, LocalDateTime print_expires_at, Long applied_print_days,
 			Long applied_max_print, Long printed_count, LocalDateTime created_at, LocalDateTime updated_at) {
 		super();
 		this.cert_request_seq = cert_request_seq;
@@ -48,7 +46,6 @@ public class CertIssueRequestDTO {
 		this.approved_at = approved_at;
 		this.rejected_at = rejected_at;
 		this.reject_reason = reject_reason;
-		this.canceled_at = canceled_at;
 		this.print_available_at = print_available_at;
 		this.print_expires_at = print_expires_at;
 		this.applied_print_days = applied_print_days;
@@ -117,12 +114,6 @@ public class CertIssueRequestDTO {
 	}
 	public void setReject_reason(String reject_reason) {
 		this.reject_reason = reject_reason;
-	}
-	public LocalDateTime getCanceled_at() {
-		return canceled_at;
-	}
-	public void setCanceled_at(LocalDateTime canceled_at) {
-		this.canceled_at = canceled_at;
 	}
 	public LocalDateTime getPrint_available_at() {
 		return print_available_at;

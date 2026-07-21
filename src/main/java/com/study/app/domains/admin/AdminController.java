@@ -548,6 +548,20 @@ public class AdminController {
 		List<CertIssueRequestDTO> list = adminServ.getAdminCertRequestList();
 		return ResponseEntity.ok(list);
 	}
+	
+	@PutMapping("/hr/approveCertRequest/{cert_request_seq}")
+	public ResponseEntity<Void> approveCertRequest(@PathVariable Long cert_request_seq,
+													@RequestAttribute String loginId) {
+		adminServ.approveCertRequest(cert_request_seq, loginId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("/hr/rejectCertRequest/{cert_request_seq}")
+	public ResponseEntity<Void> rejectCertRequest(@PathVariable Long cert_request_seq,
+			@RequestBody CertIssueRequestDTO dto, @RequestAttribute String loginId) {
+		adminServ.rejectCertRequest(cert_request_seq, dto.getReject_reason(), loginId);
+		return ResponseEntity.ok().build();
+	}
 
 
 

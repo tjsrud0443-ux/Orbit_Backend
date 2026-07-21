@@ -2,9 +2,51 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CertType">
 	<select id = "getCertType" resultType="com.study.app.domains.certType.CertTypeDTO">
-		select 
-			cert_type_seq, cert_type_code, cert_type_name, manage_auth_group, cert_description, created_at 
-		from cert_type 
-		where hidden_yn = 'N' order by cert_type_seq
+		select
+	        ct.cert_type_seq,
+	        ct.cert_type_name,
+	        ct.hidden_yn,
+	        ct.created_at,
+	        ct.cert_type_code,
+	        ct.manage_auth_group,
+	        ct.print_days,
+	        ct.max_print_count,
+	        ct.updated_at,
+	        ct.cert_description,
+	
+	        req.cert_request_seq,
+	        req.request_reason,
+	        req.status,
+	        req.requested_at,
+	        req.approved_at,
+	        req.rejected_at,
+	        req.reject_reason,
+	        req.print_available_at,
+	        req.print_expires_at,
+	        req.applied_print_days,
+	        req.applied_max_print,
+	        req.printed_count
+	
+	    from cert_type ct
+	
+	    left join (
+	        select *
+	        from (
+	            select
+	                cir.*,
+	                row_number() over (
+	                    partition by cir.cert_type_seq
+	                    order by cir.requested_at desc,
+	                             cir.cert_request_seq desc
+	                ) as rn
+	            from cert_issue_request cir
+	            where cir.users_id = #{loginId}
+	        )
+	        where rn = 1
+	    ) req
+	        on ct.cert_type_seq = req.cert_type_seq
+	
+	    where ct.hidden_yn = 'N'
+	    order by ct.cert_type_seq
 	</select>
 </mapper>
