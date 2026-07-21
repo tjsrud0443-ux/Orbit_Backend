@@ -705,6 +705,14 @@ public class ApprovalService {
 	@Transactional
 	public void updateCancelVacation(Long doc_seq, CancelVacationDTO dto) {
 		dto.setDoc_seq(doc_seq);
+		
+		if (dto.getVac_seq() != null) {
+	        int count = dao.countCancelVacByVacSeq(dto.getVac_seq(), doc_seq);
+	        if (count > 0) {
+	            throw new IllegalArgumentException("이미 취소 신청 중인 휴가입니다.");
+	        }
+	    }
+		
 		updateCommonApprovalData(dto);
 		dao.updateCancelVacation(dto);
 	}

@@ -148,11 +148,15 @@ public class ApprovalController {
 	}
 	
 	@PutMapping("update/cancelVacation/{doc_seq}")
-	public ResponseEntity<Void> updateCancelVacation(@PathVariable Long doc_seq,
+	public ResponseEntity<?> updateCancelVacation(@PathVariable Long doc_seq,
 													@RequestBody CancelVacationDTO dto) {
 		
-		appServ.updateCancelVacation(doc_seq, dto);
-		return ResponseEntity.ok().build();
+		try{
+			appServ.updateCancelVacation(doc_seq, dto);
+			return ResponseEntity.ok().build();
+		}catch(IllegalArgumentException e){
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 	
 	@GetMapping("/home")
