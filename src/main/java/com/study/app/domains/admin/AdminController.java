@@ -573,6 +573,12 @@ public class AdminController {
 		adminServ.updateCertTypeHidden(dto);
 		return ResponseEntity.ok().build();
 	}
+	
+	@PutMapping("/hr/updateCertType")
+	public ResponseEntity<Void> updateCertType(@RequestBody CertTypeDTO dto) {
+		adminServ.updateCertType(dto);
+		return ResponseEntity.ok().build();
+	}
 
 
 

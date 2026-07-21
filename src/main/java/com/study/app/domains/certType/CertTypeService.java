@@ -99,4 +99,8 @@ public class CertTypeService {
 	public void updateCertTypeHidden(CertTypeDTO dto) {
 		dao.updateCertTypeHidden(dto);
 	}
+	
+	public void updateCertType(CertTypeDTO dto) {
+		dao.updateCertType(dto);
+	}
 }

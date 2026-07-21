@@ -23,4 +23,8 @@ public class CertTypeDAO {
 	public void updateCertTypeHidden(CertTypeDTO dto) {
 		mybatis.update("CertType.updateCertTypeHidden", dto);
 	}
+	
+	public void updateCertType(CertTypeDTO dto) {
+		mybatis.update("CertType.updateCertType", dto);
+	}
 }

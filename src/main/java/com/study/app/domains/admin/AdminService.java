@@ -506,6 +506,10 @@ public class AdminService {
 	public void updateCertTypeHidden(CertTypeDTO dto) {
 		certServ.updateCertTypeHidden(dto);
 	}
+	
+	public void updateCertType(CertTypeDTO dto) {
+		certServ.updateCertType(dto);
+	}
 
 
 
