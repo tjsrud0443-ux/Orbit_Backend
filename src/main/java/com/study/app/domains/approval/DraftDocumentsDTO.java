@@ -23,12 +23,13 @@ public class DraftDocumentsDTO {
     private String name;
 	private String my_approval_status;
 	private String sysname;
+	private String cancel_yn;
     
     public DraftDocumentsDTO() {}
 	public DraftDocumentsDTO(Long doc_seq, String title, String doc_type, String users_id, String status,
 			String reject_reason, Long is_temp, String temp_expires_at, String created_at, String updated_at,
 			String stamp_sysname, Long resubmit_doc_seq, List<ApprovalLinesDTO> approvers, List<ApprovalCcDTO> referrers, String name,
-			String my_approval_status, String sysname) {
+			String my_approval_status, String sysname, String cancel_yn) {
 		super();
 		this.doc_seq = doc_seq;
 		this.title = title;
@@ -47,6 +48,7 @@ public class DraftDocumentsDTO {
 		this.name = name;
 		this.my_approval_status = my_approval_status;
 		this.sysname = sysname;
+		this.cancel_yn = cancel_yn;
 	}
 	public Long getDoc_seq() {
 		return doc_seq;
@@ -149,5 +151,11 @@ public class DraftDocumentsDTO {
 	}
 	public void setSysname(String sysname) {
 		this.sysname = sysname;
+	}
+	public String getCancel_yn() {
+		return cancel_yn;
+	}
+	public void setCancel_yn(String cancel_yn) {
+		this.cancel_yn = cancel_yn;
 	}
 }

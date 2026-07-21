@@ -434,7 +434,7 @@
 	</select>
 	
 	<select id="getMyDoc" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
-		select d.*, u.name as name 
+		select d.*, u.name as name
 			from draft_documents d 
 			inner join users u on d.users_id = u.id
 			where d.users_id = #{loginId} and d.status != 'TEMP'
@@ -443,9 +443,10 @@
 	
 	<select id="getMyDocPage" resultType="com.study.app.domains.approval.DraftDocumentsDTO">
 		select * from (select row_number() over(order by d.created_at desc) rn, 
-			d.*, u.name as name
+			d.*, u.name as name, v.cancel_yn AS cancel_yn
 			from draft_documents d
 			inner join users u on d.users_id = u.id
+			left join vacation v on d.doc_seq = v.doc_seq
 			where d.users_id = #{loginId} and d.status = #{status}
 			
 			<if test="keyword != null and keyword != ''">
