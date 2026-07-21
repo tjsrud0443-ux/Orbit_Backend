@@ -39,14 +39,17 @@ public class UsersDTO {
     private Double remaining_days;
     
     private String user_auth_group;
+    
+    private String profile_url;
 	
 	public UsersDTO() {}
 
 	public UsersDTO(String id, String pw, Long users_seq, String name, String phone, String email, String oriname,
 			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
 			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
-			String created_at, String update_at, String sysname, String is_hr_manager, String dept_name, String rank_name, Long rank_order,
-			String auth_group, Long parent_dept_seq, String stamp_sysname, String stamp_oriname, Long stamp_seq, Double remaining_days, String user_auth_group) {
+			String created_at, String update_at, String sysname, String is_hr_manager, String dept_name,
+			String rank_name, Long rank_order, String auth_group, Long parent_dept_seq, String stamp_sysname,
+			String stamp_oriname, Long stamp_seq, Double remaining_days, String user_auth_group, String profile_url) {
 		super();
 		this.id = id;
 		this.pw = pw;
@@ -81,6 +84,7 @@ public class UsersDTO {
 		this.stamp_seq = stamp_seq;
 		this.remaining_days = remaining_days;
 		this.user_auth_group = user_auth_group;
+		this.profile_url = profile_url;
 	}
 
 	public String getId() {
@@ -258,7 +262,7 @@ public class UsersDTO {
 	public void setSysname(String sysname) {
 		this.sysname = sysname;
 	}
-	
+
 	public String getIs_hr_manager() {
 		return is_hr_manager;
 	}
@@ -282,15 +286,15 @@ public class UsersDTO {
 	public void setRank_name(String rank_name) {
 		this.rank_name = rank_name;
 	}
-	
+
 	public Long getRank_order() {
 		return rank_order;
 	}
-	
+
 	public void setRank_order(Long rank_order) {
 		this.rank_order = rank_order;
 	}
-	
+
 	public String getAuth_group() {
 		return auth_group;
 	}
@@ -330,7 +334,7 @@ public class UsersDTO {
 	public void setStamp_seq(Long stamp_seq) {
 		this.stamp_seq = stamp_seq;
 	}
-	
+
 	public Double getRemaining_days() {
 		return remaining_days;
 	}
@@ -338,7 +342,7 @@ public class UsersDTO {
 	public void setRemaining_days(Double remaining_days) {
 		this.remaining_days = remaining_days;
 	}
-	
+
 	public String getUser_auth_group() {
 		return user_auth_group;
 	}
@@ -346,4 +350,14 @@ public class UsersDTO {
 	public void setUser_auth_group(String user_auth_group) {
 		this.user_auth_group = user_auth_group;
 	}
+
+	public String getProfile_url() {
+		return profile_url;
+	}
+
+	public void setProfile_url(String profile_url) {
+		this.profile_url = profile_url;
+	}
+
+	
 }
