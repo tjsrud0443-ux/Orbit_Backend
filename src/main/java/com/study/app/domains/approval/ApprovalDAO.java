@@ -76,6 +76,13 @@ public class ApprovalDAO {
 		mybatis.insert("Approval.insertPurchaseAttachment", dto);
 	}
 	
+	public int countCancelVacByVacSeq(Long vac_seq, Long doc_seq) {
+		Map<String, Long> params = new HashMap<>();
+		params.put("vac_seq", vac_seq);
+		params.put("doc_seq", doc_seq);
+		return mybatis.selectOne("Approval.countCancelVacByVacSeq", params);
+	}
+	
 	public void insertCancelVacation(CancelVacationDTO dto) {
 		mybatis.insert("Approval.insertCancelVacation", dto);
 	}

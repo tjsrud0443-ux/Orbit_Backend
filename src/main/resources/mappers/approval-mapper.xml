@@ -20,6 +20,16 @@
 		insert into approval_cc values (cc_seq.nextval, #{doc_seq}, #{users_id})
 	</insert>
 	
+	<select id="countCancelVacByVacSeq" resultType="int">
+		select count(*) from cancel_vacation cv
+	    join draft_documents d on cv.doc_seq = d.doc_seq
+	    where cv.vac_seq = #{vac_seq}
+	    and cv.vac_seq is not null
+	    and d.status != 'REJECTED'
+	    and d.status != 'TEMP'
+	    and cv.doc_seq != #{doc_seq}
+	</select>
+	
 	<insert id="insertVacationDetail">
 		<selectKey keyProperty="vac_seq" resultType="long" order="BEFORE">
 			select vac_seq.nextval from dual
@@ -675,6 +685,8 @@
 		    from cancel_vacation cv
 		    join draft_documents d on cv.doc_seq = d.doc_seq
 		    where d.status != 'REJECTED'
+		    and d.status != 'TEMP'
+		    and cv.vac_seq is not null
 		)
 		order by v.start_date desc
 	</select>
