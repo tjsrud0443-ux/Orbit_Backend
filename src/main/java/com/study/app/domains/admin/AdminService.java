@@ -489,6 +489,14 @@ public class AdminService {
 	public List<CertIssueRequestDTO> getAdminCertRequestList() {
 		return certServ.getAdminCertRequestList();
 	}
+	
+	public void approveCertRequest(Long cert_request_seq, String loginId) {
+		certServ.approveCertRequest(cert_request_seq, loginId);
+	}
+	
+	public void rejectCertRequest(Long cert_request_seq, String reject_reason, String loginId) {
+		certServ.rejectCertRequest(cert_request_seq, reject_reason, loginId);
+	}
 
 
 

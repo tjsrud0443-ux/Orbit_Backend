@@ -14,6 +14,21 @@ public class CertTypeDTO {
 	private LocalDateTime updated_at;
 	private String cert_description;
 	
+	private Long cert_request_seq;
+	private String request_reason;
+	private String status;
+	private LocalDateTime requested_at;
+	private LocalDateTime approved_at;
+	private LocalDateTime rejected_at;
+	private String reject_reason;
+	private LocalDateTime print_available_at;
+	private LocalDateTime print_expires_at;
+	private Long applied_print_days;
+	private Long applied_max_print;
+	private Long printed_count;
+	private String issue_date_code;
+	private Long issue_no;
+	
 	public CertTypeDTO() {}
 	
 	public CertTypeDTO(Long cert_type_seq, String cert_type_name, String hidden_yn, LocalDateTime created_at,
@@ -91,5 +106,89 @@ public class CertTypeDTO {
 	}
 	public void setCert_description(String cert_description) {
 		this.cert_description = cert_description;
+	}
+	public Long getCert_request_seq() {
+		return cert_request_seq;
+	}
+	public void setCert_request_seq(Long cert_request_seq) {
+		this.cert_request_seq = cert_request_seq;
+	}
+	public String getRequest_reason() {
+		return request_reason;
+	}
+	public void setRequest_reason(String request_reason) {
+		this.request_reason = request_reason;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public LocalDateTime getRequested_at() {
+		return requested_at;
+	}
+	public void setRequested_at(LocalDateTime requested_at) {
+		this.requested_at = requested_at;
+	}
+	public LocalDateTime getApproved_at() {
+		return approved_at;
+	}
+	public void setApproved_at(LocalDateTime approved_at) {
+		this.approved_at = approved_at;
+	}
+	public LocalDateTime getRejected_at() {
+		return rejected_at;
+	}
+	public void setRejected_at(LocalDateTime rejected_at) {
+		this.rejected_at = rejected_at;
+	}
+	public String getReject_reason() {
+		return reject_reason;
+	}
+	public void setReject_reason(String reject_reason) {
+		this.reject_reason = reject_reason;
+	}
+	public LocalDateTime getPrint_available_at() {
+		return print_available_at;
+	}
+	public void setPrint_available_at(LocalDateTime print_available_at) {
+		this.print_available_at = print_available_at;
+	}
+	public LocalDateTime getPrint_expires_at() {
+		return print_expires_at;
+	}
+	public void setPrint_expires_at(LocalDateTime print_expires_at) {
+		this.print_expires_at = print_expires_at;
+	}
+	public Long getApplied_print_days() {
+		return applied_print_days;
+	}
+	public void setApplied_print_days(Long applied_print_days) {
+		this.applied_print_days = applied_print_days;
+	}
+	public Long getApplied_max_print() {
+		return applied_max_print;
+	}
+	public void setApplied_max_print(Long applied_max_print) {
+		this.applied_max_print = applied_max_print;
+	}
+	public Long getPrinted_count() {
+		return printed_count;
+	}
+	public void setPrinted_count(Long printed_count) {
+		this.printed_count = printed_count;
+	}
+	public String getIssue_date_code() {
+		return issue_date_code;
+	}
+	public void setIssue_date_code(String issue_date_code) {
+		this.issue_date_code = issue_date_code;
+	}
+	public Long getIssue_no() {
+		return issue_no;
+	}
+	public void setIssue_no(Long issue_no) {
+		this.issue_no = issue_no;
 	}
 }

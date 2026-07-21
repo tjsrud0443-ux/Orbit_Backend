@@ -17,8 +17,27 @@ public class CertIssueRequestDAO {
 		batis.insert("CertIssueRequest.insertCertRequest", params);
 	}
 	
+	public int countActiveCertRequest(Map<String, Object> params) {
+		return batis.selectOne("CertIssueRequest.countActiveCertRequest", params);
+	}
+	
 	public List<CertIssueRequestDTO> getAdminCertRequestList() {
 		return batis.selectList("CertIssueRequest.getAdminCertRequestList");
 	}
 	
+	public int approveCertRequest(Map<String, Object> params) {
+		return batis.update("CertIssueRequest.approveCertRequest", params);
+	}
+	
+	public int rejectCertRequest(Map<String, Object> params) {
+		return batis.update("CertIssueRequest.rejectCertRequest", params);
+	}
+	
+	public int cancelCertRequest(Map<String, Object> params) {
+		return batis.delete("CertIssueRequest.cancelCertRequest", params);
+	}
+	
+	public int increasePrintedCount(Map<String, Object> params) {
+		return batis.update("CertIssueRequest.increasePrintedCount", params);
+	}
 }
