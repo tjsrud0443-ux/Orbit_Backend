@@ -88,11 +88,21 @@ public class TokenValidator implements HandlerInterceptor{
 
 				return true;
 			}catch(Exception e) {
-				e.printStackTrace();
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				System.out.println("JWT 인증 실패: " + e.getMessage());
+
+			    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			    response.setContentType("application/json;charset=UTF-8");
+			    response.getWriter().write(
+			        "{\"message\":\"로그인 세션이 만료되었습니다.\"}"
+			    );
 				return false;
 			}
 		}
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().write(
+		    "{\"message\":\"인증 토큰이 없습니다.\"}"
+		);
 		return false;
 	}
 	
