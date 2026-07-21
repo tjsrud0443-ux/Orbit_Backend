@@ -125,14 +125,15 @@ public class UsersService {
 		return uploadResult;
 	}
 	
-	//직원관리 - 직원등록용 비번 암호화
+	//직원관리 - 직원등록용 비번 암호화 등
     @Transactional
     public void registerUserByAdmin(UsersDTO dto) {
         String originPw = dto.getPw();
         if (originPw != null && !originPw.isEmpty()) {
             dto.setPw(EncryptionUtils.getSha512(originPw));
         }
-        dao.insertUser(dto); //USERS 테이블 등록
+        
+        dao.insertUserByAdmin(dto); //USERS 테이블 등록
         alDao.insertAnnualLeave(dto.getId()); // 연차 자동 생성
     }
 }

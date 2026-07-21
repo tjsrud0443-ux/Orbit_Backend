@@ -5,10 +5,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/users")
 public class UsersController {
-	
-	private static final Logger log = LoggerFactory.getLogger(UsersController.class);
 	
 	@Autowired
 	private UsersService usersServ;
@@ -69,17 +65,4 @@ public class UsersController {
 		Map<String, String> result = usersServ.updateProfileFile(loginId, file);
 		return ResponseEntity.ok(result);
 	}
-	
-//	@PostMapping("/admin/registerUser")
-//	public ResponseEntity<Void> registerUserByAdmin(
-//	        @RequestBody UsersDTO dto,
-//	        @RequestAttribute String loginId) {
-//
-//	    if (!usersRoleServ.isHrAuthorized(loginId)) {
-//	        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//	    }
-//
-//	    usersServ.registerUserByAdmin(dto);
-//	    return ResponseEntity.ok().build();
-//	}
 }

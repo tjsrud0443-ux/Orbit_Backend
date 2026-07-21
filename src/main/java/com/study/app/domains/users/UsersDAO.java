@@ -147,4 +147,9 @@ public class UsersDAO {
 	public int updateProfileImage(Map<String, Object> params) {
 		return batis.update("Users.updateProfileImage", params);
 	}
+	
+	//직원 등록 관리자
+	public int insertUserByAdmin(UsersDTO dto) {
+		return batis.insert("Users.insertUserByAdmin", dto);
+	}
 }

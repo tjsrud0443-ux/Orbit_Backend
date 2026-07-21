@@ -298,4 +298,21 @@
 		update users set sysname = #{sysname}, oriname = #{oriname}
 			where id = #{loginId}
 	</update>
+	
+	<!--직원 등록 관리자-->
+	<insert id="insertUserByAdmin">
+	    insert into users (
+	        id, pw, users_seq, name, phone, email,
+	        oriname, ssn_hash, ssn_enc, ssn_masked,
+	        zonecode, address1, address2,
+	        role, status, hire_date, dept_seq, rank_seq,
+	        created_at, sysname, is_hr_manager
+	    ) values (
+	        #{id}, #{pw}, users_seq.nextval, #{name}, '-', #{email},
+	        'Default6.png', '-', '-', '-',
+	        '-', '-', '-',
+	        'USER', 'ACTIVE', TO_TIMESTAMP(#{hire_date}, 'YYYY-MM-DD HH24:MI:SS'), #{dept_seq}, #{rank_seq},
+	        sysdate, 'Default6.png', 'N'
+	    )
+	</insert>
 </mapper>

@@ -21,7 +21,7 @@ public class UsersRoleController {
 	private UsersRoleService usersRoleServ;
 	
 	// 특정 사용자의 권한 목록 조회
-    @GetMapping("/{users_id}/roles")
+    @GetMapping("/hr/{users_id}/roles")
     public ResponseEntity<List<String>> getUserRoles(
             @PathVariable("users_id") String usersId,
             @RequestAttribute String loginId) {
@@ -35,7 +35,7 @@ public class UsersRoleController {
     }
 
     // 특정 사용자의 권한 목록 수정 (삭제 후 재삽입)
-    @PutMapping("/{users_id}/roles")
+    @PutMapping("/hr/{users_id}/roles")
     public ResponseEntity<Void> updateUserRoles(
             @PathVariable("users_id") String usersId,
             @RequestBody List<String> roles,
