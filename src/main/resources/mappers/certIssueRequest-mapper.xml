@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CertIssueRequest">
+	
+	<insert id="insertCertRequest">
+		insert into cert_issue_request ( 
+			cert_request_seq,
+			cert_type_seq,
+			users_id,
+			request_reason
+		) values ( cert_request_seq.nextval, #{dto.cert_type_seq}, #{loginId}, #{dto.request_reason})
+	</insert>
+	
+	<select id="getAdminCertRequestList" resultType="com.study.app.domains.certType.CertIssueRequestDTO">
+		select
+	        cir.cert_request_seq,
+	        cir.cert_type_seq,
+	        cir.users_id,
+	        cir.request_reason,
+	        cir.status,
+	        cir.requested_at,
+	        cir.handle_id,
+	        cir.approved_at,
+	        cir.rejected_at,
+	        cir.reject_reason,
+	        cir.canceled_at,
+	        cir.print_available_at,
+	        cir.print_expires_at,
+	        cir.applied_print_days,
+	        cir.applied_max_print,
+	        cir.printed_count,
+	        cir.created_at,
+	        cir.updated_at,
+	
+	        u.name,
+	        d.dept_name,
+	        r.rank_name,
+	        ct.cert_type_name,
+	
+	        hu.name as handler_name,
+	
+	        case
+	            when cir.status = 'APPROVED' then cir.approved_at
+	            when cir.status = 'REJECTED' then cir.rejected_at
+	            when cir.status = 'CANCELED' then cir.canceled_at
+	            else null
+	        end as processed_at
+	
+	    from cert_issue_request cir
+	
+		    inner join cert_type ct on cir.cert_type_seq = ct.cert_type_seq
+		    inner join users u on cir.users_id = u.id
+		    
+		    left join departments d on u.dept_seq = d.dept_seq
+		    left join rank r on u.rank_seq = r.rank_seq
+		    left join users hu on cir.handle_id = hu.id
+
+	    order by
+	        case
+	            when cir.status = 'PENDING' then 1
+	            else 2
+	        end, cir.requested_at desc
+	</select>
+</mapper>

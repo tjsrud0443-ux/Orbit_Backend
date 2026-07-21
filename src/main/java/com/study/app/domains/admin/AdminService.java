@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.annualLeave.AdminLeaveDTO;
 import com.study.app.domains.annualLeave.AnnualLeaveService;
+import com.study.app.domains.certType.CertIssueRequestDTO;
+import com.study.app.domains.certType.CertTypeService;
 import com.study.app.domains.checkoutRequest.CheckoutRequestService;
 import com.study.app.domains.companyInfo.CompanyInfoDAO;
 import com.study.app.domains.companyInfo.CompanyInfoDTO;
@@ -81,6 +82,8 @@ public class AdminService {
 	private DefaultApprovalLineService defaultServ;
 	@Autowired
 	private AnnualLeaveService annualLeaveServ;
+	@Autowired
+	private CertTypeService certServ;
 
 	public Map<String, Object> getAllRequest(Long cPage, String status, String searchTerm) {
 		return signupServ.getAllRequest(cPage, status, searchTerm);
@@ -482,4 +485,266 @@ public class AdminService {
 	public Map<String, Object> updateAdminLeave(AdminLeaveDTO dto) {
 	    return annualLeaveServ.updateAdminLeave(dto);
 	}
+	
+	public List<CertIssueRequestDTO> getAdminCertRequestList() {
+		return certServ.getAdminCertRequestList();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

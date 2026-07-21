@@ -1,5 +1,7 @@
 package com.study.app.interceptors;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -31,6 +33,7 @@ public class TokenValidator implements HandlerInterceptor{
 
 		String token = "";
 		String authHeader = request.getHeader("Authorization");
+		
 		if(authHeader != null && authHeader.startsWith("Bearer ")) {
 			token = authHeader.substring(7);
 		}else {
@@ -49,25 +52,38 @@ public class TokenValidator implements HandlerInterceptor{
 					return false;
 				}
 
-				String auth = userInfo.getAuth_group();
+				String deptAuth = userInfo.getAuth_group();
+				String userAuthGroup = userInfo.getUser_auth_group();
 				String uri = request.getRequestURI();
 				
-				if("ROLE_SUPER_ADMIN".equals(auth)) {
-					return true;
+				boolean isSuperAdmin = 
+						"ROLE_SUPER_ADMIN".equals(deptAuth)
+						|| hasAuth(userAuthGroup, "ROLE_SUPER_ADMIN");
+				
+				boolean isHrAdmin = 
+						"ROLE_HR_ADMIN".equals(deptAuth)
+						|| hasAuth(userAuthGroup, "ROLE_HR_ADMIN");
+				
+				boolean isGaAdmin = 
+						"ROLE_GA_ADMIN".equals(deptAuth)
+						|| hasAuth(userAuthGroup, "ROLE_GA_ADMIN");
+				
+				boolean isFnAdmin = 
+						"ROLE_FN_ADMIN".equals(deptAuth)
+						|| hasAuth(userAuthGroup, "ROLE_FN_ADMIN");
+				
+				if(isSuperAdmin) {return true;}
+
+				if(uri.startsWith("/admin/hr") && !isHrAdmin) {
+						response.sendError(HttpServletResponse.SC_FORBIDDEN,
+											"인사 관리 권한이 없습니다.");
+						return false;
 				}
 
-				if(uri.startsWith("/admin/hr")) {
-					if(!"ROLE_HR_ADMIN".equals(auth) && !"ROLE_SUPER_ADMIN".equals(auth)) {
-						response.sendError(HttpServletResponse.SC_FORBIDDEN);
+				if(uri.startsWith("/admin/ga") && !isGaAdmin) {
+						response.sendError(HttpServletResponse.SC_FORBIDDEN,
+											"총무 관리 권한이 없습니다.");
 						return false;
-					}
-				}
-
-				if(uri.startsWith("/admin/ga")) {
-					if(!"ROLE_GA_ADMIN".equals(auth) && !"ROLE_SUPER_ADMIN".equals(auth)) {
-						response.sendError(HttpServletResponse.SC_FORBIDDEN);
-						return false;
-					}
 				}
 
 				return true;
@@ -78,5 +94,15 @@ public class TokenValidator implements HandlerInterceptor{
 			}
 		}
 		return false;
+	}
+	
+	private boolean hasAuth(String userAuthGroup, String targetAuth) {
+		if(userAuthGroup == null || userAuthGroup.isBlank()) {
+			return false;
+		}
+		
+		return Arrays.stream(userAuthGroup.split(","))
+				.map(String::trim)
+				.anyMatch(targetAuth::equals);
 	}
 }
