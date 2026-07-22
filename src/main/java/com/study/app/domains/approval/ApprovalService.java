@@ -743,8 +743,8 @@ public class ApprovalService {
 
 	public Map<String, Object> getCcDocumentsByPage(String loginId, String status, Long cpage, 
 			String keyword, String docType){
-		int start = (int)(cpage * 5 - 4);
-		int end = (int)(cpage * 5);
+		int start = (int)((cpage - 1) * 10 + 1);
+	    int end = (int)(cpage * 10);
 
 		Map<String, Object> param = new HashMap<>();
 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CertIssueHistory">
+	
+	<select id="getNextIssueNo" resultType="long">
+		select nvl(max(issue_no), 0) + 1
+		    from cert_issue_history
+		    where substr(issue_date_code, 1, 2) = to_char(sysdate, 'YY')
+	</select>
+	
+	<insert id="insertCertIssueHistory" parameterType="map">
+		<selectKey keyProperty="issue_seq"
+					resultType="Long"
+					order="BEFORE">
+			select issue_seq.nextval from dual
+		</selectKey>
+			insert into cert_issue_history values(
+				#{issue_seq}, #{cert_request_seq}, to_char(sysdate, 'YYMMDD'), #{issue_no}, null
+			)
+	</insert>
+		
+	<update id="markPrinted">
+		update cert_issue_history h
+			set h.printed_at = sysdate
+		where h.issue_seq = #{issue_seq}
+			and h.cert_request_seq = #{cert_request_seq}
+		      and h.printed_at is null
+		      and exists (
+		          select 1
+		            from cert_issue_request cir
+		           where cir.cert_request_seq = h.cert_request_seq
+		              and cir.users_id = #{loginId}
+		              and cir.status = 'APPROVED'
+			       )
+	</update>
+	
+	<select id="getCertIssueHistoryList"
+        resultType="com.study.app.domains.certType.CertIssueHistoryDTO">
+		    select
+		        h.issue_seq,
+		        h.cert_request_seq,
+		        h.issue_date_code,
+		        h.issue_no,
+		        h.printed_at,
+		
+		        h.issue_date_code
+		            || '-'
+		            || lpad(h.issue_no, 3, '0')
+		            as issue_number,
+		
+		        cir.users_id,
+		        cir.request_reason,
+		        cir.approved_at,
+		
+		        u.name,
+		        d.dept_name,
+		        r.rank_name,
+		        ct.cert_type_name
+		
+		    from cert_issue_history h
+		    
+		    inner join cert_issue_request cir on h.cert_request_seq = cir.cert_request_seq
+		    inner join cert_type ct on cir.cert_type_seq = ct.cert_type_seq
+		    inner join users u on cir.users_id = u.id
+		    left join departments d on u.dept_seq = d.dept_seq
+		    left join rank r on u.rank_seq = r.rank_seq
+		
+		    order by
+		        h.issue_date_code desc,
+		        h.issue_no desc
+	</select>
+		
+	<select id="getPendingIssueHistory" resultType="com.study.app.domains.certType.CertIssueHistoryDTO">
+		select *
+		    from (
+		        select
+		            h.issue_seq,
+		            h.cert_request_seq,
+		            h.issue_date_code,
+		            h.issue_no,
+		            h.printed_at
+		
+		        from cert_issue_history h
+		
+		        inner join cert_issue_request cir on h.cert_request_seq = cir.cert_request_seq
+		
+		        where h.cert_request_seq = #{cert_request_seq}
+		          and cir.users_id = #{loginId}
+		          and cir.status = 'APPROVED'
+		          and h.printed_at is null
+		
+		        order by h.issue_seq desc
+		    )
+		    where rownum = 1
+	</select>
+</mapper>

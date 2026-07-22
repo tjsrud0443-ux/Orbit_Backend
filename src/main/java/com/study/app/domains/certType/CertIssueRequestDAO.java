@@ -40,4 +40,8 @@ public class CertIssueRequestDAO {
 	public int increasePrintedCount(Map<String, Object> params) {
 		return batis.update("CertIssueRequest.increasePrintedCount", params);
 	}
+	
+	public CertIssueRequestDTO getPrintableCertRequest(Map<String, Object> params) {
+		return batis.selectOne("CertIssueRequest.getPrintableCertRequest", params);
+	}
 }

@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.annualLeave.AdminLeaveDTO;
+import com.study.app.domains.certType.CertIssueHistoryDTO;
 import com.study.app.domains.certType.CertIssueRequestDTO;
 import com.study.app.domains.certType.CertTypeDTO;
 import com.study.app.domains.companyInfo.CompanyInfoDTO;
@@ -579,6 +580,11 @@ public class AdminController {
 	public ResponseEntity<Void> updateCertType(@RequestBody CertTypeDTO dto) {
 		adminServ.updateCertType(dto);
 		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/hr/getCertIssueHistoryList")
+	public ResponseEntity<List<CertIssueHistoryDTO>> getCertIssueHistoryList() {
+		return ResponseEntity.ok(adminServ.getCertIssueHistoryList());
 	}
 
 

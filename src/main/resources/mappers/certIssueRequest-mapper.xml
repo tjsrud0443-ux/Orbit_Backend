@@ -40,8 +40,6 @@
 	        cir.printed_count,
 	        cir.created_at,
 	        cir.updated_at,
-	        cir.issue_date_code,
-	        cir.issue_no,
 	
 	        u.name,
 	        d.dept_name,
@@ -102,14 +100,6 @@
 		                ),
 		                'DAY'
 		            ),
-		            
-		        cir.issue_date_code = to_char(sysdate, 'YYMMDD'),
-		        cir.issue_no = (
-					select nvl(max(issue_no), 0) + 1
-					from cert_issue_request
-						where substr(issue_date_code, 1, 2) = to_char(sysdate, 'YY')
-				),
-		
 		        cir.updated_at = sysdate
 		
 		    where cir.cert_request_seq = #{cert_request_seq} 
@@ -145,5 +135,24 @@
 				and status = 'APPROVED'
 				and print_expires_at >= sysdate
 				and nvl(printed_count, 0) <![CDATA[ < ]]> nvl(applied_max_print, 0)
+				and print_available_at <![CDATA[ <= ]]> sysdate
 	</update>
+	
+	<select id="getPrintableCertRequest" resultType="com.study.app.domains.certType.CertIssueRequestDTO">
+	    select
+	        cert_request_seq,
+	        users_id,
+	        status,
+	        applied_max_print,
+	        printed_count,
+	        print_available_at,
+	        print_expires_at
+	    from cert_issue_request
+	    where cert_request_seq = #{cert_request_seq}
+	        and users_id = #{loginId}
+	        and status = 'APPROVED'
+	        and print_available_at <![CDATA[ <= ]]> sysdate
+  			and print_expires_at >= sysdate
+	      for update
+	</select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.study.app.domains.certType;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +41,15 @@ public class CertTypeController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@PutMapping("/increasePrintedCount/{cert_request_seq}")
-	public ResponseEntity<Void> increasePrintedCount(@PathVariable Long cert_request_seq,
+	@PostMapping("/createCertIssue/{cert_request_seq}")
+	public ResponseEntity<Map<String, Object>> createCertIssue(@PathVariable Long cert_request_seq,
 												@RequestAttribute String loginId) {
-		certServ.increasePrintedCount(cert_request_seq, loginId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(certServ.createCertIssue(cert_request_seq, loginId));
+	}
+	
+	@PutMapping("/printCertificate/{cert_request_seq}/{issue_seq}")
+	public ResponseEntity<Map<String, Object>> printCertificate(@PathVariable Long cert_request_seq,
+												@PathVariable Long issue_seq, @RequestAttribute String loginId) {
+		return ResponseEntity.ok(certServ.printCertificate(cert_request_seq, issue_seq, loginId));
 	}
 }
