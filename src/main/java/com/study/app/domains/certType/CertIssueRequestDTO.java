@@ -21,8 +21,6 @@ public class CertIssueRequestDTO {
 	private Long printed_count;
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
-	private String issue_date_code;
-	private Long issue_no;
 	
 	private String name;
 	private String dept_name;
@@ -36,8 +34,7 @@ public class CertIssueRequestDTO {
 	public CertIssueRequestDTO(Long cert_request_seq, Long cert_type_seq, String users_id, String request_reason,
 			String status, LocalDateTime requested_at, String handle_id, LocalDateTime approved_at,
 			LocalDateTime rejected_at, String reject_reason, LocalDateTime print_available_at, LocalDateTime print_expires_at, Long applied_print_days,
-			Long applied_max_print, Long printed_count, LocalDateTime created_at, LocalDateTime updated_at,
-			String issue_date_code, Long issue_no) {
+			Long applied_max_print, Long printed_count, LocalDateTime created_at, LocalDateTime updated_at) {
 		super();
 		this.cert_request_seq = cert_request_seq;
 		this.cert_type_seq = cert_type_seq;
@@ -57,8 +54,6 @@ public class CertIssueRequestDTO {
 		this.created_at = created_at;
 		this.updated_at = updated_at;
 		this.applied_max_print = applied_max_print;
-		this.issue_date_code = issue_date_code;
-		this.issue_no = issue_no;
 	}
 	
 	public Long getCert_request_seq() {
@@ -162,18 +157,6 @@ public class CertIssueRequestDTO {
 	}
 	public void setUpdated_at(LocalDateTime updated_at) {
 		this.updated_at = updated_at;
-	}
-	public String getIssue_date_code() {
-		return issue_date_code;
-	}
-	public void setIssue_date_code(String issue_date_code) {
-		this.issue_date_code = issue_date_code;
-	}
-	public Long getIssue_no() {
-		return issue_no;
-	}
-	public void setIssue_no(Long issue_no) {
-		this.issue_no = issue_no;
 	}
 	public String getName() {
 		return name;

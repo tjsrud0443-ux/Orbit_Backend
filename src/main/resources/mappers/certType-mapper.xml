@@ -24,9 +24,7 @@
 	        req.print_expires_at,
 	        req.applied_print_days,
 	        req.applied_max_print,
-	        req.printed_count,
-	        req.issue_date_code,
-	        req.issue_no
+	        req.printed_count
 	
 	    from cert_type ct
 	

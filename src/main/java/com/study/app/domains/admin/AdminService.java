@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.study.app.domains.aiChat.AiUnansweredQuestionsDTO;
 import com.study.app.domains.annualLeave.AdminLeaveDTO;
 import com.study.app.domains.annualLeave.AnnualLeaveService;
+import com.study.app.domains.certType.CertIssueHistoryDTO;
 import com.study.app.domains.certType.CertIssueRequestDTO;
 import com.study.app.domains.certType.CertTypeDTO;
 import com.study.app.domains.certType.CertTypeService;
@@ -510,6 +511,10 @@ public class AdminService {
 	
 	public void updateCertType(CertTypeDTO dto) {
 		certServ.updateCertType(dto);
+	}
+	
+	public List<CertIssueHistoryDTO> getCertIssueHistoryList() {
+		return certServ.getCertIssueHistoryList();
 	}
 
 
