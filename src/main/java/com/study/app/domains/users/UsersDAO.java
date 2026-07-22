@@ -152,4 +152,9 @@ public class UsersDAO {
 	public int insertUserByAdmin(UsersDTO dto) {
 		return batis.insert("Users.insertUserByAdmin", dto);
 	}
+	
+	//직원 등록 관리자
+	public int insertSignupByAdmin(UsersDTO dto) {
+		return batis.insert("Users.insertSignupByAdmin", dto);
+	}
 }

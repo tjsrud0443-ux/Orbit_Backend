@@ -192,6 +192,7 @@
 	        u.address1,
 	        u.address2,
 	        u.hire_date,
+	        u.ssn_masked,
 	        d.dept_seq,
 	        d.dept_name,
 	        r.rank_seq,
@@ -206,9 +207,18 @@
 	    WHERE u.id = #{loginId}
 	</select>
 	<update id="updateMyPageInfo">
-		update users set 
-			phone=#{phone}, email=#{email}, zonecode=#{zonecode}, address1=#{address1}, address2=#{address2} 
-		where id = #{id}
+		update users
+	    <set>
+	        phone = #{phone},
+	        email = #{email},
+	        zonecode = #{zonecode},
+	        address1 = #{address1},
+	        address2 = #{address2}
+	        <if test="ssn_enc != null">, ssn_enc = #{ssn_enc}</if>
+	        <if test="ssn_hash != null">, ssn_hash = #{ssn_hash}</if>
+	        <if test="ssn_masked != null">, ssn_masked = #{ssn_masked}</if>
+	    </set>
+	    where id = #{id}
 	</update>
 	
 	<!-- 도장 등록 -->
@@ -313,6 +323,21 @@
 	        '-', '-', '-',
 	        'USER', 'ACTIVE', TO_TIMESTAMP(#{hire_date}, 'YYYY-MM-DD HH24:MI:SS'), #{dept_seq}, #{rank_seq},
 	        sysdate, #{sysname}, 'N'
+	    )
+	</insert>
+	
+	<!--직원 등록 관리자 - signup 테이블에도 동일 정보 등록(승인 처리)-->
+	<insert id="insertSignupByAdmin">
+	    insert into signup (
+	        signup_seq, id, pw, name, phone, email,
+	        oriname, ssn_hash, ssn_enc, ssn_masked,
+	        zonecode, address1, address2,
+	        status, signup_at, sysname
+	    ) values (
+	        signup_seq.nextval, #{id}, #{pw}, #{name}, '-', #{email},
+	        #{oriname}, '-', '-', '-',
+	        '-', '-', '-',
+	        'APPROVED', sysdate, #{sysname}
 	    )
 	</insert>
 </mapper>

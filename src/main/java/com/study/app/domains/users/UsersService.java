@@ -9,7 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.study.app.commons.Aes256Util;
 import com.study.app.commons.EncryptionUtils;
+import com.study.app.commons.MaskingUtil;
+import com.study.app.commons.Sha256Util;
+import com.study.app.commons.SsnValidator;
 import com.study.app.domains.annualLeave.AnnualLeaveDAO;
 import com.study.app.domains.file.FileService;
 
@@ -23,6 +27,9 @@ public class UsersService {
 	
 	@Autowired
 	private FileService fileServ;
+	
+    @Autowired
+    private Aes256Util aes256Util;
 	
 	public UsersDTO getHrInfo(String id) {
 		return dao.getHrInfo(id);
@@ -70,6 +77,28 @@ public class UsersService {
 	}
 	
 	public int updateMyPageInfo(UsersDTO dto) {
+		UsersDTO current = dao.getUsersInfo(dto.getId());
+
+	    boolean alreadyRegistered = current != null 
+	        && current.getSsn_masked() != null 
+	        && !"-".equals(current.getSsn_masked());
+
+	    if (dto.getSsn() != null && !dto.getSsn().isBlank() && !alreadyRegistered) {
+	        String ssn = dto.getSsn();
+	        
+	        if (!SsnValidator.isValid(ssn)) {          // 1단계: 형식/체크섬이 유효한가? ← 새로 추가된 부분
+	            throw new IllegalArgumentException("올바른 주민등록번호가 아닙니다.");
+	        }
+	        dto.setSsn_enc(aes256Util.encrypt(ssn));
+	        dto.setSsn_hash(Sha256Util.encrypt(ssn));
+	        dto.setSsn_masked(MaskingUtil.masking(ssn));
+	    } else {
+	        // 이미 등록되어 있거나 SSN을 안 보낸 경우 -> 기존 값 유지 (덮어쓰지 않음)
+	        dto.setSsn_enc(null);
+	        dto.setSsn_hash(null);
+	        dto.setSsn_masked(null);
+	    }
+	    
 		return dao.updateMyPageInfo(dto);
 	}
 	
@@ -144,6 +173,7 @@ public class UsersService {
         }
         
         dao.insertUserByAdmin(dto); //USERS 테이블 등록
+        dao.insertSignupByAdmin(dto); // SIGNUP 테이블 등록
         alDao.insertAnnualLeave(dto.getId()); // 연차 자동 생성
     }
 }

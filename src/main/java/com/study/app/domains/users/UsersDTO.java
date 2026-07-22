@@ -9,6 +9,7 @@ public class UsersDTO {
 	private String phone;
 	private String email;
 	private String oriname;
+	private String ssn;
 	private String ssn_hash;
 	private String ssn_enc;
 	private String ssn_masked;
@@ -45,9 +46,9 @@ public class UsersDTO {
 	public UsersDTO() {}
 
 	public UsersDTO(String id, String pw, Long users_seq, String name, String phone, String email, String oriname,
-			String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1, String address2,
-			String role, String status, String hire_date, String resign_date, Long dept_seq, Long rank_seq,
-			String created_at, String update_at, String sysname, String is_hr_manager, String dept_name,
+			String ssn, String ssn_hash, String ssn_enc, String ssn_masked, String zonecode, String address1,
+			String address2, String role, String status, String hire_date, String resign_date, Long dept_seq,
+			Long rank_seq, String created_at, String update_at, String sysname, String is_hr_manager, String dept_name,
 			String rank_name, Long rank_order, String auth_group, Long parent_dept_seq, String stamp_sysname,
 			String stamp_oriname, Long stamp_seq, Double remaining_days, String user_auth_group, String profile_url) {
 		super();
@@ -58,6 +59,7 @@ public class UsersDTO {
 		this.phone = phone;
 		this.email = email;
 		this.oriname = oriname;
+		this.ssn = ssn;
 		this.ssn_hash = ssn_hash;
 		this.ssn_enc = ssn_enc;
 		this.ssn_masked = ssn_masked;
@@ -141,6 +143,14 @@ public class UsersDTO {
 
 	public void setOriname(String oriname) {
 		this.oriname = oriname;
+	}
+
+	public String getSsn() {
+		return ssn;
+	}
+
+	public void setSsn(String ssn) {
+		this.ssn = ssn;
 	}
 
 	public String getSsn_hash() {
@@ -359,5 +369,4 @@ public class UsersDTO {
 		this.profile_url = profile_url;
 	}
 
-	
 }
