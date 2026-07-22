@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.study.app.domains.file.FileService;
 import com.study.app.domains.users.UsersDTO;
+import com.study.app.domains.users.UsersRoleService;
 import com.study.app.domains.users.UsersService;
 
 @Service
@@ -22,15 +23,15 @@ public class BoardService {
     private FileService fileService; 
     @Autowired
     private UsersService usersService;
+    @Autowired
+    private UsersRoleService usersRoleServ;
 
     public void checkNoticePermission(String loginId, String category) throws AccessDeniedException {
-        if (!"자유".equals(category)) {
-            UsersDTO loginUser = usersService.getUsersInfo(loginId);
-            String authGroup = loginUser.getAuth_group();
-            if (!"ROLE_HR_ADMIN".equals(authGroup) && !"ROLE_SUPER_ADMIN".equals(authGroup)) {
-                throw new AccessDeniedException("공지성 게시글 작성 권한이 없습니다.");
-            }
-        }
+    	 if (!"자유".equals(category)) {
+    	        if (!usersRoleServ.isHrAuthorized(loginId)) {
+    	            throw new AccessDeniedException("공지성 게시글 작성 권한이 없습니다.");
+    	        }
+    	 }
     }
     
 	@Transactional //여러 DB 작업을 하나로 묶어주는 어노테이션
